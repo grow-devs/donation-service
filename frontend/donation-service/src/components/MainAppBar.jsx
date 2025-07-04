@@ -9,8 +9,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import { Badge,Button } from '@mui/material';
-import FloatingLoginPage from './FloatingLoginPage';
-import FloatingAuthModal from './FloatingAuthModal';
+import FloatingAuthModal from '../modal/FloatingAuthModal';
 
 
 export default function MainAppBar() {

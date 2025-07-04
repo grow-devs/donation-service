@@ -2,13 +2,13 @@
 import React from 'react';
 import { Container, Grid } from '@mui/material';
 // ↓ 아래 import들은 기존 App.jsx의 내용과 동일
-import MainCategory from './MainCategory';
-import TotalAmount from './TotalAmount';
-import TimeImpendingCampaignCard from './TimeImpendingCampaignCard';
-import CampaignTop3 from './CampaignTop3';
-import ClosingOnGoal from './ClosingOnGoal';
-import TodayStats from './TodayStats';
-import RankingCard from './RankingCard';
+import MainCategory from '../components/MainCategory';
+import TotalAmount from '../components/TotalAmount';
+import TimeImpendingCampaignCard from '../components/TimeImpendingCampaignCard';
+import CampaignTop3 from '../components/CampaignTop3';
+import ClosingOnGoal from '../components/ClosingOnGoal';
+import TodayStats from '../components/TodayStats';
+import RankingCard from '../components/RankingCard';
 // ... 생략 ...
 
 export default function MainPage() {
