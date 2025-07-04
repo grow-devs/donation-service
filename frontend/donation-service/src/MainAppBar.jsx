@@ -8,9 +8,13 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
-import { Badge } from '@mui/material';
+import { Badge,Button } from '@mui/material';
+import FloatingLoginPage from './FloatingLoginPage';
+
 
 export default function MainAppBar() {
+   const [open, setOpen] = React.useState(false);
+
   return (
     <Paper
       elevation={1}
@@ -91,10 +95,15 @@ export default function MainAppBar() {
                 '&:hover': { color: 'primary.main' },
                 mx: 0.5,
               }}
+              onClick={()=>setOpen(true)}
             >
+              
               <AccountCircleIcon />
             </IconButton>
           </Box>
+      
+          <FloatingLoginPage open={open} onClose={() => setOpen(false)} />
+
         </Toolbar>
       </AppBar>
     </Paper>
