@@ -3,15 +3,15 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 // 기존 App 내용은 MainPage.jsx로 분리해서 불러옵니다
-import MainPage from './MainPage';
-import SignupPage from './SignupPage';
+import MainPage from './pages/MainPage';
+import RankingPage from './pages/RankingPage'
 
 export default function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<MainPage />} />
-        <Route path="/signup" element={<SignupPage />} />
+        <Route path="/rankingPage" element={<RankingPage />} />
       </Routes>
     </Router>
   );
