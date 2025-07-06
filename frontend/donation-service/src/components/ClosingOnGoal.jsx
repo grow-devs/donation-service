@@ -38,7 +38,6 @@ export default function ClosingOnGoal({
 
   const percent = Math.min(100, (raised / goal) * 100);
   const remaining = goal - raised;
-  console.log(remaining);
   return (
     <Card
       sx={{
