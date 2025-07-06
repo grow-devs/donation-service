@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import api from '../apis/api'
 import {
   Typography, TextField, Button
 } from '@mui/material';
@@ -9,7 +10,7 @@ export default function SignupForm({ onSwitchMode }) {
     email: '',
     password: '',
     userName: '',
-    userRole: 'USER',
+    userRole: 'USER_ROLE',
   });
   const [error, setError] = useState('');
 
@@ -20,7 +21,7 @@ export default function SignupForm({ onSwitchMode }) {
 
   const handleSignup = async () => {
     try {
-      const res = await axios.post('/api/user/signup', form);
+      const res = await api.post('/user/signup', form);
       alert(res.data.message || '회원가입 성공');
       onSwitchMode(); // 로그인 모드로 전환
     } catch (err) {

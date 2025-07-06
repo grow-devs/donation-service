@@ -5,6 +5,7 @@ import {
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import axios from 'axios';
+import api from '../apis/api'
 
 export default function LoginForm({ onSwitchMode, onClose }) {
   const [email, setEmail] = useState('');
@@ -14,8 +15,8 @@ export default function LoginForm({ onSwitchMode, onClose }) {
 
   const handleLogin = async () => {
     try {
-      const res = await axios.post('/api/user/login', { email, password });
-      localStorage.setItem('accessToken', res.data.accessToken);
+      const res = await api.post('/user/login', { email, password });
+      localStorage.setItem('accessToken', res.data.data);
       alert('로그인 성공');
       onClose();
     } catch (err) {
