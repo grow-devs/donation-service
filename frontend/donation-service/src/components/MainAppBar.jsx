@@ -35,7 +35,6 @@ export default function MainAppBar() {
         sx={{
           borderRadius: 3,
           boxShadow: 'none',
-          backgroundColor: '#ffffff',
         }}
       >
         <Toolbar

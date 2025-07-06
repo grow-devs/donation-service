@@ -9,7 +9,7 @@ export let theme = createTheme({
             contarstText: "#ffc14d",
         },
         background: {
-                default: 'rgb(240, 240, 240)', // 전체 배경색
+                default: '#f9f9f9', // 전체 배경색
         },
     },
      
