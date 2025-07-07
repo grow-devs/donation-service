@@ -1,5 +1,7 @@
-
 import * as React from 'react';
+import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -14,6 +16,7 @@ import FloatingAuthModal from '../modal/FloatingAuthModal';
 
 export default function MainAppBar() {
    const [open, setOpen] = React.useState(false);
+    const navigate = useNavigate();
 
   return (
     <Paper
@@ -35,7 +38,6 @@ export default function MainAppBar() {
         sx={{
           borderRadius: 3,
           boxShadow: 'none',
-          backgroundColor: '#ffffff',
         }}
       >
         <Toolbar
@@ -46,8 +48,17 @@ export default function MainAppBar() {
             px: { xs: 1, sm: 2 },
           }}
         >
+          {/* 클릭하면 메인페이지로의 이동 */}
+
           {/* 왼쪽: 서비스 이름 (항상 보임) */}
-          <Typography variant="h5" fontWeight="bold" color="primary">
+          <Typography variant="h5" fontWeight="bold" color="primary" onClick={() => navigate('/')}
+          sx={{
+            cursor: 'pointer',
+            '&:hover': {
+              opacity: 0.8,
+              textDecoration: 'underline', // 또는 색상 변경
+            },
+          }}>
             같이가치
           </Typography>
 

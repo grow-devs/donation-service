@@ -2,25 +2,34 @@
 import React from 'react';
 import { Card, CardContent, Typography, Box } from '@mui/material';
 import ProfileInRankingCard from './ProfileInRankingCard';
-
+import { useNavigate } from 'react-router-dom';
 const RANKING_DATA = [
   { rank: 1, nickname: '기부천사123', amount: 120000 },
   { rank: 2, nickname: '행복나눔이', amount: 95000 },
   { rank: 3, nickname: '따뜻한손길', amount: 87000 },
   { rank: 4, nickname: '익명의기부자', amount: 50000 },
   { rank: 5, nickname: '희망전도사', amount: 42000 },
+  { rank: 6, nickname: '희망전도사', amount: 42000 },
+  { rank: 7, nickname: '희망전도사', amount: 42000 },
+  { rank: 8, nickname: '희망전도사', amount: 42000 },
+  { rank: 9, nickname: '희망전도사', amount: 42000 },
+  { rank: 10, nickname: '희망전도사', amount: 42000 },
+  { rank: 11, nickname: '희망전도사', amount: 42000 },
 ];
 
 export default function RankingCard() {
+  const navigate = useNavigate();
   return (
     <Card
       sx={{
+        cursor : 'pointer',
         borderRadius: 3,
         boxShadow: 2,
         width: 345,
         display: 'flex',
         flexDirection: 'column',
       }}
+      onClick={()=>navigate('/RankingPage')}
     >
       {/* 헤더 */}
       <Box sx={{ p: 2 }}>
