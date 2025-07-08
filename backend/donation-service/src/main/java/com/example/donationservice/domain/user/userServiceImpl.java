@@ -1,6 +1,7 @@
 package com.example.donationservice.domain.user;
 
 import com.example.donationservice.config.auth.jwt.JwtService;
+import com.example.donationservice.config.redis.RedisTokenService;
 import com.example.donationservice.domain.user.dto.UserDto;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class userServiceImpl implements UserService {
@@ -23,12 +28,31 @@ public class userServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final RedisTokenService redisTokenService;
+
+    // refreshToken에서 이메일 추출
+    public String extractEmailFromToken(String refreshToken) {
+        try {
+            return jwtService.getUserNameFromJwtToken(refreshToken);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatusCode.valueOf(401), "유효하지 않은 토큰");
+        }
+    }
+
+    // refreshToken 유효성 검사 (Redis와 비교)
+    public boolean isRefreshTokenValid(String email, String refreshToken) {
+        String savedRefreshToken = redisTokenService.getRefreshToken(email);
+        return savedRefreshToken != null && savedRefreshToken.equals(refreshToken) && !jwtService.isTokenExpired(refreshToken);
+    }
+
+    // 새 Access Token 생성
+    public String generateAccessToken(String email) {
+        return jwtService.generateToken(email);
+    }
 
     @Override
     @Transactional
-    public String login(UserDto.loginRequest loginRequest) {
-        String email = loginRequest.getEmail();
-        String password = loginRequest.getPassword();
+    public Map<String, String> login(UserDto.loginRequest loginRequest) {
         Authentication authentication;
         try {
             System.out.println("call - > login in service");
@@ -41,12 +65,28 @@ public class userServiceImpl implements UserService {
             //todo globalexception
             return null;
         }
+
+        String email = loginRequest.getEmail();
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String jwt = jwtService.generateToken(userDetails.getUsername());
-        System.out.println(jwt);
+
+//        String jwt = jwtService.generateToken(userDetails.getUsername());
+        String accessToken = jwtService.generateToken(email);
+
+        // Refresh Token 생성 (예: 7일 유효기간)
+        String refreshToken = jwtService.generateRefreshToken(email); // TODO : email을 UUID로 변경 필요
+
+        // Redis에 Refresh Token 저장 (TTL 7일)
+        redisTokenService.saveRefreshToken(email, refreshToken, 1000L * 60 * 60 * 24 * 7);
+
+        Map<String, String> tokens = new HashMap<>();
+        tokens.put("accessToken", accessToken);
+        tokens.put("refreshToken", refreshToken);
+        return tokens;
+
         // 인증 성공 시 JWT 생성
-        return jwt;
+//        return jwt;
     }
 
     @Override
