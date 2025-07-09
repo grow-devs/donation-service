@@ -37,25 +37,21 @@ public class JwtFilter extends OncePerRequestFilter {
         final String jwt;
         final String userEmail;
 
-//        //그냥 지나치기
-//        filterChain.doFilter(request,response);
-
         // 헤더에 토큰을 포함하고 있지 않으면 다음 필터로 넘기자
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
         jwt = authorizationHeader.substring(7);
-        userEmail = jwtService.getUserNameFromJwtToken(jwt); // todo extract the uesrEmail from JWT token;
-        // 유저가 존재하지만, springsecurity가 이미 검증을 완료하고 UserDetailService의
-        // loadUserByUsername을 통해 contextholder에 그 정보를 저장하고 있지 않다면,
+        userEmail = jwtService.getUserNameFromJwtToken(jwt); // 토큰이 만료되더라도 username은 가져오게 내부적으로 try catch
+
+        // jwt의 userEmail과 인증객체의 userEmail이 있어야 로직 수행
+        // 필터가 실행되었을 때, 현재 요청에 대해 이미 인증 정보가 존재하는지 확인하기 위함
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = customUserDetailService.loadUserByUsername(userEmail);
-
             try{
                 //jwt가 유효하면 security contextholder에 사용자를 저장한다.
                 if(jwtService.isTokenValid(jwt,userDetails)){
-                    String username = jwtService.getUserNameFromJwtToken(jwt);
                     setAuthentication(userDetails);
                 }
             }
@@ -79,7 +75,7 @@ public class JwtFilter extends OncePerRequestFilter {
     private void handleExpiredAccessToken(HttpServletRequest request, HttpServletResponse response, UserDetails userDetails){
         String username = userDetails.getUsername();
         String refreshToken = (String) redisTemplate.opsForValue().get(username); // Redis에서 Refresh Token 가져오기
-
+        System.out.println("refreshToken" +refreshToken);
         //등록된 refreshToken이 존재한다면 accesstoken을 재발급해야한다.
         if(refreshToken!=null){
             String newAccessToken = jwtService.generateToken(username);
