@@ -13,8 +13,9 @@ import Diversity3Icon from '@mui/icons-material/Diversity3';
 import PublicIcon from '@mui/icons-material/Public';
 import AccessibleIcon from '@mui/icons-material/Accessible';
 import { Card } from '@mui/material';
-
+import { useNavigate } from 'react-router-dom';
 export default function MainCategory() {
+  const navigate = useNavigate();
   const categories = [
     { label: '전체', icon: <Diversity1SharpIcon /> },
     { label: '아동', icon: <ChildCareIcon /> },
@@ -79,6 +80,8 @@ export default function MainCategory() {
                 boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
                 transition: 'background-color 0.3s ease',
               }}
+                  onClick={() => navigate('/postList')}
+
             >
               {cat.icon}
             </IconButton>
