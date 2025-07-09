@@ -13,8 +13,8 @@ public class RedisTokenService {
     private final RedisTemplate<String, Object> redisTemplate;
 
     // 저장
-    public void saveRefreshToken(String email, String refreshToken, long expirationMillis) {
-        redisTemplate.opsForValue().set(email, refreshToken, Duration.ofMillis(expirationMillis));
+    public void saveRefreshToken(String key, String value, long expirationMillis) {
+        redisTemplate.opsForValue().set(key, value, Duration.ofMillis(expirationMillis));
     }
 
     // 조회
