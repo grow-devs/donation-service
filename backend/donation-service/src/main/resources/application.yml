@@ -14,6 +14,12 @@ spring:
         format_sql: true  # SQL 예쁘게 출력
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+#      password: redis_password  # Redis 비밀번호 설정 (필요 시)
+
   # 필요 시 timezone 설정
   jackson:
     time-zone: Asia/Seoul

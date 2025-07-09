@@ -1,4 +1,4 @@
-// SignupForm.jsx
+// SignupFrom.jsx
 import React, { useState } from 'react';
 import api from '../apis/api'
 import {
@@ -45,8 +45,8 @@ export default function SignupForm({ onSwitchMode }) {
       <TextField fullWidth select SelectProps={{ native: true }}
         label="권한" name="userRole" margin="normal"
         value={form.userRole} onChange={handleChange}>
-        <option value="USER">USER</option>
-        <option value="ADMIN">ADMIN</option>
+        <option value="USER_ROLE">USER</option>
+        <option value="ADMIN_ROLE">ADMIN</option>
       </TextField>
 
       {error && <Typography color="error" variant="body2">{error}</Typography>}
