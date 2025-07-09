@@ -8,7 +8,7 @@ import java.util.Map;
 
 
 public interface UserService {
-    public Map<String, String > login(UserDto.loginRequest loginRequest);
+    public String login(UserDto.loginRequest loginRequest);
 
     public void signup(UserDto.signupRequest signupRequest);
 
