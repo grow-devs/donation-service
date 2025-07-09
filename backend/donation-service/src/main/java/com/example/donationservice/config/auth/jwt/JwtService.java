@@ -41,7 +41,7 @@ public class JwtService {
                 .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 //todo 만료 시점 설정
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 20)) // 만료 시점 (20초)
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 30)) // 만료 시점 (30분)
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
