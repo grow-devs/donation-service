@@ -1,6 +1,7 @@
 package com.example.donationservice.config.auth.jwt;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -40,7 +41,7 @@ public class JwtService {
                 .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 //todo 만료 시점 설정
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 20)) //
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 20)) // 만료 시점 (20초)
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -74,11 +75,19 @@ public class JwtService {
     }
     // token으로 유저 이름 가져오기
     public String getUserNameFromJwtToken(String token){
-        return Jwts.parserBuilder()
-                .setSigningKey(getSignInKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody().getSubject();
+        // 만료되더라도 이름은 가져올 수 있게 try catch
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(getSignInKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody().getSubject();
+        }
+        catch(ExpiredJwtException e)
+        {
+            return e.getClaims().getSubject();
+        }
+
     }
 
     // 리프레시 토큰 생성
