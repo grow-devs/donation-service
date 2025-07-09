@@ -1,10 +1,10 @@
+// LoginFrom.jsx
 import React, { useState } from 'react';
 import {
   Typography, TextField, Button, IconButton, InputAdornment
 } from '@mui/material';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import axios from 'axios';
 import api from '../apis/api'
 
 export default function LoginForm({ onSwitchMode, onClose }) {
