@@ -1,18 +1,23 @@
-package com.example.donationservice.domain.user;
+package com.example.donationservice.domain.sponsor;
 
+import com.example.donationservice.domain.user.ApprovalStatus;
+import com.example.donationservice.domain.user.User;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Team {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
+
+    private String address;
 
     private String description;
 
