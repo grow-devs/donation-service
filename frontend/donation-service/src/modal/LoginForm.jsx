@@ -17,9 +17,8 @@ export default function LoginForm({ onSwitchMode, onClose }) {
   const handleLogin = async () => {
     try {
       const res = await api.post('/user/login', { email, password });
-      const { accessToken, refreshToken } = res.data.data;  // 객체에서 분해 할당
+      const accessToken= res.data.data;  // 객체에서 분해 할당
       localStorage.setItem('accessToken', accessToken);
-      localStorage.setItem('refreshToken', refreshToken);
       alert('로그인 성공');
       onClose();
     } catch (err) {
