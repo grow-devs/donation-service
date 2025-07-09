@@ -5,6 +5,7 @@ import com.example.donationservice.domain.user.CustomUserDetailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
@@ -71,7 +72,10 @@ public class SecurityConfig {
                         //requsetMatchers를 사용할때는 url를 정확하게 작성해야한다.
                         .requestMatchers("/api/user/login").permitAll()
                         .requestMatchers("/api/user/signup").permitAll()
+                        .requestMatchers("/api/team/check-name").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/team").permitAll()
                         .requestMatchers("/api/user/test").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/team").authenticated()
 
 //                        .requestMatchers("/api/v1/user/test").hasRole("UESR")
 //                        .anyRequest().hasRole(Role.USER.name())//위에서 언급한 url 이외의 url은 모두 허용한다.
