@@ -42,33 +42,13 @@ public class UserController {
         );
     }
 
-    // accessToken 재발급
-    @PostMapping("/reissue")
-    public ResponseEntity<Result> reissue(HttpServletRequest request) {
-        String refreshToken = request.getHeader("Authorization");
-        if (refreshToken == null || !refreshToken.startsWith("Bearer ")) {
-            return ResponseEntity.status(401).body(Result.builder().message("RefreshToken 누락").build());
-        }
-        refreshToken = refreshToken.substring(7);
-
-        String email;
-        try {
-            email = userService.extractEmailFromToken(refreshToken);
-        } catch (Exception e) {
-            return ResponseEntity.status(401).body(Result.builder().message("유효하지 않은 토큰").build());
-        }
-
-        if (!userService.isRefreshTokenValid(email, refreshToken)) {
-            return ResponseEntity.status(403).body(Result.builder().message("RefreshToken 불일치 또는 만료").build());
-        }
-
-        String newAccessToken = userService.generateAccessToken(email);
-        return ResponseEntity.ok(Result.builder()
-                .message("AccessToken 재발급 성공")
-                .data(Collections.singletonMap("accessToken", newAccessToken))
-                .build());
-    }
-
+    /**
+     * TODO. 파라미터로 Authentication 대신 @AuthenticationPrincipal CustomUserDetail을 통해 인증된 객체를 바로 주입받는다.
+     *       이를 통해 user의 정보를 간단하게 가져올 수 있다. (ex. userId)
+     *
+     * @param customUserDetail
+     * @return
+     */
     @PostMapping("/test")
     public ResponseEntity<Result> test(@AuthenticationPrincipal CustomUserDetail customUserDetail){
         System.out.println(customUserDetail.getUserId());
