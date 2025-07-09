@@ -56,7 +56,7 @@ export default function MainAppBar() {
             cursor: 'pointer',
             '&:hover': {
               opacity: 0.8,
-              textDecoration: 'underline', // 또는 색상 변경
+              // textDecoration: 'underline', // 또는 색상 변경
             },
           }}>
             같이가치
