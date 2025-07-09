@@ -4,7 +4,6 @@ import api from '../apis/api'
 import {
   Typography, TextField, Button
 } from '@mui/material';
-import axios from 'axios';
 
 export default function SignupForm({ onSwitchMode }) {
   const [form, setForm] = useState({

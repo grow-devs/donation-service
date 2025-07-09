@@ -7,6 +7,9 @@ import MainPage from './pages/MainPage';
 import RankingPage from './pages/RankingPage'
 import MainAppBar from './components/MainAppBar';
 import ScrollToTop from './ScrollToTop';
+import MyPage from './pages/MyPage';
+import ApplyAgencyPage from './pages/ApplyAgencyPage';
+
 export default function App() {
   return (
     <Router>
@@ -15,6 +18,8 @@ export default function App() {
       <Routes>
         <Route path="/" element={<MainPage />} />
         <Route path="/rankingPage" element={<RankingPage />} />
+        <Route path="/mypage" element={<MyPage />} />
+        <Route path="/apply-agency" element={<ApplyAgencyPage />} />
       </Routes>
     </Router>
   );
