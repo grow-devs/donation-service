@@ -8,6 +8,9 @@ import RankingPage from './pages/RankingPage'
 import PostListPage from './pages/PostListPage';
 import MainAppBar from './components/MainAppBar';
 import ScrollToTop from './ScrollToTop';
+import MyPage from './pages/MyPage';
+import ApplyAgencyPage from './pages/ApplyAgencyPage';
+
 export default function App() {
   return (
     <Router>
@@ -16,7 +19,10 @@ export default function App() {
       <Routes>
         <Route path="/" element={<MainPage />} />
         <Route path="/rankingPage" element={<RankingPage />} />
-        <Route path="/postList" element={<PostListPage />} />
+        <Route path="/mypage" element={<MyPage />} />
+        <Route path="/apply-agency" element={<ApplyAgencyPage />} />
+        <Route path="/postListPage" element={<PostListPage />} />
+
       </Routes>
     </Router>
   );
