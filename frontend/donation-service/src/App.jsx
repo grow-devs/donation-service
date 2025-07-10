@@ -9,6 +9,7 @@ import MainAppBar from './components/MainAppBar';
 import ScrollToTop from './ScrollToTop';
 import MyPage from './pages/MyPage';
 import ApplyAgencyPage from './pages/ApplyAgencyPage';
+import PrivateRoute from './routes/PrivateRoute';
 
 export default function App() {
   return (
@@ -18,7 +19,10 @@ export default function App() {
       <Routes>
         <Route path="/" element={<MainPage />} />
         <Route path="/rankingPage" element={<RankingPage />} />
-        <Route path="/mypage" element={<MyPage />} />
+        <Route path="/mypage" element={
+          <PrivateRoute>
+            <MyPage />
+          </PrivateRoute>} />
         <Route path="/apply-agency" element={<ApplyAgencyPage />} />
       </Routes>
     </Router>
