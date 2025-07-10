@@ -10,6 +10,7 @@ import ScrollToTop from './ScrollToTop';
 import MyPage from './pages/MyPage';
 import ApplyAgencyPage from './pages/ApplyAgencyPage';
 import PrivateRoute from './routes/PrivateRoute';
+import AdminForm from './pages/AdminForm';
 
 export default function App() {
   return (
@@ -24,6 +25,11 @@ export default function App() {
             <MyPage />
           </PrivateRoute>} />
         <Route path="/apply-agency" element={<ApplyAgencyPage />} />
+        <Route path="/admin-page" element={
+          <PrivateRoute>
+            <AdminForm />
+          </PrivateRoute>
+        } />
       </Routes>
     </Router>
   );
