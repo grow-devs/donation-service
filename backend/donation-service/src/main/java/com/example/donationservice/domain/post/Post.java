@@ -3,7 +3,7 @@ package com.example.donationservice.domain.post;
 import com.example.donationservice.common.entity.BaseTimeEntity;
 import com.example.donationservice.domain.category.Category;
 import com.example.donationservice.domain.user.ApprovalStatus;
-import com.example.donationservice.domain.user.Team;
+import com.example.donationservice.domain.sponsor.Team;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

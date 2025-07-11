@@ -8,7 +8,7 @@ import {
   Alert
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../apis/api'
 
 export default function ApplyAgencyPage() {
   const [agencyName, setAgencyName] = useState('');
@@ -24,12 +24,13 @@ export default function ApplyAgencyPage() {
     if (!agencyName.trim()) return;
 
     try {
-      console.log('~~~~~ Checking name duplication for:', agencyName);
-      const res = await axios.get(`/api/user/team/check-name?name=${agencyName}`);
-      if (res.data.isDuplicate) {
-        setNameCheckResult({ ok: false, msg: res.data.message });
+      const res = await api.get(`/team/check-name?teamName=${encodeURIComponent(agencyName)}`);
+      const isAvailable = res.data.data;
+  
+      if (isAvailable) {
+        setNameCheckResult({ ok: true, msg: '사용 가능한 이름입니다.' });
       } else {
-        setNameCheckResult({ ok: true, msg: res.data.message });
+        setNameCheckResult({ ok: false, msg: '이미 존재하는 이름입니다.' });
       }
     } catch (err) {
       setNameCheckResult({ ok: false, msg: '서버 오류로 중복 확인 실패' });
@@ -42,15 +43,20 @@ export default function ApplyAgencyPage() {
       setError('모든 항목을 입력해주세요.');
       return;
     }
-
+  
+    if (!nameCheckResult?.ok) {
+      setError('단체 이름 중복 확인을 해주세요.');
+      return;
+    }
+  
     try {
-      await axios.post('/api/user/team', {
+      await api.post('/team', {
         name: agencyName,
         address,
         description
       });
-
-      navigate('/mypage'); // 예: 등록 후 마이페이지 이동
+  
+      navigate('/mypage'); // 등록 성공 시 마이페이지 이동
     } catch (err) {
       setError('단체 등록에 실패했습니다.');
     }
