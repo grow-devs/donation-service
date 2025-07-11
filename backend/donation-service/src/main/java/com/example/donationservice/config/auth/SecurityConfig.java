@@ -5,6 +5,7 @@ import com.example.donationservice.domain.user.CustomUserDetailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
@@ -71,8 +72,14 @@ public class SecurityConfig {
                         //requsetMatchers를 사용할때는 url를 정확하게 작성해야한다.
                         .requestMatchers("/api/user/login").permitAll()
                         .requestMatchers("/api/user/signup").permitAll()
+                        .requestMatchers("/api/team/check-name").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/team").permitAll()
                         .requestMatchers("/api/user/test").authenticated()
-
+                        .requestMatchers(HttpMethod.POST, "/api/team").authenticated()
+                        .requestMatchers("/api/admin/**").authenticated()
+                        .anyRequest().authenticated()
+//                        .requestMatchers("/api/admin/**").hasRole("ADMIN_ROLE")  // ADMIN 만접근!
+                // 참고로 "ADMIN" 만적으면 sercurity가 자동으로 "ROLE_ADMIN"로 변환해준다. 근데 나는 이름 자체가 ADMIN_ROLE 이니까 "ADMIN_ROLE"을 써야해
 //                        .requestMatchers("/api/v1/user/test").hasRole("UESR")
 //                        .anyRequest().hasRole(Role.USER.name())//위에서 언급한 url 이외의 url은 모두 허용한다.
         );

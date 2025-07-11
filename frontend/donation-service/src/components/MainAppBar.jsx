@@ -1,22 +1,32 @@
+// MainAppBar.jsx
 import * as React from 'react';
-import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
+import { IconButton, Tooltip } from '@mui/material';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import { Badge,Button } from '@mui/material';
 import FloatingAuthModal from '../modal/FloatingAuthModal';
-
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 
 export default function MainAppBar() {
-   const [open, setOpen] = React.useState(false);
-    const navigate = useNavigate();
+  const [open, setOpen] = React.useState(false);
+  const navigate = useNavigate();
+
+  const accessToken = localStorage.getItem('accessToken');
+  const userRole = localStorage.getItem('userRole');
+
+  const isAdmin = accessToken && userRole === 'ADMIN_ROLE';
+
+  // const isLoggedIn = () => {
+  //   const accessToken = localStorage.getItem('accessToken');
+  //   return !!accessToken; // accessToken이 있으면 true, 없으면 false
+  // };
 
   return (
     <Paper
@@ -96,9 +106,9 @@ export default function MainAppBar() {
                           },
                         }}>
                 <NotificationsIcon />
-              </Badge>
-                
+              </Badge>    
             </IconButton>
+
             <IconButton
               size="large"
               sx={{
@@ -106,11 +116,39 @@ export default function MainAppBar() {
                 '&:hover': { color: 'primary.main' },
                 mx: 0.5,
               }}
-              onClick={()=>setOpen(true)}
+              // onClick={() => {
+              //   if (isLoggedIn()) {
+              //     navigate('/mypage');  // 로그인되어 있으면 마이페이지로 이동
+              //   } else {
+              //     setOpen(true);        // 로그인되어 있지 않으면 모달 열기
+              //   }
+              // }}
+              onClick={() => {
+                const accessToken = localStorage.getItem('accessToken');
+                if (accessToken) {
+                  navigate('/mypage'); // 로그인 상태이면 마이페이지로 이동
+                } else {
+                  setOpen(true);       // 아니면 로그인 모달 열기
+                }
+              }}
             >
-              
               <AccountCircleIcon />
             </IconButton>
+
+            {/* 관리자 전용 아이콘 */}
+            {localStorage.getItem('accessToken') && localStorage.getItem('userRole') === 'ADMIN_ROLE' && (
+              <IconButton
+                size="large"
+                onClick={() => navigate('/admin-page')}
+                sx={{
+                  color: 'text.secondary',
+                  '&:hover': { color: 'primary.main' },
+                  mx: 0.5,
+                }}
+              >
+                <AdminPanelSettingsIcon />
+              </IconButton>
+            )}
           </Box>
       
           <FloatingAuthModal open={open} onClose={() => setOpen(false)} />

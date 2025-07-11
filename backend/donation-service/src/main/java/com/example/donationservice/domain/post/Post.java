@@ -2,7 +2,7 @@ package com.example.donationservice.domain.post;
 
 import com.example.donationservice.domain.category.Category;
 import com.example.donationservice.domain.user.ApprovalStatus;
-import com.example.donationservice.domain.user.Team;
+import com.example.donationservice.domain.sponsor.Team;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

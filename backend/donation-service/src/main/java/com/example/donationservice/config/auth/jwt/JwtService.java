@@ -39,9 +39,10 @@ public class JwtService {
     ) {
         return Jwts.builder()
                 .setSubject(subject)
+//                .claim("role", role) // 기본적으로 ROLE_USER로 설정
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 //todo 만료 시점 설정
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 30)) // 만료 시점 (30분)
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 10)) // 만료 시점 10분
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
