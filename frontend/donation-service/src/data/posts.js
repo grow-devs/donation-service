@@ -1,0 +1,67 @@
+export const posts = [
+  {
+    id: 1,
+    categoryId: 6, // 어르신
+    title: "어르신 기본 생활 지원을 위한 매달기부하시길바랍니다아아아아아",
+    tag: "매달기부",
+    image: "https://loremflickr.com/600/400",
+    participants: 1200,
+  },
+  {
+    id: 2,
+    categoryId: 6,
+    title: "조손가정 추석 선물",
+    tag: "조손가정 추석 선물",
+    image: "https://loremflickr.com/600/400",
+    participants: 2826,
+  },
+  {
+    id: 3,
+    categoryId: 6,
+    title: "어르신 여름음식 지원",
+    tag: "여름음식 지원",
+    image: "https://loremflickr.com/600/400",
+    participants: 1635,
+  },
+  {
+    id: 4,
+    categoryId: 6,
+    title: "어르신 삼계탕으로 회복한닭~!",
+    tag: "여름음식 지원",
+    image: "https://loremflickr.com/600/400",
+    participants: 1105,
+  },
+  {
+    id: 5,
+    categoryId: 6,
+    title: "어르신 삼계탕으로 회복한닭~!",
+    tag: "여름음식 지원",
+    image: "https://loremflickr.com/600/400",
+    participants: 1105,
+  },
+  {
+    id: 6,
+    categoryId: 6,
+    title: "어르신 삼계탕으로 회복한닭~!",
+    tag: "여름음식 지원",
+    image: "https://loremflickr.com/600/400",
+    participants: 1105,
+  },
+  {
+    id: 7,
+    categoryId: 6,
+    title: "어르신 삼계탕으로 회복한닭~!",
+    tag: "여름음식 지원",
+    image: "https://loremflickr.com/600/400",
+    participants: 1105,
+  },
+  {
+    id: 8,
+    categoryId: 6,
+    title: "어르신 삼계탕으로 회복한닭~!",
+    tag: "여름음식 지원",
+    image: "https://loremflickr.com/600/400",
+    participants: 1105,
+  },
+  // ... 추가 데이터
+];
