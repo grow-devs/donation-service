@@ -3,6 +3,7 @@ package com.example.donationservice.domain.admin;
 import com.example.donationservice.domain.sponsor.Team;
 import com.example.donationservice.domain.sponsor.TeamRepository;
 import com.example.donationservice.domain.sponsor.dto.TeamDto;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,7 @@ public class AdminServiceImpl implements AdminService{
     private final TeamRepository teamRepository;
 
     @Override
+    @Transactional
     public List<TeamDto.response> getTeamList() {
         List<Team> teamList = teamRepository.findAll();
 

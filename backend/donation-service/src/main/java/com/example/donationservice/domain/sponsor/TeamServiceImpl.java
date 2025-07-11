@@ -5,6 +5,7 @@ import com.example.donationservice.domain.sponsor.dto.TeamDto;
 import com.example.donationservice.domain.user.ApprovalStatus;
 import com.example.donationservice.domain.user.User;
 import com.example.donationservice.domain.user.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,8 @@ public class TeamServiceImpl implements TeamService{
     private final UserRepository userRepository;
 
     // 후원 단체 생성
+    @Override
+    @Transactional
     public TeamDto.response createTeam(TeamDto.CreateTeamRequest createTeamRequest, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RestApiException(USER_NOT_FOUND));
