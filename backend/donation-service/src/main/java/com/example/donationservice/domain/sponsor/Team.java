@@ -23,6 +23,8 @@ public class Team {
 
     private ApprovalStatus approvalStatus;
 
+    // team이 user를 단방향으로 참조한다 (user에서는 참조안함)
+    // 외래키는 team 테이블에서 user의 id를 참조한다.
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;

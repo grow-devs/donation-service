@@ -1,12 +1,15 @@
 package com.example.donationservice.domain.sponsor;
 
+import com.example.donationservice.common.exception.RestApiException;
 import com.example.donationservice.domain.sponsor.dto.TeamDto;
 import com.example.donationservice.domain.user.ApprovalStatus;
 import com.example.donationservice.domain.user.User;
 import com.example.donationservice.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+
+import static com.example.donationservice.common.exception.CommonErrorCode.TEAM_ALREADY_EXISTS;
+import static com.example.donationservice.common.exception.CommonErrorCode.USER_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -18,7 +21,11 @@ public class TeamServiceImpl implements TeamService{
     // 후원 단체 생성
     public TeamDto.response createTeam(TeamDto.CreateTeamRequest createTeamRequest, Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다. ID: " + userId));
+                .orElseThrow(() -> new RestApiException(USER_NOT_FOUND));
+
+        if(teamRepository.existsByUser(user)) {
+            throw new RestApiException(TEAM_ALREADY_EXISTS);
+        }
 
         // 요청으로부터 Team 객체 생성
         Team team = Team.builder()
