@@ -29,26 +29,6 @@ public class UserServiceImpl implements UserService {
     private final AuthenticationManager authenticationManager;
     private final RedisTokenService redisTokenService;
 
-    // refreshToken에서 이메일 추출
-    public String extractEmailFromToken(String refreshToken) {
-        try {
-            return jwtService.getUserNameFromJwtToken(refreshToken);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatusCode.valueOf(401), "유효하지 않은 토큰");
-        }
-    }
-
-    // refreshToken 유효성 검사 (Redis와 비교)
-    public boolean isRefreshTokenValid(String email, String refreshToken) {
-        String savedRefreshToken = redisTokenService.getRefreshToken(email);
-        return savedRefreshToken != null && savedRefreshToken.equals(refreshToken) && !jwtService.isTokenExpired(refreshToken);
-    }
-
-    // 새 Access Token 생성
-    public String generateAccessToken(String email) {
-        return jwtService.generateToken(email);
-    }
-
     @Override
     @Transactional
     public String login(UserDto.loginRequest loginRequest) {

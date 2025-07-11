@@ -75,6 +75,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/team/check-name").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/team").permitAll()
                         .requestMatchers("/api/user/test").authenticated()
+                        .requestMatchers(HttpMethod.POST,"/api/post/").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/team").authenticated()
                         .requestMatchers("/api/admin/**").authenticated()
                         .anyRequest().authenticated()
