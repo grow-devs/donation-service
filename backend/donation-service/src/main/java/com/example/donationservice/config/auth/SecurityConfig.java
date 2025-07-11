@@ -77,7 +77,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/user/test").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/team").authenticated()
                         .requestMatchers("/api/admin/**").authenticated()
-//                        .anyRequest().authenticated()
+                        .anyRequest().authenticated()
 //                        .requestMatchers("/api/admin/**").hasRole("ADMIN_ROLE")  // ADMIN 만접근!
                 // 참고로 "ADMIN" 만적으면 sercurity가 자동으로 "ROLE_ADMIN"로 변환해준다. 근데 나는 이름 자체가 ADMIN_ROLE 이니까 "ADMIN_ROLE"을 써야해
 //                        .requestMatchers("/api/v1/user/test").hasRole("UESR")
