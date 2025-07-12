@@ -1,14 +1,10 @@
 package com.example.donationservice.domain.admin;
 
 import com.example.donationservice.common.dto.Result;
-import com.example.donationservice.domain.sponsor.dto.TeamDto;
+import com.example.donationservice.domain.user.ApprovalStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,6 +19,19 @@ public class AdminController {
                 Result.builder()
                         .message("팀 목록 조회 성공")
                         .data(adminService.getTeamList())
+                        .build()
+        );
+    }
+
+    @PatchMapping("/team-approval/{teamId}")
+    public ResponseEntity<Result> updateTeamApprovalStatus(
+            @PathVariable Long teamId,
+            @RequestBody ApprovalStatus approvalStatus) {
+        adminService.updateTeamApprovalStatus(teamId, approvalStatus);
+        return ResponseEntity.ok(
+                Result.builder()
+                        .message("팀 승인 상태 업데이트 성공")
+                        .data("ok")
                         .build()
         );
     }

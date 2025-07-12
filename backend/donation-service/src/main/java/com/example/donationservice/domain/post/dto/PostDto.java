@@ -1,8 +1,6 @@
 package com.example.donationservice.domain.post.dto;
 
-import com.example.donationservice.domain.category.Category;
 import com.example.donationservice.domain.user.ApprovalStatus;
-import com.example.donationservice.domain.user.Team;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
