@@ -99,7 +99,7 @@ export default function AdminForm() {
           <TableBody>
             {agencyRequests.map((req, index) => (
               <TableRow key={index}>
-                <TableCell>{req.createdAt?.substring(0, 10) || '-'}</TableCell>
+                <TableCell>{req.createdAt ? req.createdAt.substring(0, 16).replace('T', ' \u00A0\u00A0') : '-'}</TableCell>
                 <TableCell>{req.name}</TableCell>
                 <TableCell align="right">{req.description}</TableCell>
                 <TableCell align="right">

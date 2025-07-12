@@ -19,7 +19,7 @@ public class AdminServiceImpl implements AdminService{
     @Override
     @Transactional
     public List<TeamDto.response> getTeamList() {
-        List<Team> teamList = teamRepository.findAll();
+        List<Team> teamList = teamRepository.findAllByOrderByCreatedAtDesc();
 
         return teamList.stream()
                 .map(team -> TeamDto.response.builder()
