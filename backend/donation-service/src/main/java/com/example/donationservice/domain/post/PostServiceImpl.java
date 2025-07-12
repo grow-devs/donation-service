@@ -3,6 +3,8 @@ package com.example.donationservice.domain.post;
 import com.example.donationservice.domain.category.Category;
 import com.example.donationservice.domain.category.CategoryRepository;
 import com.example.donationservice.domain.post.dto.PostDto;
+import com.example.donationservice.domain.sponsor.Team;
+import com.example.donationservice.domain.sponsor.TeamRepository;
 import com.example.donationservice.domain.user.ApprovalStatus;
 import com.example.donationservice.domain.user.User;
 import com.example.donationservice.domain.user.UserRepository;
@@ -17,14 +19,14 @@ import org.springframework.stereotype.Service;
 public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
-    private final UserRepository userRepository;
+    private final TeamRepository teamRepository;
     private final CategoryRepository categoryRepository;
 
     @Override
     @Transactional
     public void create(Long userId, PostDto.PostCreateRequest request) {
         // todo 전체 globalException 필요
-        User user = userRepository.findById(userId)
+        Team team = teamRepository.findByUserId(userId)
                 .orElseThrow(()-> new IllegalArgumentException("유저를 찾을 수 없습니다."));
 
         Category category = categoryRepository.findById(request.getCategoryId())
@@ -38,7 +40,7 @@ public class PostServiceImpl implements PostService {
                 .currentAmount(0L)
                 .targetAmount(request.getTargetAmount())
                 .imageUrl(request.getImageUrl())
-                .team(user.getTeam())
+                .team(team)
                 .category(category)
                 .build();
 
