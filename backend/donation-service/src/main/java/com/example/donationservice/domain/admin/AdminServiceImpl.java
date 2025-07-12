@@ -27,6 +27,7 @@ public class AdminServiceImpl implements AdminService{
                         .name(team.getName())
                         .address(team.getAddress())
                         .description(team.getDescription())
+                        .createdAt(team.getCreatedAt())
                         .approvalStatus(team.getApprovalStatus().name())
                         .build())
                 .toList();
