@@ -10,6 +10,7 @@ export default function SignupForm({ onSwitchMode }) {
     email: '',
     password: '',
     userName: '',
+    nickName: '',
     userRole: 'USER_ROLE',
   });
   const [error, setError] = useState('');
@@ -42,6 +43,8 @@ export default function SignupForm({ onSwitchMode }) {
         value={form.password} onChange={handleChange} />
       <TextField fullWidth label="사용자 이름" name="userName" margin="normal"
         value={form.userName} onChange={handleChange} />
+      <TextField fullWidth label="닉네임(별명)" name="nickName" margin="normal"
+        value={form.nickName} onChange={handleChange} />
       <TextField fullWidth select SelectProps={{ native: true }}
         label="권한" name="userRole" margin="normal"
         value={form.userRole} onChange={handleChange}>
