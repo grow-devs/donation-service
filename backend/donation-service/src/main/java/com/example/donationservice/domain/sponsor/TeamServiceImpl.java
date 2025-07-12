@@ -48,6 +48,7 @@ public class TeamServiceImpl implements TeamService{
                 .name(savedTeam.getName())
                 .address(savedTeam.getAddress())
                 .description(savedTeam.getDescription())
+                .createdAt(savedTeam.getCreatedAt())
                 .approvalStatus(savedTeam.getApprovalStatus().name()) // ApprovalStatus를 문자열로 변환
                 .build();
     }

@@ -1,5 +1,6 @@
 package com.example.donationservice.domain.comment;
 
+import com.example.donationservice.common.entity.BaseTimeEntity;
 import com.example.donationservice.domain.post.Post;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -8,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Comment {
+public class Comment extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
