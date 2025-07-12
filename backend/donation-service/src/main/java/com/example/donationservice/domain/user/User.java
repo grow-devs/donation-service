@@ -22,6 +22,8 @@ public class User extends BaseTimeEntity {
 
     private String username;
 
+    private String nickName;
+
     private UserRole userRole;
 
 }

@@ -2,6 +2,7 @@ package com.example.donationservice.domain.sponsor;
 
 import com.example.donationservice.domain.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.Optional;
 
 import java.util.List;
 
@@ -13,4 +14,6 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
     boolean existsByName(String teamName);
 
     boolean existsByUser(User user);
+
+    Optional<Team> findByUserId(Long userId);
 }

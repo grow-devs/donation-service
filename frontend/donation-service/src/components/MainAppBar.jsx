@@ -1,33 +1,25 @@
 // MainAppBar.jsx
-import * as React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import * as React from "react";
+import { Link, useNavigate } from "react-router-dom";
 
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import { IconButton, Tooltip } from '@mui/material';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
-import { Badge,Button } from '@mui/material';
-import FloatingAuthModal from '../modal/FloatingAuthModal';
-import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
-
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import { IconButton, Tooltip } from "@mui/material";
+import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import Box from "@mui/material/Box";
+import Paper from "@mui/material/Paper";
+import { Badge, Button } from "@mui/material";
+import FloatingAuthModal from "../modal/FloatingAuthModal";
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+import useAuthStore from "../store/authStore";
 export default function MainAppBar() {
   const [open, setOpen] = React.useState(false);
   const navigate = useNavigate();
-
-  const accessToken = localStorage.getItem('accessToken');
-  const userRole = localStorage.getItem('userRole');
-
-  const isAdmin = accessToken && userRole === 'ADMIN_ROLE';
-
-  // const isLoggedIn = () => {
-  //   const accessToken = localStorage.getItem('accessToken');
-  //   return !!accessToken; // accessToken이 있으면 true, 없으면 false
-  // };
-
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+  const userRole = useAuthStore((state) => state.userRole);
+  const nickName = useAuthStore((state) => state.nickName);
   return (
     <Paper
       elevation={1}
@@ -39,7 +31,7 @@ export default function MainAppBar() {
         mt: 2,
         mb: 3,
         /* 반응형 패딩: xs=4%, sm 이상=8% */
-        px: { xs: '4%', sm: '8%' },
+        px: { xs: "4%", sm: "8%" },
       }}
     >
       <AppBar
@@ -47,13 +39,13 @@ export default function MainAppBar() {
         color="inherit"
         sx={{
           borderRadius: 3,
-          boxShadow: 'none',
+          boxShadow: "none",
         }}
       >
         <Toolbar
           disableGutters
           sx={{
-            justifyContent: 'space-between',
+            justifyContent: "space-between",
             /* 툴바 내부도 반응형 px  */
             px: { xs: 1, sm: 2 },
           }}
@@ -61,14 +53,19 @@ export default function MainAppBar() {
           {/* 클릭하면 메인페이지로의 이동 */}
 
           {/* 왼쪽: 서비스 이름 (항상 보임) */}
-          <Typography variant="h5" fontWeight="bold" color="primary" onClick={() => navigate('/')}
-          sx={{
-            cursor: 'pointer',
-            '&:hover': {
-              opacity: 0.8,
-              // textDecoration: 'underline', // 또는 색상 변경
-            },
-          }}>
+          <Typography
+            variant="h5"
+            fontWeight="bold"
+            color="primary"
+            onClick={() => navigate("/")}
+            sx={{
+              cursor: "pointer",
+              "&:hover": {
+                opacity: 0.8,
+                // textDecoration: 'underline', // 또는 색상 변경
+              },
+            }}
+          >
             같이가치
           </Typography>
 
@@ -77,9 +74,9 @@ export default function MainAppBar() {
             variant="h6"
             color="text.secondary"
             sx={{
-              fontStyle: 'normal',
-              fontSize: '1rem',
-              display: { xs: 'none', sm: 'block' },  // 핵심!
+              fontStyle: "normal",
+              fontSize: "1rem",
+              display: { xs: "none", sm: "block" }, // 핵심!
             }}
           >
             함께 살아가는 우리 기부 플랫폼과 함께하세요
@@ -87,72 +84,77 @@ export default function MainAppBar() {
 
           {/* 오른쪽: 아이콘 */}
           <Box>
-            <IconButton
-              size="large"
-              sx={{
-                color: 'text.secondary',
-                '&:hover': { color: 'primary.main' },
-                mx: 0.5,
-              }}
-            >
-              {/* 알림 뱃지 */}
-              <Badge badgeContent={100} color="primary"  sx={{
-                          '& .MuiBadge-badge': {
-                            fontStyle: 'normal',       // ← 여기!
-                            fontWeight: 'bold',
-                            fontSize: '0.75rem',
-                            color : "rgba(0, 0, 0, 0.7)",
-                            px: 1,
-                          },
-                        }}>
-                <NotificationsIcon />
-              </Badge>    
-            </IconButton>
-
-            <IconButton
-              size="large"
-              sx={{
-                color: 'text.secondary',
-                '&:hover': { color: 'primary.main' },
-                mx: 0.5,
-              }}
-              // onClick={() => {
-              //   if (isLoggedIn()) {
-              //     navigate('/mypage');  // 로그인되어 있으면 마이페이지로 이동
-              //   } else {
-              //     setOpen(true);        // 로그인되어 있지 않으면 모달 열기
-              //   }
-              // }}
-              onClick={() => {
-                const accessToken = localStorage.getItem('accessToken');
-                if (accessToken) {
-                  navigate('/mypage'); // 로그인 상태이면 마이페이지로 이동
-                } else {
-                  setOpen(true);       // 아니면 로그인 모달 열기
-                }
-              }}
-            >
-              <AccountCircleIcon />
-            </IconButton>
-
-            {/* 관리자 전용 아이콘 */}
-            {localStorage.getItem('accessToken') && localStorage.getItem('userRole') === 'ADMIN_ROLE' && (
+            {isLoggedIn ? (
               <IconButton
                 size="large"
-                onClick={() => navigate('/admin-page')}
                 sx={{
-                  color: 'text.secondary',
-                  '&:hover': { color: 'primary.main' },
+                  color: "text.secondary",
+                  "&:hover": { color: "primary.main" },
                   mx: 0.5,
                 }}
               >
-                <AdminPanelSettingsIcon />
+                {/* 알림 뱃지 */}
+                <Badge
+                  badgeContent={100}
+                  sx={{
+                    "& .MuiBadge-badge": {
+                      minWidth: "20px",
+                      height: "20px",
+                      borderRadius: "10px",
+                      fontWeight: "bold",
+                      fontSize: "0.7rem",
+                      color: "#fff",
+                      background: "#ea3030ff", // 알림 빨간색
+                      transform: "scale(1) translate(50%, -50%)",
+                    },
+                  }}
+                >
+                  <NotificationsNoneIcon fontSize="medium" color="primary" />{" "}
+                  {/* 아이콘은 브랜드 색 or 다크톤 */}
+                </Badge>
               </IconButton>
+            ) : (
+              <></>
             )}
-          </Box>
-      
-          <FloatingAuthModal open={open} onClose={() => setOpen(false)} />
+            <IconButton
+              size="large"
+              onClick={() => {
+                if (isLoggedIn) {
+                  navigate("/mypage"); // 로그인되어 있으면 마이페이지로 이동
+                } else {
+                  setOpen(true); // 로그인되어 있지 않으면 모달 열기
+                }
+              }}
+            >
+              <AccountCircleIcon fontSize="medium" color="primary" />
+              {isLoggedIn ? (
+                <Typography variant="body2" color="black">
+                  {nickName} &nbsp;님
+                </Typography>
+              ) : (
+                <Typography variant="body2" color="black">
+                 &nbsp;로그인
+                </Typography>
+              )}
 
+            </IconButton>
+            {/* 관리자 전용 아이콘 */}
+            {userRole==='ADMIN_ROLE'&&(
+                <IconButton
+                  size="large"
+                  onClick={() => navigate("/admin-page")}
+                  sx={{
+                    color: "text.secondary",
+                    "&:hover": { color: "primary.main" },
+                    mx: 0.5,
+                  }}
+                >
+                  <AdminPanelSettingsIcon fontSize="mediuem"/>
+                </IconButton>
+              )}
+          </Box>
+
+          <FloatingAuthModal open={open} onClose={() => setOpen(false)} />
         </Toolbar>
       </AppBar>
     </Paper>
