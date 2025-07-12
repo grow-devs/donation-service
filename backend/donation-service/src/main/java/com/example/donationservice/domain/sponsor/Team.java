@@ -1,5 +1,6 @@
 package com.example.donationservice.domain.sponsor;
 
+import com.example.donationservice.common.entity.BaseTimeEntity;
 import com.example.donationservice.domain.user.ApprovalStatus;
 import com.example.donationservice.domain.user.User;
 import jakarta.persistence.*;
@@ -10,7 +11,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Team {
+public class Team extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

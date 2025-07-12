@@ -1,5 +1,6 @@
 package com.example.donationservice.domain.donation;
 
+import com.example.donationservice.common.entity.BaseTimeEntity;
 import com.example.donationservice.domain.category.Category;
 import com.example.donationservice.domain.post.Post;
 import com.example.donationservice.domain.user.User;
@@ -10,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Donation {
+public class Donation extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
