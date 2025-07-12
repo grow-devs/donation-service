@@ -92,7 +92,7 @@ export default function AdminForm() {
             <TableRow>
               <TableCell>날짜</TableCell>
               <TableCell>단체 이름</TableCell>
-              <TableCell align="right">처리1</TableCell>
+              <TableCell align="right">설명</TableCell>
               <TableCell align="right">상태1</TableCell>
             </TableRow>
           </TableHead>
@@ -101,38 +101,67 @@ export default function AdminForm() {
               <TableRow key={index}>
                 <TableCell>{req.createdAt?.substring(0, 10) || '-'}</TableCell>
                 <TableCell>{req.name}</TableCell>
-                <TableCell align="right">{req.approvalStatus}</TableCell>
+                <TableCell align="right">{req.description}</TableCell>
                 <TableCell align="right">
-                  <Button variant="outlined" color="success" size="small"
-                    sx={{
-                      px: 1,              // 좌우 padding (1 = 8px)
-                      py: 1.5,              // 상하 padding
-                      fontSize: '0.9rem',   // 텍스트 크기
-                      minWidth: 'auto',     // 최소 너비 제거
-                      height: '24px',       // 버튼 높이 (원하는 값으로 조정 가능)
-                      lineHeight: 1,        // 줄간격 조정
+                  {req.approvalStatus === 'PENDING' && (
+                    <>
+                      <Button
+                        variant="outlined"
+                        color="success"
+                        size="small"
+                        sx={{ mx: 0.5 }}
+                        onClick={() => handleApproval(req.teamId, 'ACCEPTED')}
+                      >
+                        수락
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        color="error"
+                        size="small"
+                        sx={{ mx: 0.5 }}
+                        onClick={() => handleApproval(req.teamId, 'REJECTED')}
+                      >
+                        거절
+                      </Button>
+                    </>
+                  )}
+                  {req.approvalStatus === 'ACCEPTED' && (
+                    <Button
+                      variant="contained"
+                      size="small"
+                      sx={{
+                        mx: 0.5,
+                        backgroundColor: '#4caf50', // 초록
+                        color: 'white',
+                        '&:hover': {
+                          backgroundColor: '#388e3c', // 진한 초록
+                        },
                       }}
-                    onClick={() => handleApproval(req.teamId, 'ACCEPTED')}
-                  >
-                    수락
-                  </Button>
-                  <Button variant="outlined" color="error" size="small"
-                    sx={{
-                      px: 1,              // 좌우 padding (1 = 8px)
-                      py: 1.5,              // 상하 padding
-                      fontSize: '0.9rem',   // 텍스트 크기
-                      minWidth: 'auto',     // 최소 너비 제거
-                      height: '24px',       // 버튼 높이 (원하는 값으로 조정 가능)
-                      lineHeight: 1,        // 줄간격 조정
+                    >
+                      수락됨
+                    </Button>
+                  )}
+                  {req.approvalStatus === 'REJECTED' && (
+                    <Button
+                      variant="contained"
+                      size="small"
+                      sx={{
+                        mx: 0.5,
+                        backgroundColor: '#f44336', // 빨강
+                        color: 'white',
+                        '&:hover': {
+                          backgroundColor: '#d32f2f', // 진한 빨강
+                        },
                       }}
-                    onClick={() => handleApproval(req.teamId, 'REJECTED')}
-                  >
-                    거절
-                  </Button>
+                    >
+                      거절됨
+                    </Button>
+                  )}
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
+
         </Table>
       </Paper>
 
