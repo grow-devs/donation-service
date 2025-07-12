@@ -26,7 +26,7 @@ public class PostServiceImpl implements PostService {
     @Transactional
     public void create(Long userId, PostDto.PostCreateRequest request) {
         // todo 전체 globalException 필요
-        Team team = teamRepository.findByUserId(userId)
+        Team team = teamRepository.findById(request.getTeamId())
                 .orElseThrow(()-> new IllegalArgumentException("유저를 찾을 수 없습니다."));
 
         Category category = categoryRepository.findById(request.getCategoryId())
