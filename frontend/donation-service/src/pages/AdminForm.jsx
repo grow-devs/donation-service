@@ -16,6 +16,7 @@ import api from '../apis/api';
 export default function AdminForm() {
 
   const [agencyRequests, setAgencyRequests] = useState([]); // 실제 API에서 불러온 데이터
+  const [postRequests, setPostRequests] = useState([]); // 게시물 신청 리스트 상태 추가
 
   useEffect(() => {
     const fetchAgencyList = async () => {
@@ -31,6 +32,25 @@ export default function AdminForm() {
     fetchAgencyList();
   }, []);
 
+  useEffect(() => {
+    const fetchPostList = async () => {
+      try {
+        const res = await api.get('/admin/post-list', {
+          params: {
+            page: 0,
+            size: 10,
+            sort: 'updatedAt,desc', // 또는 'createdAt,desc'로 맞춰도 됨
+          },
+        });
+        setPostRequests(res.data.data?.content || []);
+      } catch (err) {
+        console.error('게시물 리스트 불러오기 실패', err);
+      }
+    };
+    fetchPostList();
+  }, []);
+  
+
   const handleApproval = async (teamId, status) => {
     try {
       await api.patch(`/admin/team-approval/${teamId}`, status, {
@@ -45,31 +65,6 @@ export default function AdminForm() {
       console.error('팀 승인 상태 변경 실패:', err);
     }
   };
-
-  const postRequests = [
-    {
-      date: '2025-07-10',
-      agency: '희망나눔회',
-      title: '소외된 이웃을 위한 여름나기',
-      category: '복지',
-      status: 'pending',
-    },
-    {
-      date: '2025-07-09',
-      agency: '행복한세상재단',
-      title: '청소년 장학금 캠페인',
-      category: '교육',
-      status: '수락됨',
-    },
-    {
-        date: '2025-07-09',
-        agency: '행복한세상재단',
-        title: '청소년 장학금 캠페인',
-        category: '교육',
-        status: '수락됨',
-      },
-    // ... (최대 6개)
-  ];
 
   return (
     <Box
@@ -183,10 +178,10 @@ export default function AdminForm() {
           <TableBody>
             {postRequests.map((post, index) => (
               <TableRow key={index}>
-                <TableCell>{post.date}</TableCell>
-                <TableCell>{post.agency}</TableCell>
+                <TableCell>{post.createdAt ? post.createdAt.substring(0, 16).replace('T', ' \u00A0\u00A0') : '-'}</TableCell>
+                <TableCell>{post.teamName}</TableCell>
                 <TableCell>{post.title}</TableCell>
-                <TableCell>{post.category}</TableCell>
+                <TableCell>{post.categoryName}</TableCell>
                 <TableCell align="right">
                   <Button variant="outlined" color="success" size="small" 
                     sx={{

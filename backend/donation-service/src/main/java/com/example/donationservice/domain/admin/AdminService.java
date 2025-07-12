@@ -1,7 +1,10 @@
 package com.example.donationservice.domain.admin;
 
+import com.example.donationservice.domain.post.dto.PostDto;
 import com.example.donationservice.domain.sponsor.dto.TeamDto;
 import com.example.donationservice.domain.user.ApprovalStatus;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 
 import java.util.List;
 
@@ -10,4 +13,6 @@ public interface AdminService {
 
     // 유저가 요청한 팀 승인
     void updateTeamApprovalStatus(Long teamId, ApprovalStatus approvalStatus);
+
+    Slice<PostDto.PostResponse> getPostList(Pageable pageable);
 }

@@ -1,11 +1,16 @@
 package com.example.donationservice.domain.admin;
 
+import com.example.donationservice.domain.post.Post;
+import com.example.donationservice.domain.post.PostRepository;
+import com.example.donationservice.domain.post.dto.PostDto;
 import com.example.donationservice.domain.sponsor.Team;
 import com.example.donationservice.domain.sponsor.TeamRepository;
 import com.example.donationservice.domain.sponsor.dto.TeamDto;
 import com.example.donationservice.domain.user.ApprovalStatus;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +20,7 @@ import java.util.List;
 public class AdminServiceImpl implements AdminService{
 
     private final TeamRepository teamRepository;
+    private final PostRepository postRepository;
 
     @Override
     @Transactional
@@ -42,5 +48,31 @@ public class AdminServiceImpl implements AdminService{
         // 팀 승인 상태를 APPROVED로 변경
         team.updateTeamApprovalStatus(approvalStatus);
         teamRepository.save(team);
+    }
+
+    @Override
+    @Transactional
+    public Slice<PostDto.PostResponse> getPostList(Pageable pageable) {
+        // repository 에서 페이징 조회
+        Slice<Post> postList = postRepository.findAll(pageable);
+
+        // Post -> PostResponse DTO 변환
+        return postList.map(post -> PostDto.PostResponse.builder()
+                .id(post.getId())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .currentAmount(post.getCurrentAmount())
+                .targetAmount(post.getTargetAmount())
+                .deadline(post.getDeadline())
+                .imageUrl(post.getImageUrl())
+                .approvalStatus(post.getApprovalStatus())
+                .teamId(post.getTeam().getId())
+                .teamName(post.getTeam().getName())
+                .categoryId(post.getCategory().getId())
+                .categoryName(post.getCategory().getName())
+                .createdAt(post.getCreatedAt())
+                .updatedAt(post.getUpdatedAt())
+                .build()
+        );
     }
 }
