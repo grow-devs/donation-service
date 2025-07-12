@@ -9,7 +9,7 @@ import java.util.Map;
 
 public interface UserService {
 
-    public String login(UserDto.loginRequest loginRequest);
+    public UserDto.loginResponse login(UserDto.loginRequest loginRequest);
 
     public void signup(UserDto.signupRequest signupRequest);
 

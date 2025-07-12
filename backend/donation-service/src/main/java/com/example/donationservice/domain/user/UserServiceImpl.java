@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public String login(UserDto.loginRequest loginRequest) {
+    public UserDto.loginResponse login(UserDto.loginRequest loginRequest) {
         try {
             System.out.println("call -> login in service");
             Authentication authentication;
@@ -58,8 +58,13 @@ public class UserServiceImpl implements UserService {
             // [6] Refresh Token을 Redis에 저장 (key: email, value: refreshToken)
             redisTokenService.saveRefreshToken(authenticatedEmail, refreshToken, 1000L * 60 * 60 * 24 * 10);
 
-            // [7] 클라이언트에게 Access Token 반환
-            return accessToken;
+            // [7] 클라이언트에게 nickName,accessToken,userRole전달.
+            CustomUserDetail customUserDetail = (CustomUserDetail) authentication.getPrincipal();
+            return  UserDto.loginResponse.builder()
+                    .accessToken(accessToken)
+                    .nickName(customUserDetail.getNickName())
+                    .userRole(customUserDetail.getUserRole())
+                    .build();
 
         } catch (AuthenticationException e) {
             System.out.println("인증실패");
@@ -82,6 +87,7 @@ public class UserServiceImpl implements UserService {
                 .password(passwordEncoder.encode(signupRequest.getPassword()))
                 .username(signupRequest.getUserName())
                 .userRole(signupRequest.getUserRole())
+                .nickName(signupRequest.getNickName())
                 .build();
         //객체 저장
         userRepository.save(user);

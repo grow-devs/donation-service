@@ -20,6 +20,8 @@ public class User {
 
     private String username;
 
+    private String nickName;
+
     private UserRole userRole;
 
 }
