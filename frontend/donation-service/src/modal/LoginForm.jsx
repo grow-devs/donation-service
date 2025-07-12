@@ -6,19 +6,27 @@ import {
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import api from '../apis/api'
+import useAuthStore from '../store/authStore';
 
 export default function LoginForm({ onSwitchMode, onClose }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const login = useAuthStore(state => state.login);
+  const setNickName = useAuthStore(state => state.setNickName);
+  const setUserRole = useAuthStore(state => state.setUserRole);
 
   const handleLogin = async () => {
     try {
-      const res = await api.post('/user/login', { email, password });
-      const accessToken= res.data.data;  // 객체에서 분해 할당
+      const res = (await api.post('/user/login', { email, password }));
+      const accessToken= res.data.data.accessToken;  // 객체에서 분해 할당
       localStorage.setItem('accessToken', accessToken);
       alert('로그인 성공');
+      login();
+      setNickName(res.data.data.nickName);
+      setUserRole(res.data.data.userRole);
+      console.log(res.data.data.userRole);
       onClose();
     } catch (err) {
       setError('이메일 또는 비밀번호가 올바르지 않습니다.');
