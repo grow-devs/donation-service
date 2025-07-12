@@ -22,6 +22,7 @@ export default function AdminForm() {
       try {
         const res = await api.get('/admin/team-list');
         setAgencyRequests(res.data.data || []);
+        console.log('~~~ res.data.data : ', res.data.data);
       } catch (err) {
         console.error('단체 신청 리스트 불러오기 실패:', err);
       }
@@ -29,6 +30,21 @@ export default function AdminForm() {
 
     fetchAgencyList();
   }, []);
+
+  const handleApproval = async (teamId, status) => {
+    try {
+      await api.patch(`/admin/team-approval/${teamId}`, status, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      // 승인 or 거절 후 목록 새로고침
+      const res = await api.get('/admin/team-list');
+      setAgencyRequests(res.data.data || []);
+    } catch (err) {
+      console.error('팀 승인 상태 변경 실패:', err);
+    }
+  };
 
   const postRequests = [
     {
@@ -88,27 +104,29 @@ export default function AdminForm() {
                 <TableCell align="right">{req.approvalStatus}</TableCell>
                 <TableCell align="right">
                   <Button variant="outlined" color="success" size="small"
-                  sx={{
-                    px: 1,              // 좌우 padding (1 = 8px)
-                    py: 1.5,              // 상하 padding
-                    fontSize: '0.9rem',   // 텍스트 크기
-                    minWidth: 'auto',     // 최소 너비 제거
-                    height: '24px',       // 버튼 높이 (원하는 값으로 조정 가능)
-                    lineHeight: 1,        // 줄간격 조정
-                    }}
-                    >
+                    sx={{
+                      px: 1,              // 좌우 padding (1 = 8px)
+                      py: 1.5,              // 상하 padding
+                      fontSize: '0.9rem',   // 텍스트 크기
+                      minWidth: 'auto',     // 최소 너비 제거
+                      height: '24px',       // 버튼 높이 (원하는 값으로 조정 가능)
+                      lineHeight: 1,        // 줄간격 조정
+                      }}
+                    onClick={() => handleApproval(req.teamId, 'ACCEPTED')}
+                  >
                     수락
                   </Button>
-                  <Button variant="outlined" color="error" size="small" 
-                  sx={{
-                    px: 1,              // 좌우 padding (1 = 8px)
-                    py: 1.5,              // 상하 padding
-                    fontSize: '0.9rem',   // 텍스트 크기
-                    minWidth: 'auto',     // 최소 너비 제거
-                    height: '24px',       // 버튼 높이 (원하는 값으로 조정 가능)
-                    lineHeight: 1,        // 줄간격 조정
-                    }}
-                    >
+                  <Button variant="outlined" color="error" size="small"
+                    sx={{
+                      px: 1,              // 좌우 padding (1 = 8px)
+                      py: 1.5,              // 상하 padding
+                      fontSize: '0.9rem',   // 텍스트 크기
+                      minWidth: 'auto',     // 최소 너비 제거
+                      height: '24px',       // 버튼 높이 (원하는 값으로 조정 가능)
+                      lineHeight: 1,        // 줄간격 조정
+                      }}
+                    onClick={() => handleApproval(req.teamId, 'REJECTED')}
+                  >
                     거절
                   </Button>
                 </TableCell>
