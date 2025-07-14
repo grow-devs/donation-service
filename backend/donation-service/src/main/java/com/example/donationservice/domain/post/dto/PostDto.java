@@ -42,7 +42,8 @@ public class PostDto {
         private String teamName;      // 필요에 따라 추가 가능
         private Long categoryId;
         private String categoryName;  // 필요에 따라 추가 가능
+        private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
     }
-
 
 }
