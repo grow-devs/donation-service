@@ -21,14 +21,19 @@ export default function AdminForm() {
   useEffect(() => {
     const fetchAgencyList = async () => {
       try {
-        const res = await api.get('/admin/team-list');
-        setAgencyRequests(res.data.data || []);
-        console.log('~~~ res.data.data : ', res.data.data);
+        const res = await api.get('/admin/team-list', {
+          params: {
+            page: 0,
+            size: 10,
+            sort: 'updatedAt,desc',
+          },
+        });
+        setAgencyRequests(res.data.data?.content || []); // <-- 바뀐 응답 형식 (Slice이므로 .content 필요)
       } catch (err) {
         console.error('단체 신청 리스트 불러오기 실패:', err);
       }
     };
-
+  
     fetchAgencyList();
   }, []);
 

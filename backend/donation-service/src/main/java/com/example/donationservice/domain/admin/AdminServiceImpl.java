@@ -24,19 +24,17 @@ public class AdminServiceImpl implements AdminService{
 
     @Override
     @Transactional
-    public List<TeamDto.response> getTeamList() {
-        List<Team> teamList = teamRepository.findAllByOrderByCreatedAtDesc();
+    public Slice<TeamDto.response> getTeamList(Pageable pageable) {
+        Slice<Team> teamList = teamRepository.findAllByOrderByCreatedAtDesc(pageable);
 
-        return teamList.stream()
-                .map(team -> TeamDto.response.builder()
-                        .teamId(team.getId())
-                        .name(team.getName())
-                        .address(team.getAddress())
-                        .description(team.getDescription())
-                        .createdAt(team.getCreatedAt())
-                        .approvalStatus(team.getApprovalStatus().name())
-                        .build())
-                .toList();
+        return teamList.map(team -> TeamDto.response.builder()
+                .teamId(team.getId())
+                .name(team.getName())
+                .address(team.getAddress())
+                .description(team.getDescription())
+                .createdAt(team.getCreatedAt())
+                .approvalStatus(team.getApprovalStatus().name())
+                .build());
     }
 
     @Override

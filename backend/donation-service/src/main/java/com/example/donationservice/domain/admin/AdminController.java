@@ -21,11 +21,13 @@ public class AdminController {
      * @return
      */
     @GetMapping("/team-list")
-    public ResponseEntity<Result> getTeamList() {
+    public ResponseEntity<Result> getTeamList(
+            @PageableDefault(size = 10, sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
         return ResponseEntity.ok(
                 Result.builder()
                         .message("팀 목록 조회 성공")
-                        .data(adminService.getTeamList())
+                        .data(adminService.getTeamList(pageable))
                         .build()
         );
     }

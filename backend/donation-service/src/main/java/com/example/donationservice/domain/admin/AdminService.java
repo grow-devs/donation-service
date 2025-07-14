@@ -9,7 +9,7 @@ import org.springframework.data.domain.Slice;
 import java.util.List;
 
 public interface AdminService {
-    List<TeamDto.response> getTeamList();
+    Slice<TeamDto.response> getTeamList(Pageable pageable);
 
     // 유저가 요청한 팀 승인
     void updateTeamApprovalStatus(Long teamId, ApprovalStatus approvalStatus);
