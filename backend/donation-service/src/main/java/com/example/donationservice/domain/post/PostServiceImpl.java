@@ -21,13 +21,15 @@ public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final TeamRepository teamRepository;
     private final CategoryRepository categoryRepository;
+    private final TeamRepository teamRepository;
 
     @Override
     @Transactional
     public void create(Long userId, PostDto.PostCreateRequest request) {
         // todo 전체 globalException 필요
+
         Team team = teamRepository.findById(request.getTeamId())
-                .orElseThrow(()-> new IllegalArgumentException("유저를 찾을 수 없습니다."));
+                .orElseThrow(()-> new IllegalArgumentException("팀를 찾을 수 없습니다."));
 
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new IllegalArgumentException("카테고리를 찾을 수 없습니다."));
