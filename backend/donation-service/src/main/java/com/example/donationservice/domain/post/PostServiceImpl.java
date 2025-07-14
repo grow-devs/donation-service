@@ -21,7 +21,6 @@ public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final TeamRepository teamRepository;
     private final CategoryRepository categoryRepository;
-    private final TeamRepository teamRepository;
 
     @Override
     @Transactional
