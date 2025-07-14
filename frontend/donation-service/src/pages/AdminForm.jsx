@@ -109,23 +109,20 @@ export default function AdminForm() {
             <TableRow>
               <TableCell>날짜</TableCell>
               <TableCell>단체 이름</TableCell>
-              <TableCell align="right">설명</TableCell>
+              <TableCell align="left">설명</TableCell>
               <TableCell align="right">상태1</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {agencyRequests.map((req, index) => (
-              <TableRow key={index}>
+              <TableRow key={index} sx={{ height: '60px' }}>
                 <TableCell>{req.createdAt ? req.createdAt.substring(0, 16).replace('T', ' \u00A0\u00A0') : '-'}</TableCell>
                 <TableCell>{req.name}</TableCell>
-                <TableCell align="right">{req.description}</TableCell>
-                <TableCell align="right">
+                <TableCell align="left">{req.description}</TableCell>
+                <TableCell align="right" sx={{ minWidth: '120px' }}>
                   {req.approvalStatus === 'PENDING' && (
                     <>
-                      <Button
-                        variant="outlined"
-                        color="success"
-                        size="small"
+                      <Button variant="outlined" color="success" size="small"
                         sx={{
                           px: 1,              // 좌우 padding (1 = 8px)
                           py: 1.5,              // 상하 padding
@@ -139,10 +136,7 @@ export default function AdminForm() {
                       >
                         수락
                       </Button>
-                      <Button
-                        variant="outlined"
-                        color="error"
-                        size="small"
+                      <Button variant="outlined" color="error" size="small"
                         sx={{
                           px: 1,              // 좌우 padding (1 = 8px)
                           py: 1.5,              // 상하 padding
@@ -159,15 +153,13 @@ export default function AdminForm() {
                     </>
                   )}
                   {req.approvalStatus === 'ACCEPTED' && (
-                    <Button
-                      variant="contained"
-                      size="small"
+                    <Button variant="contained" size="small"
                       sx={{
                         px: 1,              // 좌우 padding (1 = 8px)
                         py: 1.5,              // 상하 padding
                         fontSize: '0.9rem',   // 텍스트 크기
                         minWidth: 'auto',     // 최소 너비 제거
-                        height: '4px',       // 버튼 높이 (원하는 값으로 조정 가능)
+                        height: '24px',       // 버튼 높이 (원하는 값으로 조정 가능)
                         mx: 0.3,
                         backgroundColor: '#4caf50', // 초록
                         color: 'white',
@@ -180,15 +172,13 @@ export default function AdminForm() {
                     </Button>
                   )}
                   {req.approvalStatus === 'REJECTED' && (
-                    <Button
-                      variant="contained"
-                      size="small"
+                    <Button variant="contained" size="small"
                       sx={{
                         px: 1,              // 좌우 padding (1 = 8px)
                         py: 1.5,              // 상하 padding
                         fontSize: '0.9rem',   // 텍스트 크기
                         minWidth: 'auto',     // 최소 너비 제거
-                        height: '2px',       // 버튼 높이 (원하는 값으로 조정 가능)
+                        height: '24px',       // 버튼 높이 (원하는 값으로 조정 가능)
                         mx: 0.5,
                         backgroundColor: '#f44336', // 빨강
                         color: 'white',
@@ -225,12 +215,12 @@ export default function AdminForm() {
           </TableHead>
           <TableBody>
             {postRequests.map((post, index) => (
-              <TableRow key={index}>
+              <TableRow key={index} sx={{ height: '60px' }}>
                 <TableCell>{post.createdAt ? post.createdAt.substring(0, 16).replace('T', ' \u00A0\u00A0') : '-'}</TableCell>
                 <TableCell>{post.teamName}</TableCell>
                 <TableCell>{post.title}</TableCell>
                 <TableCell>{post.categoryName}</TableCell>
-                <TableCell align="right">
+                <TableCell align="right" sx={{ minWidth: '120px' }}>
                   {post.approvalStatus === 'PENDING' && (
                     <>
                       <Button variant="outlined" color="success" size="small"
