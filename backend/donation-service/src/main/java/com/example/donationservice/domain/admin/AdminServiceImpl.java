@@ -45,16 +45,27 @@ public class AdminServiceImpl implements AdminService{
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new IllegalArgumentException("팀을 찾을 수 없습니다."));
 
-        // 팀 승인 상태를 APPROVED로 변경
+        // 요청한 팀 상태를 수락 및 반려
         team.updateTeamApprovalStatus(approvalStatus);
         teamRepository.save(team);
     }
 
     @Override
     @Transactional
+    public void updatePostApprovalStatus(Long postId, ApprovalStatus approvalStatus) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+
+        // 요청한 게시글 상태를 수락 및 반려
+        post.updateApprovalStatus(approvalStatus);
+        postRepository.save(post);
+    }
+
+    @Override
+    @Transactional
     public Slice<PostDto.PostResponse> getPostList(Pageable pageable) {
         // repository 에서 페이징 조회
-        Slice<Post> postList = postRepository.findAll(pageable);
+        Slice<Post> postList = postRepository.findAllByOrderByCreatedAtDesc(pageable);
 
         // Post -> PostResponse DTO 변환
         return postList.map(post -> PostDto.PostResponse.builder()

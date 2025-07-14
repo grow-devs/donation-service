@@ -66,6 +66,28 @@ export default function AdminForm() {
     }
   };
 
+  const handlePostApproval = async (postId, status) => {
+    try {
+      await api.patch(`/admin/post-approval/${postId}`, status, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      // 게시물 리스트 다시 불러오기
+      const res = await api.get('/admin/post-list', {
+        params: {
+          page: 0,
+          size: 10,
+          sort: 'updatedAt,desc',
+        },
+      });
+      setPostRequests(res.data.data?.content || []);
+    } catch (err) {
+      console.error('게시물 승인 상태 변경 실패:', err);
+    }
+  };
+  
+
   return (
     <Box
       sx={{
@@ -104,7 +126,15 @@ export default function AdminForm() {
                         variant="outlined"
                         color="success"
                         size="small"
-                        sx={{ mx: 0.5 }}
+                        sx={{
+                          px: 1,              // 좌우 padding (1 = 8px)
+                          py: 1.5,              // 상하 padding
+                          fontSize: '0.9rem',   // 텍스트 크기
+                          minWidth: 'auto',     // 최소 너비 제거
+                          height: '24px',       // 버튼 높이 (원하는 값으로 조정 가능)
+                          lineHeight: 1,        // 줄간격 조정
+                          mx: 0.3
+                          }}
                         onClick={() => handleApproval(req.teamId, 'ACCEPTED')}
                       >
                         수락
@@ -113,7 +143,15 @@ export default function AdminForm() {
                         variant="outlined"
                         color="error"
                         size="small"
-                        sx={{ mx: 0.5 }}
+                        sx={{
+                          px: 1,              // 좌우 padding (1 = 8px)
+                          py: 1.5,              // 상하 padding
+                          fontSize: '0.9rem',   // 텍스트 크기
+                          minWidth: 'auto',     // 최소 너비 제거
+                          height: '24px',       // 버튼 높이 (원하는 값으로 조정 가능)
+                          lineHeight: 1,        // 줄간격 조정
+                          mx: 0.3
+                          }}
                         onClick={() => handleApproval(req.teamId, 'REJECTED')}
                       >
                         거절
@@ -125,7 +163,12 @@ export default function AdminForm() {
                       variant="contained"
                       size="small"
                       sx={{
-                        mx: 0.5,
+                        px: 1,              // 좌우 padding (1 = 8px)
+                        py: 1.5,              // 상하 padding
+                        fontSize: '0.9rem',   // 텍스트 크기
+                        minWidth: 'auto',     // 최소 너비 제거
+                        height: '4px',       // 버튼 높이 (원하는 값으로 조정 가능)
+                        mx: 0.3,
                         backgroundColor: '#4caf50', // 초록
                         color: 'white',
                         '&:hover': {
@@ -141,6 +184,11 @@ export default function AdminForm() {
                       variant="contained"
                       size="small"
                       sx={{
+                        px: 1,              // 좌우 padding (1 = 8px)
+                        py: 1.5,              // 상하 padding
+                        fontSize: '0.9rem',   // 텍스트 크기
+                        minWidth: 'auto',     // 최소 너비 제거
+                        height: '2px',       // 버튼 높이 (원하는 값으로 조정 가능)
                         mx: 0.5,
                         backgroundColor: '#f44336', // 빨강
                         color: 'white',
@@ -183,34 +231,83 @@ export default function AdminForm() {
                 <TableCell>{post.title}</TableCell>
                 <TableCell>{post.categoryName}</TableCell>
                 <TableCell align="right">
-                  <Button variant="outlined" color="success" size="small" 
-                    sx={{
-                            px: 1,              // 좌우 padding (1 = 8px)
-                            py: 1.5,              // 상하 padding
-                            fontSize: '0.9rem',   // 텍스트 크기
-                            minWidth: 'auto',     // 최소 너비 제거
-                            height: '24px',       // 버튼 높이 (원하는 값으로 조정 가능)
-                            lineHeight: 1,        // 줄간격 조정
-                            }}
-                            >
+                  {post.approvalStatus === 'PENDING' && (
+                    <>
+                      <Button variant="outlined" color="success" size="small"
+                        sx={{
+                          px: 1,              // 좌우 padding (1 = 8px)
+                          py: 1.5,              // 상하 padding
+                          fontSize: '0.9rem',   // 텍스트 크기
+                          minWidth: 'auto',     // 최소 너비 제거
+                          height: '24px',       // 버튼 높이 (원하는 값으로 조정 가능)
+                          lineHeight: 1,        // 줄간격 조정
+                          mx: 0.3
+                          }}
+                        onClick={() => handlePostApproval(post.id, 'ACCEPTED')}
+                      >
                         수락
-                  </Button>
-                  <Button variant="outlined" color="error"
-                    sx={{
+                      </Button>
+                      <Button variant="outlined" color="error" size="small"
+                        sx={{
+                          px: 1,              // 좌우 padding (1 = 8px)
+                          py: 1.5,              // 상하 padding
+                          fontSize: '0.9rem',   // 텍스트 크기
+                          minWidth: 'auto',     // 최소 너비 제거
+                          height: '24px',       // 버튼 높이 (원하는 값으로 조정 가능)
+                          lineHeight: 1,        // 줄간격 조정
+                          mx: 0.3
+                          }}
+                        onClick={() => handlePostApproval(post.id, 'REJECTED')}
+                      >
+                        거절
+                      </Button>
+                    </>
+                  )}
+                  {post.approvalStatus === 'ACCEPTED' && (
+                    <Button variant="contained" size="small"
+                      sx={{
                         px: 1,              // 좌우 padding (1 = 8px)
                         py: 1.5,              // 상하 padding
                         fontSize: '0.9rem',   // 텍스트 크기
                         minWidth: 'auto',     // 최소 너비 제거
                         height: '24px',       // 버튼 높이 (원하는 값으로 조정 가능)
                         lineHeight: 1,        // 줄간격 조정
-                        }}
-                        >
-                    거절
-                  </Button>
+                        mx: 0.3,
+                        backgroundColor: '#4caf50',
+                        color: 'white',
+                        '&:hover': {
+                          backgroundColor: '#388e3c',
+                        },
+                      }}
+                    >
+                      수락됨
+                    </Button>
+                  )}
+                  {post.approvalStatus === 'REJECTED' && (
+                    <Button variant="contained" size="small"
+                      sx={{
+                        px: 1,              // 좌우 padding (1 = 8px)
+                        py: 1.5,              // 상하 padding
+                        fontSize: '0.9rem',   // 텍스트 크기
+                        minWidth: 'auto',     // 최소 너비 제거
+                        height: '24px',       // 버튼 높이 (원하는 값으로 조정 가능)
+                        lineHeight: 1,        // 줄간격 조정
+                        mx: 0.3,
+                        backgroundColor: '#f44336',
+                        color: 'white',
+                        '&:hover': {
+                          backgroundColor: '#d32f2f',
+                        },
+                      }}
+                    >
+                      거절됨
+                    </Button>
+                  )}
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
+
         </Table>
       </Paper>
     </Box>

@@ -30,6 +30,7 @@ public class Team extends BaseTimeEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
+    // 요청한 팀 수락 및 반려
     public void updateTeamApprovalStatus(ApprovalStatus approvalStatus) {
         this.approvalStatus = approvalStatus;
     }

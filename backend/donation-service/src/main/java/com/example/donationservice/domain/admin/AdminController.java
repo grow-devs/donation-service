@@ -16,6 +16,10 @@ public class AdminController {
 
     private final AdminService adminService;
 
+    /**
+     * 팀 목록 조회
+     * @return
+     */
     @GetMapping("/team-list")
     public ResponseEntity<Result> getTeamList() {
         return ResponseEntity.ok(
@@ -26,6 +30,12 @@ public class AdminController {
         );
     }
 
+    /**
+     * 팀 승인 요청 상태 업데이트
+     * @param teamId
+     * @param approvalStatus
+     * @return
+     */
     @PatchMapping("/team-approval/{teamId}")
     public ResponseEntity<Result> updateTeamApprovalStatus(
             @PathVariable Long teamId,
@@ -39,6 +49,11 @@ public class AdminController {
         );
     }
 
+    /**
+     * 요청한 게시글 목록 조회
+     * @param pageable
+     * @return
+     */
     @GetMapping("/post-list")
     public ResponseEntity<Result> getPostList(
             @PageableDefault(size = 10, sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable
@@ -47,6 +62,25 @@ public class AdminController {
                 Result.builder()
                         .message("게시글 목록 조회 성공")
                         .data(adminService.getPostList(pageable))
+                        .build()
+        );
+    }
+
+    /**
+     * 게시물 승인 요청 상태 업데이트
+     * @param postId
+     * @param approvalStatus
+     * @return
+     */
+    @PatchMapping("/post-approval/{postId}")
+    public ResponseEntity<Result> updatePostApprovalStatus(
+            @PathVariable Long postId,
+            @RequestBody ApprovalStatus approvalStatus) {
+        adminService.updatePostApprovalStatus(postId, approvalStatus);
+        return ResponseEntity.ok(
+                Result.builder()
+                        .message("게시물 승인 상태 업데이트 성공")
+                        .data("ok")
                         .build()
         );
     }

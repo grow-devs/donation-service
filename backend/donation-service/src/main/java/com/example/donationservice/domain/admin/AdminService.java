@@ -15,4 +15,7 @@ public interface AdminService {
     void updateTeamApprovalStatus(Long teamId, ApprovalStatus approvalStatus);
 
     Slice<PostDto.PostResponse> getPostList(Pageable pageable);
+
+    // 게시물 수락 및 반려
+    void updatePostApprovalStatus(Long postId, ApprovalStatus approvalStatus);
 }
