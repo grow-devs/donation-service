@@ -12,6 +12,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/post")
 @RequiredArgsConstructor
@@ -41,14 +44,43 @@ public class PostController {
      * http://localhost:8080/api/post?page=0&size=10&sort=createdAt,desc와 같이 요청받는다.
      * @param pageable
      * @return
-     */
+//     */
+//    @GetMapping("")
+//    public ResponseEntity<Result> getPosts(
+//            @PageableDefault(size = 10,sort = "updateTime", direction = Sort.Direction.DESC) Pageable pageable
+//    ){
+//        return ResponseEntity.ok().body(Result.builder()
+//                .message("게시글 목록 조회 성공")
+//                .data(postService.getPosts(pageable))
+//                .build());
+//    }
+
+    /**
+     * 무한스크롤 방식 -
+     * @param categoryId
+     * @return
+     *
+     * LocalDateTime 대신 timestamp(long)으로 보내서 Instant.ofEpochMilli()로 변환
+     * sortBy를 Enum으로 만들어서 컨트롤러에서 받을 때 안전하게 파싱을 고려려     */
     @GetMapping("")
-    public ResponseEntity<Result> getPosts(
-            @PageableDefault(size = 10,sort = "updateTime", direction = Sort.Direction.DESC) Pageable pageable
-    ){
+    public ResponseEntity<Result> getPostsByCategory(
+            @RequestParam(name = "sortBy", defaultValue = "latest") String sortBy,
+            @RequestParam(name = "lastId", required = false) Long lastId,
+            @RequestParam(name = "lastCreatedAt", required = false) LocalDateTime lastCreatedAt,
+            @RequestParam(name = "lastEndDate", required = false) LocalDateTime lastEndDate,
+            @RequestParam(name = "lastFundingAmount", required = false) Long lastFundingAmount,
+            @RequestParam(name = "lastParticipants", required = false) Long lastParticipants,
+            @RequestParam(name = "categoryId", required = false) Long categoryId,
+            @RequestParam(name = "size", defaultValue = "20") int size){
+
+        List<PostDto.PostResponse> posts = postService.getposts(
+                sortBy, lastId, lastCreatedAt, lastEndDate, lastFundingAmount,
+                lastParticipants, categoryId, size
+        );
+
         return ResponseEntity.ok().body(Result.builder()
                 .message("게시글 목록 조회 성공")
-                .data(postService.getPosts(pageable))
+                .data(posts)
                 .build());
     }
 }
