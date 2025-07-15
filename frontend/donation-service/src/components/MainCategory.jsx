@@ -1,87 +1,90 @@
+import * as React from "react";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import IconButton from "@mui/material/IconButton";
 
-import * as React from 'react';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
-
-import Diversity1SharpIcon from '@mui/icons-material/Diversity1Sharp';
-import ChildCareIcon from '@mui/icons-material/ChildCare';
-import ForestIcon from '@mui/icons-material/Forest';
-import PetsIcon from '@mui/icons-material/Pets';
-import ElderlyIcon from '@mui/icons-material/Elderly';
-import Diversity3Icon from '@mui/icons-material/Diversity3';
-import PublicIcon from '@mui/icons-material/Public';
-import AccessibleIcon from '@mui/icons-material/Accessible';
-import { Card } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import Diversity1SharpIcon from "@mui/icons-material/Diversity1Sharp";
+import ChildCareIcon from "@mui/icons-material/ChildCare";
+import ForestIcon from "@mui/icons-material/Forest";
+import PetsIcon from "@mui/icons-material/Pets";
+import ElderlyIcon from "@mui/icons-material/Elderly";
+import Diversity3Icon from "@mui/icons-material/Diversity3";
+import PublicIcon from "@mui/icons-material/Public";
+import AccessibleIcon from "@mui/icons-material/Accessible";
+import { Card } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 export default function MainCategory() {
   const navigate = useNavigate();
   const categories = [
-    { label: '전체', icon: <Diversity1SharpIcon /> },
-    { label: '아동', icon: <ChildCareIcon /> },
-    { label: '환경', icon: <ForestIcon /> },
-    { label: '동물', icon: <PetsIcon /> },
-    { label: '어르신', icon: <ElderlyIcon /> },
-    { label: '사회', icon: <Diversity3Icon /> },
-    { label: '지구', icon: <PublicIcon /> },
-    { label: '장애인', icon: <AccessibleIcon /> },
+    { id: 0, label: "전체", icon: <Diversity1SharpIcon /> },
+    { id: 1, label: "아동", icon: <ChildCareIcon /> },
+    { id: 2, label: "환경", icon: <ForestIcon /> },
+    { id: 3, label: "동물", icon: <PetsIcon /> },
+    { id: 4, label: "어르신", icon: <ElderlyIcon /> },
+    { id: 5, label: "사회", icon: <Diversity3Icon /> },
+    { id: 6, label: "지구", icon: <PublicIcon /> },
+    { id: 7, label: "장애인", icon: <AccessibleIcon /> },
   ];
 
   return (
-    
     <Card
       elevation={1}
       sx={{
         borderRadius: 4,
-        flexDirection: 'column',  
-        display: 'flex',
-        overflowX: 'auto',
+        flexDirection: "column",
+        display: "flex",
+        overflowX: "auto",
         gap: 1,
         px: 2,
         py: 1,
-        alignItems: 'center',
+        alignItems: "center",
         // mt: 2,
       }}
     >
-       <Typography variant="subtitle1" fontWeight="500">
+      <Typography variant="subtitle1" fontWeight="500">
         관심있는 모금함에 들어가보세요!
       </Typography>
 
-    <Box
+      <Box
         component="nav"
         sx={{
-          display: 'flex',
-          flexDirection: 'row',     // 2) 아이콘만 가로로
-          flexWrap: 'nowrap',       // 한 줄로 쭉
-          overflowX: 'auto',        // 넘칠 땐 스크롤
+          display: "flex",
+          flexDirection: "row", // 2) 아이콘만 가로로
+          flexWrap: "nowrap", // 한 줄로 쭉
+          overflowX: "auto", // 넘칠 땐 스크롤
           gap: 1,
-          alignItems: 'center',
+          alignItems: "center",
         }}
       >
         {categories.map((cat, idx) => (
           <Box
             key={idx}
             sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
               minWidth: 60,
             }}
           >
             <IconButton
               sx={{
-                bgcolor: 'primary.light',
-                color: 'white',
+                bgcolor: "primary.light",
+                color: "white",
                 mb: 0.5,
-                '&:hover': { bgcolor: 'primary.main' },
+                "&:hover": { bgcolor: "primary.main" },
                 width: 50,
                 height: 50,
-                borderRadius: '50%',
-                boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
-                transition: 'background-color 0.3s ease',
+                borderRadius: "50%",
+                boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+                transition: "background-color 0.3s ease",
               }}
-                  onClick={() => navigate('/postListPage')}
-
+              onClick={() => {
+                if (cat.label === "전체") {
+                  navigate("/postListPage");
+                } else {
+                  navigate(`/postListPage/${cat.id}`);
+                }
+              }}
             >
               {cat.icon}
             </IconButton>
@@ -92,6 +95,5 @@ export default function MainCategory() {
         ))}
       </Box>
     </Card>
-
   );
 }
