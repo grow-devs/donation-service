@@ -16,7 +16,7 @@ export default function PostCard({ post }) {
     >
       <CardMedia
         component="img"
-        image={post.image}
+        image={post.imageUrl}
         alt={post.title}
         sx={{
           flex: "0 0 64%",
@@ -41,7 +41,7 @@ export default function PostCard({ post }) {
           fontSize="0.8rem"
           fontWeight="500"
         >
-          총 {post.participants.toLocaleString()}명이 참여중
+          총 {(post.participants ?? 0).toLocaleString()}명이 참여중
         </Typography>
       </CardContent>
     </Card>
