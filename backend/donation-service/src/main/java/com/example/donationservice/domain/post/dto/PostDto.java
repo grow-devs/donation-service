@@ -1,5 +1,6 @@
 package com.example.donationservice.domain.post.dto;
 
+import com.example.donationservice.domain.post.Post;
 import com.example.donationservice.domain.user.ApprovalStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,9 +40,24 @@ public class PostDto {
         private String imageUrl;
         private ApprovalStatus approvalStatus;
         private Long teamId;
-        private String teamName;      // 필요에 따라 추가 가능
         private Long categoryId;
-        private String categoryName;  // 필요에 따라 추가 가능
+        private Long participants;
+    }
+
+    public static PostResponse from(Post post) {
+        return PostResponse.builder()
+                .id(post.getId())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .currentAmount(post.getCurrentAmount())
+                .targetAmount(post.getTargetAmount())
+                .deadline(post.getDeadline())
+                .imageUrl(post.getImageUrl())
+                .approvalStatus(post.getApprovalStatus())
+                .teamId(post.getTeam() != null ? post.getTeam().getId() : null)
+                .categoryId(post.getCategory() != null ? post.getCategory().getId() : null)
+                .participants(post.getParticipants())
+                .build();
     }
 
 
