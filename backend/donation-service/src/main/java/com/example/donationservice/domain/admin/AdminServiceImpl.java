@@ -9,8 +9,8 @@ import com.example.donationservice.domain.sponsor.dto.TeamDto;
 import com.example.donationservice.domain.user.ApprovalStatus;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,8 +24,8 @@ public class AdminServiceImpl implements AdminService{
 
     @Override
     @Transactional
-    public Slice<TeamDto.response> getTeamList(Pageable pageable) {
-        Slice<Team> teamList = teamRepository.findAllByOrderByCreatedAtDesc(pageable);
+    public Page<TeamDto.response> getTeamList(Pageable pageable) {
+        Page<Team> teamList = teamRepository.findAllByOrderByCreatedAtDesc(pageable);
 
         return teamList.map(team -> TeamDto.response.builder()
                 .teamId(team.getId())
@@ -61,9 +61,9 @@ public class AdminServiceImpl implements AdminService{
 
     @Override
     @Transactional
-    public Slice<PostDto.PostResponse> getPostList(Pageable pageable) {
+    public Page<PostDto.PostResponse> getPostList(Pageable pageable) {
         // repository 에서 페이징 조회
-        Slice<Post> postList = postRepository.findAllByOrderByCreatedAtDesc(pageable);
+        Page<Post> postList = postRepository.findAllByOrderByCreatedAtDesc(pageable);
 
         // Post -> PostResponse DTO 변환
         return postList.map(post -> PostDto.PostResponse.builder()
