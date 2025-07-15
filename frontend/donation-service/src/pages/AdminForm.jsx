@@ -55,17 +55,19 @@ export default function AdminForm() {
     fetchPostList();
   }, []);
   
-
-  const handleApproval = async (teamId, status) => {
+  const handleTeamApproval = async (teamId, status) => {
     try {
       await api.patch(`/admin/team-approval/${teamId}`, status, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
       });
-      // 승인 or 거절 후 목록 새로고침
-      const res = await api.get('/admin/team-list');
-      setAgencyRequests(res.data.data || []);
+  
+      const res = await api.get('/admin/team-list', {
+        params: { page: 0, size: 10, sort: 'updatedAt,desc' }, // 이전 fetch와 동일하게 맞춤
+      });
+  
+      // res.data.data가 객체라면 그 안에 content 배열이 있어야 정상
+      setAgencyRequests(res.data.data?.content || []);
+  
     } catch (err) {
       console.error('팀 승인 상태 변경 실패:', err);
     }
@@ -137,7 +139,7 @@ export default function AdminForm() {
                           lineHeight: 1,        // 줄간격 조정
                           mx: 0.3
                           }}
-                        onClick={() => handleApproval(req.teamId, 'ACCEPTED')}
+                        onClick={() => handleTeamApproval(req.teamId, 'ACCEPTED')}
                       >
                         수락
                       </Button>
@@ -151,7 +153,7 @@ export default function AdminForm() {
                           lineHeight: 1,        // 줄간격 조정
                           mx: 0.3
                           }}
-                        onClick={() => handleApproval(req.teamId, 'REJECTED')}
+                        onClick={() => handleTeamApproval(req.teamId, 'REJECTED')}
                       >
                         거절
                       </Button>
