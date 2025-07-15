@@ -31,7 +31,9 @@ export default function App() {
             <AdminForm />
           </PrivateRoute>
         } />
-        <Route path="/postListPage" element={<PostListPage />} />
+        <Route path="/postListPage/:categoryId" element={<PostListPage />} />
+        <Route path="/postListPage/" element={<PostListPage />} />
+
       </Routes>
     </Router>
   );
