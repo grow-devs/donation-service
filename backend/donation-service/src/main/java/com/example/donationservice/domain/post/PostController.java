@@ -61,7 +61,11 @@ public class PostController {
      * @return
      *
      * LocalDateTime 대신 timestamp(long)으로 보내서 Instant.ofEpochMilli()로 변환
-     * sortBy를 Enum으로 만들어서 컨트롤러에서 받을 때 안전하게 파싱을 고려려     */
+     * sortBy를 Enum으로 만들어서 컨트롤러에서 받을 때 안전하게 파싱을 고려려
+     *
+     * !단, 인덱스 필요 !
+     * */
+
     @GetMapping("")
     public ResponseEntity<Result> getPostsByCategory(
             @RequestParam(name = "sortBy", defaultValue = "latest") String sortBy,
