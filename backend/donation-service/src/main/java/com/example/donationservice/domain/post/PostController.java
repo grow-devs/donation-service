@@ -81,7 +81,6 @@ public class PostController {
                 sortBy, lastId, lastCreatedAt, lastEndDate, lastFundingAmount,
                 lastParticipants, categoryId, size
         );
-
         return ResponseEntity.ok().body(Result.builder()
                 .message("게시글 목록 조회 성공")
                 .data(posts)

@@ -62,7 +62,7 @@ public class PostDto {
                 .categoryId(post.getCategory() != null ? post.getCategory().getId() : null)
                 .participants(post.getParticipants())
                 .build();
-    }
 
+    }
 
 }

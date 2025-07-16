@@ -46,5 +46,9 @@ public class Post extends BaseTimeEntity {
     @JoinColumn(name = "category_id")
     private Category category;
 
+    // 요청한 게시물 수락 및 반려
+    public void updateApprovalStatus(ApprovalStatus approvalStatus) {
+        this.approvalStatus = approvalStatus;
+    }
 
 }
