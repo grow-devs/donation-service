@@ -42,11 +42,13 @@ export default function PostListPage() {
   const [lastFundingAmount, setLastFundingAmount] = useState(null); // 'fundingAmountDesc' 정렬용 (백엔드에 추가 가정)
   const [lastParticipants, setLastParticipants] = useState(null); // 'participantsDesc' (추천순) 정렬용
   // 새로운 상태 추가: 첫 페이지 로드인지 확인
-  const [initialLoad, setInitialLoad] = useState(true); 
+  const [initialLoad, setInitialLoad] = useState(true);
 
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
 
+  // 전체 게시물 개수를 저장할 새로운 상태 추가
+  const [totalPostsCount, setTotalPostsCount] = useState(0);
   const observer = useRef();
 
   // 마지막 카드 관찰 (스크롤 끝 감지)
@@ -88,7 +90,7 @@ export default function PostListPage() {
     setLastParticipants(null);
 
     setHasMore(true);
-    setInitialLoad(true); // 새 검색 시작 시 initialLoad를 true로 설정
+    
     fetchPosts(true); // isInitial이 true (초기 데이터 요청)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCategory, sortOrder]); // sortOrder도 의존성 배열에 포함
@@ -105,6 +107,7 @@ export default function PostListPage() {
       size: 12,
       categoryId: selectedCategory !== 0 ? selectedCategory : undefined,
       lastId: !isInitial ? lastId : undefined, // isInitial이 아닐 때만 lastId 전달
+      initialLoad: initialLoad,
     };
 
     switch (sortOrder) {
@@ -131,10 +134,20 @@ export default function PostListPage() {
         break;
     }
 
-    postapi
+     postapi
       .get("/post", { params })
       .then((res) => {
-        const newPosts = res.data.data;
+        const postListResult = res.data.data; // Result 객체의 'data' 필드에 접근
+
+        //PostListResultDto의 게시물 목록 필드 이름이 'resultList'입니다.
+        const newPosts = postListResult.resultList; // PostListResultDto의 'resultList' 필드 접근
+        const totalCount = postListResult.totalCount; // PostListResultDto의 'totalCount' 필드 접근
+
+        // 초기 요청일 때만 totalPostsCount를 업데이트
+        if (isInitial) {
+          setTotalPostsCount(totalCount);
+        }
+
         setPosts((prev) => (isInitial ? newPosts : [...prev, ...newPosts]));
 
         setHasMore(newPosts.length === 12); // 정확히 12개면 더 있다고 판단, 아니면 없다고 판단
@@ -142,7 +155,6 @@ export default function PostListPage() {
         if (newPosts.length > 0) {
           const lastFetchedPost = newPosts[newPosts.length - 1];
           setLastId(lastFetchedPost.id);
-
 
           // 현재 로직은 이미 switch문에서 params.sortBy가 결정되었기 때문에,
           // 해당 sortBy에 맞는 last 필드를 업데이트하는 것이 중요
@@ -164,8 +176,9 @@ export default function PostListPage() {
               setLastCreatedAt(lastFetchedPost.createdAt);
               break;
           }
-        } else if (isInitial) { // 초기 로드인데 데이터가 없으면 hasMore는 false
-           setHasMore(false);
+        } else if (isInitial) {
+          // 초기 로드인데 데이터가 없으면 hasMore는 false
+          setHasMore(false);
         }
       })
       .catch((err) => {
@@ -177,14 +190,26 @@ export default function PostListPage() {
         setInitialLoad(false); // 로딩이 끝나면 initialLoad를 false로 설정
       });
   };
+  // 탭 변경 핸들러
+  const handleCategoryChange = (newCategoryId) => {
+    setSelectedCategory(newCategoryId);
+    setInitialLoad(true); // 탭 변경 시 initialLoad를 true로 설정
+    setTotalPostsCount(0); // 새 카테고리 로드 시 총 개수 초기화
+  };
 
+  // 정렬 순서 변경 핸들러
+  const handleSortOrderChange = (event) => {
+    setSortOrder(event.target.value);
+    setInitialLoad(true); // 정렬 변경 시 initialLoad를 true로 설정
+    setTotalPostsCount(0); // 새 정렬 로드 시 총 개수 초기화
+  };
   return (
     <Container sx={{ mt: 3 }}>
       <Box sx={{ display: "flex", justifyContent: "center" }}>
         <CategoryTabs
           categories={categories}
           selected={selectedCategory}
-          onChange={setSelectedCategory}
+          onChange={(handleCategoryChange)}
         />
       </Box>
 
@@ -198,7 +223,7 @@ export default function PostListPage() {
         }}
       >
         <Typography variant="h5" sx={{ color: "black", fontWeight: "bold" }}>
-          진행중 모금함 {categories.length - 1} {/* 전체 카테 제외한 개수 */}
+          진행중 모금함 {totalPostsCount} {/* 전체 카테 제외한 개수 */}
         </Typography>
         <FormControl variant="standard" size="small">
           <Select
