@@ -80,7 +80,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
             case "latest": // 최신순 (createdAt DESC, id DESC)
                 return post.createdAt.lt(lastCreatedAt)
                         .or(post.createdAt.eq(lastCreatedAt).and(post.id.lt(lastId)));
-            case "endDateAsc": // 종료임박순 (endDate ASC, id ASC)
+            case "deadlineAsc": // 종료임박순 (endDate ASC, id ASC)
                 return post.deadline.gt(lastEndDate)
                         .or(post.deadline.eq(lastEndDate).and(post.id.gt(lastId)));
             case "amountDesc": // 모금액 많은 순 (currentFundingAmount DESC, id DESC)
@@ -107,7 +107,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
                         post.createdAt.desc(),
                         post.id.desc()
                 };
-            case "endDateAsc": // 종료임박순: endDate ASC, id ASC
+            case "deadlineAsc": // 종료임박순: endDate ASC, id ASC
                 return new OrderSpecifier[]{
                         post.deadline.asc(),
                         post.id.asc()
