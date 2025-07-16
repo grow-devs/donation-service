@@ -24,6 +24,8 @@ public class PostDto {
         private Long teamId;         // team, category는 엔티티가므로 id만 받음
         private Long categoryId;
         private ApprovalStatus approvalStatus; // 생성 시 기본값이라면 여기서 안 받아도 됨
+        private Long currentAmount; //필터링을 테스트하기 위해 임시로 생성
+        private Long participants; //필터링을 테스트하기 위해 임시로 생성
     }
 
     @Getter
@@ -34,6 +36,7 @@ public class PostDto {
         private Long id;
         private String title;
         private String content;
+        private LocalDateTime createdAt; // 최신순 정렬을 위한 만들어진 시간 응답
         private Long currentAmount;
         private Long targetAmount;
         private LocalDateTime deadline;
@@ -49,6 +52,7 @@ public class PostDto {
                 .id(post.getId())
                 .title(post.getTitle())
                 .content(post.getContent())
+                .createdAt(post.getCreatedAt())
                 .currentAmount(post.getCurrentAmount())
                 .targetAmount(post.getTargetAmount())
                 .deadline(post.getDeadline())
