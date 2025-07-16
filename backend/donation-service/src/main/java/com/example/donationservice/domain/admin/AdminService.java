@@ -10,12 +10,12 @@ import org.springframework.data.domain.Slice;
 import java.util.List;
 
 public interface AdminService {
-    Page<TeamDto.response> getTeamList(Pageable pageable);
+    Page<TeamDto.response> getTeamList(Pageable pageable, ApprovalStatus approvalStatus);
 
     // 유저가 요청한 팀 승인
     void updateTeamApprovalStatus(Long teamId, ApprovalStatus approvalStatus);
 
-    Page<PostDto.PostResponse> getPostList(Pageable pageable);
+    Page<PostDto.PostResponse> getPostList(Pageable pageable, ApprovalStatus approvalStatus);
 
     // 게시물 수락 및 반려
     void updatePostApprovalStatus(Long postId, ApprovalStatus approvalStatus);

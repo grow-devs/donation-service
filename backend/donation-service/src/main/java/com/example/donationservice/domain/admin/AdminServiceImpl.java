@@ -24,8 +24,14 @@ public class AdminServiceImpl implements AdminService{
 
     @Override
     @Transactional
-    public Page<TeamDto.response> getTeamList(Pageable pageable) {
-        Page<Team> teamList = teamRepository.findAllByOrderByCreatedAtDesc(pageable);
+    public Page<TeamDto.response> getTeamList(Pageable pageable, ApprovalStatus approvalStatus) {
+        Page<Team> teamList;
+
+        if(approvalStatus == null){
+            teamList = teamRepository.findAllByOrderByCreatedAtDesc(pageable);
+        } else {
+            teamList = teamRepository.findByApprovalStatusOrderByCreatedAtDesc(pageable, approvalStatus);
+        }
 
         return teamList.map(team -> TeamDto.response.builder()
                 .teamId(team.getId())
@@ -61,9 +67,15 @@ public class AdminServiceImpl implements AdminService{
 
     @Override
     @Transactional
-    public Page<PostDto.PostResponse> getPostList(Pageable pageable) {
+    public Page<PostDto.PostResponse> getPostList(Pageable pageable, ApprovalStatus approvalStatus) {
         // repository 에서 페이징 조회
-        Page<Post> postList = postRepository.findAllByOrderByCreatedAtDesc(pageable);
+        Page<Post> postList;
+
+        if(approvalStatus == null){
+            postList = postRepository.findAllByOrderByCreatedAtDesc(pageable);
+        } else {
+            postList = postRepository.findByApprovalStatusOrderByCreatedAtDesc(pageable, approvalStatus);
+        }
 
         // Post -> PostResponse DTO 변환
         return postList.map(post -> PostDto.PostResponse.builder()
