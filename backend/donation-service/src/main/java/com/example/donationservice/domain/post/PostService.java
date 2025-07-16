@@ -13,7 +13,7 @@ public interface PostService {
 
 //    Slice<PostDto.PostResponse> getPosts(Pageable pageable);
 //    public List<PostDto.PostResponse> getPostsByCategory(Long categoryId, Long lastId, Pageable pageable);
-    List<PostDto.PostResponse>getposts(
+    PostDto.PostResponseWithTotalCount getposts(
             String sortBy,
             Long lastId,
             LocalDateTime lastCreatedAt,
@@ -21,5 +21,6 @@ public interface PostService {
             Long lastFundingAmount,
             Long lastParticipants,
             Long categoryId,
-            int size);
+            int size,
+            boolean isInitial);
 }
