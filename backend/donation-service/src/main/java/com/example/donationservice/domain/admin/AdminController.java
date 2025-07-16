@@ -22,12 +22,13 @@ public class AdminController {
      */
     @GetMapping("/team-list")
     public ResponseEntity<Result> getTeamList(
-            @PageableDefault(size = 10, sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable
+            @PageableDefault(size = 10, sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable,
+            @RequestParam(required = false) ApprovalStatus approvalStatus
     ) {
         return ResponseEntity.ok(
                 Result.builder()
                         .message("팀 목록 조회 성공")
-                        .data(adminService.getTeamList(pageable))
+                        .data(adminService.getTeamList(pageable, approvalStatus))
                         .build()
         );
     }
@@ -58,12 +59,13 @@ public class AdminController {
      */
     @GetMapping("/post-list")
     public ResponseEntity<Result> getPostList(
-            @PageableDefault(size = 10, sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable
+            @PageableDefault(size = 10, sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable,
+            @RequestParam(required = false) ApprovalStatus approvalStatus
     ) {
         return ResponseEntity.ok(
                 Result.builder()
                         .message("게시글 목록 조회 성공")
-                        .data(adminService.getPostList(pageable))
+                        .data(adminService.getPostList(pageable, approvalStatus))
                         .build()
         );
     }
