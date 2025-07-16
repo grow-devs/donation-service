@@ -30,8 +30,7 @@ public class PostController {
     @PostMapping("")
     public ResponseEntity<Result> create(
             @AuthenticationPrincipal CustomUserDetail userDetails,
-            @RequestBody PostDto.PostCreateRequest postCreateRequest){
-
+            @ModelAttribute PostDto.PostCreateRequest postCreateRequest){
         postService.create(userDetails.getUserId(), postCreateRequest);
         return ResponseEntity.ok().body(Result.builder()
                 .message("게시글 생성 성공")
@@ -40,26 +39,9 @@ public class PostController {
     }
 
     /**
-     * 기본 10개씩 updateTime을 기준으로 내림차순 정렬된 post를 가져온다.
-     * http://localhost:8080/api/post?page=0&size=10&sort=createdAt,desc와 같이 요청받는다.
-     * @param pageable
-     * @return
-//     */
-//    @GetMapping("")
-//    public ResponseEntity<Result> getPosts(
-//            @PageableDefault(size = 10,sort = "updateTime", direction = Sort.Direction.DESC) Pageable pageable
-//    ){
-//        return ResponseEntity.ok().body(Result.builder()
-//                .message("게시글 목록 조회 성공")
-//                .data(postService.getPosts(pageable))
-//                .build());
-//    }
-
-    /**
      * 무한스크롤 방식 -
      * @param categoryId
      * @return
-     *
      * LocalDateTime 대신 timestamp(long)으로 보내서 Instant.ofEpochMilli()로 변환
      * sortBy를 Enum으로 만들어서 컨트롤러에서 받을 때 안전하게 파싱을 고려려
      *
@@ -75,11 +57,13 @@ public class PostController {
             @RequestParam(name = "lastFundingAmount", required = false) Long lastFundingAmount,
             @RequestParam(name = "lastParticipants", required = false) Long lastParticipants,
             @RequestParam(name = "categoryId", required = false) Long categoryId,
-            @RequestParam(name = "size", defaultValue = "20") int size){
+            @RequestParam(name = "size", defaultValue = "20") int size,
+            // 처음 카테고리별 게시물 목록을 조회할때만 count 쿼리를 날릴 수 있게 inInitial 값을 추가
+            @RequestParam(name = "initialLoad",defaultValue = "true") boolean initialLoad){
 
-        List<PostDto.PostResponse> posts = postService.getposts(
+        PostDto.PostResponseWithTotalCount posts = postService.getposts(
                 sortBy, lastId, lastCreatedAt, lastEndDate, lastFundingAmount,
-                lastParticipants, categoryId, size
+                lastParticipants, categoryId, size , initialLoad
         );
         return ResponseEntity.ok().body(Result.builder()
                 .message("게시글 목록 조회 성공")
