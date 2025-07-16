@@ -14,6 +14,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
@@ -38,8 +42,9 @@ public class PostServiceImpl implements PostService {
                 .content(request.getContent())
                 .deadline(request.getDeadline())
                 .approvalStatus(ApprovalStatus.PENDING) // 기본 상태
-                .currentAmount(0L)
+                .currentAmount(request.getCurrentAmount())// 필터링 테스트를 위한 임시용
                 .targetAmount(request.getTargetAmount())
+                .participants(request.getParticipants())// 필터링 테스트를 위한 임시용
                 .imageUrl(request.getImageUrl())
                 .team(team)
                 .category(category)
@@ -49,24 +54,24 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    @Transactional()
-    public Slice<PostDto.PostResponse> getPosts(Pageable pageable) {
-        // repository 에서 페이징 조회
-        Slice<Post> posts = postRepository.findAll(pageable);
-
-        // Post -> PostResponse DTO 변환
-        return posts.map(post -> PostDto.PostResponse.builder()
-                .id(post.getId())
-                .title(post.getTitle())
-                .content(post.getContent())
-                .currentAmount(post.getCurrentAmount())
-                .targetAmount(post.getTargetAmount())
-                .deadline(post.getDeadline())
-                .imageUrl(post.getImageUrl())
-                .approvalStatus(post.getApprovalStatus())
-                .teamId(post.getTeam().getId())
-                .categoryId(post.getCategory().getId())
-                .build()
+    public List<PostDto.PostResponse> getposts(
+            String sortBy,
+            Long lastId,
+            LocalDateTime lastCreatedAt,
+            LocalDateTime lastEndDate,
+            Long lastFundingAmount,
+            Long lastParticipants,
+            Long categoryId,
+            int size) {
+        return postRepository.findPostsByCursor(
+                sortBy,
+                lastId,
+                lastCreatedAt,
+                lastEndDate,
+                lastFundingAmount,
+                lastParticipants,
+                categoryId,
+                size
         );
     }
 
