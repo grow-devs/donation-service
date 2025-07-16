@@ -42,8 +42,9 @@ public class PostServiceImpl implements PostService {
                 .content(request.getContent())
                 .deadline(request.getDeadline())
                 .approvalStatus(ApprovalStatus.PENDING) // 기본 상태
-                .currentAmount(0L)
+                .currentAmount(request.getCurrentAmount())// 필터링 테스트를 위한 임시용
                 .targetAmount(request.getTargetAmount())
+                .participants(request.getParticipants())// 필터링 테스트를 위한 임시용
                 .imageUrl(request.getImageUrl())
                 .team(team)
                 .category(category)
