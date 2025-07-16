@@ -1,6 +1,6 @@
 import { Card, CardContent, CardMedia, Typography } from "@mui/material";
 
-export default function PostCard({ post }) {
+export default function PostCard({ post, sortOrder, daysLeft }) {
   return (
     <Card
       sx={{
@@ -16,9 +16,10 @@ export default function PostCard({ post }) {
     >
       <CardMedia
         component="img"
-        image={post.image}
+        image={post.imageUrl}
         alt={post.title}
         sx={{
+          height: 192,
           flex: "0 0 64%",
           borderRadius: 2, // 이미지만 둥글게
           width: "100%",
@@ -32,16 +33,35 @@ export default function PostCard({ post }) {
           py: 2,
         }}
       >
-        <Typography variant="subtitle2" fontWeight="bold" noWrap>
+        <Typography
+          variant="subtitle2"
+          fontWeight=""
+          color="rgba(46, 46, 46, 1)"
+          sx={{ mb: 0.3 }}
+          noWrap
+        >
           {post.title}
         </Typography>
         <Typography
           variant="body2"
-          color="text.secondary"
-          fontSize="0.8rem"
-          fontWeight="500"
+          color="rgba(20, 20, 20, 1)"
+          fontSize="0.75rem"
+          fontWeight="600"
+          sx={{
+            
+            fontFeatureSettings: '"tnum"', // Tabular Numbers 적용
+            // fontFeatureSettings: '"tnum", "lnum"', // 여러 기능 적용 시 쉼표로 구분
+            // fontFeatureSettings: '"onum"', // Oldstyle Numbers (디자인 컨셉에 따라)
+          }}
         >
-          총 {post.participants.toLocaleString()}명이 참여중
+          {sortOrder === "종료임박순" // '마감임박순' 조건
+            ? daysLeft === 0
+              ? "오늘 마감"
+              : `${daysLeft}일 남음`
+            : sortOrder === "최신순" // '최신순' 조건
+            ? `${new Date(post.createdAt).toLocaleDateString()}` // 생성일을 날짜 형식으로 변환하여 표시
+            : `총 ${(post.participants ?? 0).toLocaleString()}명이 참여중`}{" "}
+          {/* 그 외 조건 (예: '추천순') */}
         </Typography>
       </CardContent>
     </Card>
