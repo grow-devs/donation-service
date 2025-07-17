@@ -1,5 +1,6 @@
 package com.example.donationservice.domain.post;
 
+import com.example.donationservice.aws.s3.S3UploadService;
 import com.example.donationservice.domain.category.Category;
 import com.example.donationservice.domain.category.CategoryRepository;
 import com.example.donationservice.domain.post.dto.PostDto;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,6 +27,7 @@ public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final TeamRepository teamRepository;
     private final CategoryRepository categoryRepository;
+    private final S3UploadService s3UploadService;
 
     @Override
     @Transactional
@@ -37,6 +40,18 @@ public class PostServiceImpl implements PostService {
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new IllegalArgumentException("카테고리를 찾을 수 없습니다."));
 
+        //todo 대표이미지 s3 업로드 로직
+        String imageUrl = null;
+        if (request.getImageFile() != null && !request.getImageFile().isEmpty()) {
+            try {
+                // 대표 이미지 S3 업로드 (post-images/ 디렉토리에 저장)
+                imageUrl = s3UploadService.uploadFile(request.getImageFile(), "post-images/");
+            } catch (IOException e) {
+                // 이미지 업로드 실패 처리 (예: 예외 던지기 또는 기본 이미지 URL 설정)
+                throw new RuntimeException("Failed to upload image to S3", e);
+            }
+        }
+
         Post post = Post.builder()
                 .title(request.getTitle())
                 .content(request.getContent())
@@ -45,7 +60,7 @@ public class PostServiceImpl implements PostService {
                 .currentAmount(request.getCurrentAmount())// 필터링 테스트를 위한 임시용
                 .targetAmount(request.getTargetAmount())
                 .participants(request.getParticipants())// 필터링 테스트를 위한 임시용
-                .imageUrl("https://picsum.photos/640/480") // 테스트를 위한 임시용 -> s3에 이미지를 저장하고, imageurl을 받아와 저장한다.
+                .imageUrl(imageUrl) // 테스트를 위한 임시용 -> s3에 이미지를 저장하고, imageurl을 받아와 저장한다.
                 .team(team)
                 .category(category)
                 .build();
