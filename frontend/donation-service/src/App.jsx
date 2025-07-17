@@ -12,6 +12,7 @@ import MyPage from './pages/MyPage';
 import ApplyAgencyPage from './pages/ApplyAgencyPage';
 import PrivateRoute from './routes/PrivateRoute';
 import AdminForm from './pages/AdminForm';
+import PostDetailPage from './pages/PostDetailPage';
 
 export default function App() {
   return (
@@ -33,7 +34,8 @@ export default function App() {
         } />
         <Route path="/postListPage/:categoryId" element={<PostListPage />} />
         <Route path="/postListPage/" element={<PostListPage />} />
-
+        <Route path='/post-detail' element={<PostDetailPage />} />
+        
       </Routes>
     </Router>
   );
