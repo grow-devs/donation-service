@@ -99,23 +99,28 @@ function CommentItem({ comment }) {
   // 여기서는 단순히 좋아요 수를 표시합니다.
   const isLiked = false; // 더미 상태
 
+  // ✨ 수정: 백엔드 응답 필드에 맞게 comment 객체 속성 사용
+  const displayAuthor = comment.nickname || `사용자 ${comment.userId}`; // 닉네임 없으면 userId 사용
+  const displayTime = new Date(comment.createdAt).toLocaleString(); // createdAt을 보기 좋은 시간 형태로 변환
+  const displayContent = comment.message; // message 필드 사용
+  const displayLikes = comment.likes || 0; // 좋아요 필드 (백엔드에 없으면 0 또는 다른 기본값)
+
   return (
     <CommentWrapper>
-      {comment.avatar ? (
-        <Avatar src={comment.avatar} alt={`${comment.author} 아바타`} />
-      ) : (
-        <DefaultAvatar>{comment.author.charAt(0)}</DefaultAvatar>
-      )}
+      {/* comment.avatar는 백엔드 응답에 없으므로, 아바타 표시 로직을 nickname 첫 글자로 변경 */}
+      {/* 백엔드에서 아바타 URL을 제공하지 않는다면 DefaultAvatar만 사용하거나, UserAvatarPlaceholder와 동일하게 처리 */}
+      <DefaultAvatar>{displayAuthor.charAt(0)}</DefaultAvatar> {/* ✨ 수정: displayAuthor의 첫 글자 사용 */}
+
       <CommentContent>
         <CommentHeader>
-          <AuthorName>{comment.author}</AuthorName>
-          <CommentTime>{comment.time}</CommentTime>
+          <AuthorName>{displayAuthor}</AuthorName> {/* ✨ 수정: displayAuthor 사용 */}
+          <CommentTime>{displayTime}</CommentTime> {/* ✨ 수정: displayTime 사용 */}
         </CommentHeader>
-        <CommentText>{comment.content}</CommentText>
+        <CommentText>{displayContent}</CommentText> {/* ✨ 수정: displayContent 사용 */}
         <CommentActions>
           <LikeButton>
             <LikeIcon $isLiked={isLiked} />
-            좋아요 {comment.likes}
+            좋아요 {displayLikes} {/* ✨ 수정: displayLikes 사용 */}
           </LikeButton>
           {/* <button>답글 달기</button> (옵션) */}
         </CommentActions>
@@ -123,5 +128,6 @@ function CommentItem({ comment }) {
     </CommentWrapper>
   );
 }
+
 
 export default CommentItem;
