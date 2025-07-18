@@ -120,16 +120,23 @@ const LoadMoreButton = styled.button`
   width: 100%;
   padding: 12px 0;
   margin-top: 20px;
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
+  background-color: white;
+  color: black; // 글자색
+  border: 1px solid #adaaaa; /* 예시: 두께 1px, 실선, 금색 테두리 */
   border-radius: 8px;
   cursor: pointer;
   font-size: 1.1em;
   font-weight: 600;
   transition: background-color 0.2s ease;
+
+  // ✨ 1. 가운데 정렬 추가
+  display: block; // 블록 요소로 만들어 margin: auto 적용 가능하게 함
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 160px; // 버튼의 최대 너비를 지정하여 가운데 정렬이 더 잘 보이게 할 수 있음 (선택 사항)
+
   &:hover:not(:disabled) {
-    background-color: #e64a7a;
+    background-color: #dedcdc;
   }
   &:disabled {
     background-color: var(--light-gray);
@@ -300,7 +307,7 @@ function CommentSection({ postId }) {
       {/* ✨ 추가: '더보기' 버튼 */}
       {hasMore && ( // 더 불러올 댓글이 있을 때만 버튼 표시
         <LoadMoreButton onClick={handleLoadMore} disabled={loading}>
-          {loading ? '불러오는 중...' : '더보기'}
+          {loading ? '불러오는 중...' : '더보기  ⌄'} {/* ⌄ */}
         </LoadMoreButton>
       )}
 
