@@ -177,15 +177,15 @@ function CommentSection({ postId }) {
         },
       });
 
-      const fetchedComments = response.data.comments;
+      const fetchedComments = response.data.data.comments;
       if (page === 0) { // 첫 페이지 로드 (초기 로드 또는 정렬 변경 시)
         setComments(fetchedComments); // 기존 댓글 초기화 후 새 댓글로 채움
       } else { // '더보기'로 다음 페이지 로드
         setComments((prevComments) => [...prevComments, ...fetchedComments]); // 기존 댓글에 새 댓글 추가
       }
 
-      setCurrentPage(response.data.currentPage + 1); // 백엔드에서 받은 현재 페이지 번호 + 1 (다음 요청 시 사용)
-      setHasMore(response.data.hasNext); // 백엔드 응답에서 다음 페이지 존재 여부 확인
+      setCurrentPage(response.data.data.currentPage + 1); // 백엔드에서 받은 현재 페이지 번호 + 1 (다음 요청 시 사용)
+      setHasMore(response.data.data.hasNext); // 백엔드 응답에서 다음 페이지 존재 여부 확인
     } catch (error) {
       console.error("댓글 불러오기 실패:", error);
       // 에러 처리 (예: 사용자에게 메시지 표시)

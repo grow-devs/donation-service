@@ -1,5 +1,6 @@
 package com.example.donationservice.domain.comment;
 
+import com.example.donationservice.common.dto.Result;
 import com.example.donationservice.domain.comment.dto.CommentDto;
 import com.example.donationservice.domain.user.CustomUserDetail;
 import lombok.RequiredArgsConstructor;
@@ -17,18 +18,31 @@ public class CommentController {
 
     private final CommentService commentService;
 
+    // todo : Result추가해서 front 코드 변경해야함
+
     @PostMapping
-    public void createComment(@AuthenticationPrincipal CustomUserDetail userDetails,
-                              @RequestBody CommentDto.CreateCommentRequest request) {
+    public ResponseEntity<Result> createComment(@AuthenticationPrincipal CustomUserDetail userDetails,
+                                                @RequestBody CommentDto.CreateCommentRequest request) {
         commentService.createComment(userDetails.getUserId(), request);
+        return ResponseEntity.ok(
+                Result.builder()
+                        .message("댓글 생성 성공")
+                        .data(null)
+                        .build()
+        );
     }
 
     @GetMapping("/list/{postId}")
-    public ResponseEntity<CommentDto.PagedCommentResponse> getCommentsByPostId(
+    public ResponseEntity<Result> getCommentsByPostId(
             @PathVariable Long postId,
             @PageableDefault(size = 10, sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         CommentDto.PagedCommentResponse response = commentService.getCommentsByPostId(postId, pageable);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(
+                Result.builder()
+                        .message("댓글 조회 성공")
+                        .data(response)
+                        .build()
+        );
     }
 }
