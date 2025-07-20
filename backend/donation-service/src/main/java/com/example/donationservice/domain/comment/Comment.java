@@ -17,6 +17,8 @@ public class Comment extends BaseTimeEntity {
 
     private String message;
 
+    private Integer likesCount;
+
     // todo: 유저 엔티티와 연관관계 설정할건지 말건지, 추가하면 n+1 문제 발생여부 확인
     private Long userId;
 
@@ -24,4 +26,18 @@ public class Comment extends BaseTimeEntity {
     @JoinColumn(name = "post_id")
     private Post post;
 
+    // likesCount 증가
+    public void incrementLikesCount() {
+        if (this.likesCount == null) {
+            this.likesCount = 0;
+        }
+        this.likesCount++;
+    }
+
+    // likesCount 감소
+    public void decrementLikesCount() {
+        if (this.likesCount != null && this.likesCount > 0) {
+            this.likesCount--;
+        }
+    }
 }
