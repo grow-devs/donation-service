@@ -24,5 +24,5 @@ public interface PostService {
             int size,
             boolean isInitial);
 
-    PostDto.PostDetailResponse getPostDetilById(Long postId);
+//    PostDto.PostDetailResponse getPostDetilById(Long postId);
 }

@@ -89,28 +89,9 @@ const DonateButton = styled.button`
 
 
 function FundraisingSummary({ summary, post }) {
-  // const formatAmount = (amount) => {
-  //   return new Intl.NumberFormat('ko-KR').format(amount);
-  // };
-
   const formatAmount = (amount) => {
-    // 금액이 유효한 숫자인 경우에만 포맷팅
-    if (typeof amount === 'number') {
-      return new Intl.NumberFormat('ko-KR').format(amount);
-    }
-    return '0'; // 금액이 유효하지 않으면 '0' 또는 'N/A' 등으로 표시
+    return new Intl.NumberFormat('ko-KR').format(amount);
   };
-
-  // ✨ 현재 금액과 목표 금액을 사용하여 진행률 계산
-  const currentAmount = post?.currentAmount || 0; // post가 undefined일 경우를 대비하여 기본값 0
-  const targetAmount = post?.targetAmount || 0;   // post가 undefined일 경우를 대비하여 기본값 0
-
-  let progress = 0;
-  if (targetAmount > 0) { // 목표 금액이 0보다 클 경우에만 계산 (0으로 나누는 에러 방지)
-    progress = (currentAmount / targetAmount) * 100;
-  }
-  // 진행률을 소수점 첫째 자리까지 표시
-  const formattedProgress = progress.toFixed(1);
 
   return (
     <SummaryContainer>
@@ -118,21 +99,19 @@ function FundraisingSummary({ summary, post }) {
 
       <DetailRow>
         <span>목표 모금액</span>
-        {/* <span>{formatAmount(post.goalAmount)}원</span> */}
-        <span>{formatAmount(targetAmount)}원</span>
+        <span>{formatAmount(post.goalAmount)}원</span>
       </DetailRow>
       <DetailRow>
         <span>참여자</span>
         <span>{formatAmount(post.participants)}명</span>
       </DetailRow>
 
-      {/* <CurrentAmount>{formatAmount(post.currentAmount)}원</CurrentAmount> */}
-      <CurrentAmount>{formatAmount(currentAmount)}원</CurrentAmount>
+      <CurrentAmount>{formatAmount(post.currentAmount)}원</CurrentAmount>
 
       <ProgressContainer>
         <ProgressBar $progress={post.progress} />
       </ProgressContainer>
-      <ProgressText>{formattedProgress}% 달성</ProgressText>
+      <ProgressText>{post.progress.toFixed(1)}% 달성</ProgressText>
 
       <DonateButton>응원하고 기부하기</DonateButton>
 
