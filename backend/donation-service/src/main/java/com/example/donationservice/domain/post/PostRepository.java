@@ -1,7 +1,9 @@
 package com.example.donationservice.domain.post;
 
+
+import com.example.donationservice.domain.user.ApprovalStatus;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -11,6 +13,6 @@ import java.util.List;
 public interface PostRepository extends JpaRepository<Post,Long>,PostRepositoryCustom {
     Long countByCategoryId(Long CategoryId);
 
-    Slice<Post> findAllByOrderByCreatedAtDesc(Pageable pageable);
-
+    Page<Post> findAllByOrderByCreatedAtDesc(Pageable pageable);
+    Page<Post> findByApprovalStatusOrderByCreatedAtDesc(Pageable pageable, ApprovalStatus approvalStatus);
 }

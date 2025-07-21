@@ -41,7 +41,7 @@ public class PostDto {
         private String title;
         private String content;
         private LocalDateTime createdAt; // 최신순 정렬을 위한 만들어진 시간 응답
-        private LocalDateTime updatedAt; // 최신순 정렬을 위한 만들어진 시간 응답
+        private LocalDateTime updatedAt; 
         private Long currentAmount;
         private Long targetAmount;
         private LocalDateTime deadline;
