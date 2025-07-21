@@ -102,4 +102,15 @@ public class PostController {
                 .data(posts)
                 .build());
     }
+
+    // 단일 게시물 조회
+    @GetMapping("/{postId}")
+    public ResponseEntity<Result> getPostDetilById(
+            @PathVariable Long postId) {
+        PostDto.PostDetailResponse postDetailResponse = postService.getPostDetilById(postId);
+        return ResponseEntity.ok().body(Result.builder()
+                .message("게시글 조회 성공")
+                .data(postDetailResponse)
+                .build());
+    }
 }

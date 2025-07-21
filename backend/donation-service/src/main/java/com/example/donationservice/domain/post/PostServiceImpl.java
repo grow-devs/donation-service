@@ -11,11 +11,11 @@ import com.example.donationservice.domain.sponsor.TeamRepository;
 import com.example.donationservice.domain.user.ApprovalStatus;
 import com.example.donationservice.domain.user.User;
 import com.example.donationservice.domain.user.UserRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -101,6 +101,35 @@ public class PostServiceImpl implements PostService {
                 .resultList(resultList)
                 .build();
 
+    }
+
+    @Override
+    @Transactional
+    public PostDto.PostDetailResponse getPostDetilById(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+
+        // 게시글 상세 조회시 팀과 카테고리 정보도 함께 조회
+        Team team = post.getTeam();
+        Category category = post.getCategory();
+
+        return PostDto.PostDetailResponse.builder()
+                .id(post.getId())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .createdAt(post.getCreatedAt())
+                .updatedAt(post.getUpdatedAt())
+                .currentAmount(post.getCurrentAmount())
+                .targetAmount(post.getTargetAmount())
+                .deadline(post.getDeadline())
+                .displayImageUrl(post.getDisplayImageUrl())
+                .approvalStatus(post.getApprovalStatus())
+                .teamId(team != null ? team.getId() : null)
+                .teamName(team != null ? team.getName() : null)
+                .categoryId(category != null ? category.getId() : null)
+                .categoryName(category != null ? category.getName() : null)
+                .participants(post.getParticipants())
+                .build();
     }
 
 }
