@@ -13,6 +13,8 @@ import com.example.donationservice.domain.user.User;
 import com.example.donationservice.domain.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.owasp.html.HtmlPolicyBuilder;
+import org.owasp.html.PolicyFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -42,8 +44,10 @@ public class PostServiceImpl implements PostService {
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new IllegalArgumentException("카테고리를 찾을 수 없습니다."));
         try {
+            //content script 공격에 대응하기 위한 살균 전략
+            String sanitizedContent = sanitizeHtmlContent(request.getContent());
             // 3가지 이미지 버전으로 이미지를 업로드하는 메서드 호출 (processAndSavePostImages)
-            S3UploadService.ProcessedContentResult result= s3UploadService.processAndSavePostImages(request.getContent(),request.getImageFile());
+            S3UploadService.ProcessedContentResult result = s3UploadService.processAndSavePostImages(sanitizedContent, request.getImageFile());
             Post post = Post.builder()
                     .title(request.getTitle())
                     .content(result.getFinalContent())
@@ -59,7 +63,7 @@ public class PostServiceImpl implements PostService {
                     .build();
 
             postRepository.save(post);
-        }catch (IOException e){
+        } catch (IOException e) {
             throw new RestApiException(CommonErrorCode.FAIL_UPLOAD_IMAGE);
         }
     }
@@ -103,4 +107,27 @@ public class PostServiceImpl implements PostService {
 
     }
 
+    /**
+     * quill에디터를 통해 html이 string 값으로 들어온 content는 script 공격이 들어올 수 있다.
+     * 백엔드단에서 살균을 통해 이를 방지한다.
+     * @param htmlContent
+     * @return
+     */
+    public String sanitizeHtmlContent(String htmlContent) {
+        if (htmlContent == null || htmlContent.trim().isEmpty()) {
+            return "";
+        }
+        // 허용할 HTML 태그와 속성을 정의하는 정책 생성
+        // Quill이 생성하는 일반적인 태그와 속성을 포함하되, script, iframe 등 위험 요소는 제외
+        PolicyFactory policy = new HtmlPolicyBuilder()
+                .allowElements("a", "p", "div", "br", "strong", "em", "u", "s", "ol", "ul", "li",
+                        "h1", "h2", "h3", "blockquote", "img", "pre", "code")
+                .allowAttributes("href").onElements("a")
+                .allowAttributes("src").onElements("img")
+                .allowAttributes("alt", "title", "width", "height").onElements("img")
+                .allowAttributes("class").onElements("p", "div", "strong", "em", "u", "s", "ol", "ul", "li", "h1", "h2", "h3", "blockquote", "pre", "code") // Quill 스타일링을 위한 class 허용 (예: ql-align-center)
+                .toFactory();
+
+        return policy.sanitize(htmlContent);
+    }
 }
