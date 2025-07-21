@@ -1,3 +1,4 @@
+// PostDetailPage.jsx
 import React, {useState} from 'react';
 import styled from 'styled-components';
 import PostContentSection from '../components/post/PostContentSection';
@@ -58,6 +59,7 @@ function PostDetailPage() {
   // '모금소개'와 '기부현황' 탭 상태 관리
   // PostContentSection과 TabMenu가 이 상태를 공유합니다.
   const [activeTab, setActiveTab] = useState('story'); 
+  const testPostId = 83;
 
   return (
     <PageContainer>
@@ -71,7 +73,7 @@ function PostDetailPage() {
             donations={donationListData} 
           />
           {/* 댓글 섹션은 탭과 관계없이 항상 아래에 표시됨 */}
-          <CommentSection comments={commentsData} />
+          <CommentSection postId={testPostId} />
         </MainContentArea>
 
         {/* 우측 1/3 사이드바 영역 */}
