@@ -28,3 +28,8 @@ logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type.descriptor.sql.BasicBinder: trace  # 바인딩 파라미터 출력
+ # aws s3 설정
+aws:
+  s3:
+    bucket: donation-service #  S3 버킷 이름
+    region: ap-northeast-2     #  S3 버킷 리전

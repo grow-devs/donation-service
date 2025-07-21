@@ -1,6 +1,9 @@
 package com.example.donationservice.domain.post;
 
+import com.example.donationservice.aws.s3.S3UploadService;
 import com.example.donationservice.common.dto.Result;
+import com.example.donationservice.common.exception.CommonErrorCode;
+import com.example.donationservice.common.exception.RestApiException;
 import com.example.donationservice.domain.post.dto.PostDto;
 import com.example.donationservice.domain.user.CustomUserDetail;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -20,9 +25,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PostController {
     private final PostService postService;
+    private final S3UploadService s3UploadService;
 
     /**
-     * 회원만이 팀을 생성할 수 있다. (권한을 가진다는 느낌)
+     * 팀을 가진 회원만 게시물을 생성할 수 있다. (권한을 가진다는 느낌)
      * @param userDetails
      * @param postCreateRequest
      * @return
@@ -30,9 +36,10 @@ public class PostController {
     @PostMapping("")
     public ResponseEntity<Result> create(
             @AuthenticationPrincipal CustomUserDetail userDetails,
-            @RequestBody PostDto.PostCreateRequest postCreateRequest){
+            @ModelAttribute PostDto.PostCreateRequest postCreateRequest){
 
         postService.create(userDetails.getUserId(), postCreateRequest);
+
         return ResponseEntity.ok().body(Result.builder()
                 .message("게시글 생성 성공")
                 .data(null)
@@ -40,26 +47,33 @@ public class PostController {
     }
 
     /**
-     * 기본 10개씩 updateTime을 기준으로 내림차순 정렬된 post를 가져온다.
-     * http://localhost:8080/api/post?page=0&size=10&sort=createdAt,desc와 같이 요청받는다.
-     * @param pageable
+     *  게시물 생성 시에 에디터에 포함되는 사진을 s3에 임시로 올려놓는다.
+     *  service 까지 가지 않고 controller에서 해결해도 되지 않나?
+     * @param userDetails
+     * @param image
      * @return
-//     */
-//    @GetMapping("")
-//    public ResponseEntity<Result> getPosts(
-//            @PageableDefault(size = 10,sort = "updateTime", direction = Sort.Direction.DESC) Pageable pageable
-//    ){
-//        return ResponseEntity.ok().body(Result.builder()
-//                .message("게시글 목록 조회 성공")
-//                .data(postService.getPosts(pageable))
-//                .build());
-//    }
+     */
+    @PostMapping("/upload")
+    public ResponseEntity<Result> uploadTempImage (
+            @AuthenticationPrincipal CustomUserDetail userDetails,
+            @ModelAttribute MultipartFile image){
+        try {
+           String imageUrl = s3UploadService.uploadTempImage(image);
+            return ResponseEntity.ok().body(Result.builder()
+                    .message("임시 imageurl 반환 완료")
+                    .data(imageUrl)
+                    .build());
+        }
+        catch (IOException e){
+            throw new RestApiException(CommonErrorCode.valueOf(e.getMessage()));
+        }
+
+    }
 
     /**
      * 무한스크롤 방식 -
      * @param categoryId
      * @return
-     *
      * LocalDateTime 대신 timestamp(long)으로 보내서 Instant.ofEpochMilli()로 변환
      * sortBy를 Enum으로 만들어서 컨트롤러에서 받을 때 안전하게 파싱을 고려려
      *
@@ -75,11 +89,13 @@ public class PostController {
             @RequestParam(name = "lastFundingAmount", required = false) Long lastFundingAmount,
             @RequestParam(name = "lastParticipants", required = false) Long lastParticipants,
             @RequestParam(name = "categoryId", required = false) Long categoryId,
-            @RequestParam(name = "size", defaultValue = "20") int size){
+            @RequestParam(name = "size", defaultValue = "20") int size,
+            // 처음 카테고리별 게시물 목록을 조회할때만 count 쿼리를 날릴 수 있게 inInitial 값을 추가
+            @RequestParam(name = "initialLoad",defaultValue = "true") boolean initialLoad){
 
-        List<PostDto.PostResponse> posts = postService.getposts(
+        PostDto.PostResponseWithTotalCount posts = postService.getposts(
                 sortBy, lastId, lastCreatedAt, lastEndDate, lastFundingAmount,
-                lastParticipants, categoryId, size
+                lastParticipants, categoryId, size , initialLoad
         );
         return ResponseEntity.ok().body(Result.builder()
                 .message("게시글 목록 조회 성공")
