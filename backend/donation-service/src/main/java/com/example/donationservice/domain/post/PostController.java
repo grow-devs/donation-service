@@ -1,6 +1,9 @@
 package com.example.donationservice.domain.post;
 
+import com.example.donationservice.aws.s3.S3UploadService;
 import com.example.donationservice.common.dto.Result;
+import com.example.donationservice.common.exception.CommonErrorCode;
+import com.example.donationservice.common.exception.RestApiException;
 import com.example.donationservice.domain.post.dto.PostDto;
 import com.example.donationservice.domain.user.CustomUserDetail;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -20,9 +25,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PostController {
     private final PostService postService;
+    private final S3UploadService s3UploadService;
 
     /**
-     * 회원만이 팀을 생성할 수 있다. (권한을 가진다는 느낌)
+     * 팀을 가진 회원만 게시물을 생성할 수 있다. (권한을 가진다는 느낌)
      * @param userDetails
      * @param postCreateRequest
      * @return
@@ -31,11 +37,37 @@ public class PostController {
     public ResponseEntity<Result> create(
             @AuthenticationPrincipal CustomUserDetail userDetails,
             @ModelAttribute PostDto.PostCreateRequest postCreateRequest){
+
         postService.create(userDetails.getUserId(), postCreateRequest);
+
         return ResponseEntity.ok().body(Result.builder()
                 .message("게시글 생성 성공")
                 .data(null)
                 .build());
+    }
+
+    /**
+     *  게시물 생성 시에 에디터에 포함되는 사진을 s3에 임시로 올려놓는다.
+     *  service 까지 가지 않고 controller에서 해결해도 되지 않나?
+     * @param userDetails
+     * @param image
+     * @return
+     */
+    @PostMapping("/upload")
+    public ResponseEntity<Result> uploadTempImage (
+            @AuthenticationPrincipal CustomUserDetail userDetails,
+            @ModelAttribute MultipartFile image){
+        try {
+           String imageUrl = s3UploadService.uploadTempImage(image);
+            return ResponseEntity.ok().body(Result.builder()
+                    .message("임시 imageurl 반환 완료")
+                    .data(imageUrl)
+                    .build());
+        }
+        catch (IOException e){
+            throw new RestApiException(CommonErrorCode.valueOf(e.getMessage()));
+        }
+
     }
 
     /**
