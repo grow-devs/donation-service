@@ -19,7 +19,7 @@ export default function PostCard({ post, sortOrder, daysLeft }) {
         image={post.imageUrl}
         alt={post.title}
         sx={{
-          height: 192,
+          height: 170,
           flex: "0 0 64%",
           borderRadius: 2, // 이미지만 둥글게
           width: "100%",
