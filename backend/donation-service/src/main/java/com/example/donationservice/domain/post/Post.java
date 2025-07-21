@@ -24,6 +24,7 @@ public class Post extends BaseTimeEntity {
 
     private String title;
 
+    @Column(columnDefinition = "TEXT") // todo html컨텐츠를 저장하기위해 데이터 타입을 "TEXT"로 맵핑시킨다.
     private String content;
 
     private Long currentAmount;
@@ -32,7 +33,9 @@ public class Post extends BaseTimeEntity {
 
     private LocalDateTime deadline;
 
-    private String imageUrl;
+    private String thumnbnailImageUrl; //todo 게시물 목록 조회시 대표 이미지 썸네일용 imageurl 추가
+
+    private String displayImageUrl; //todo 게시물 상세 조회시 대표이미지용  imageurl 추가
 
     private ApprovalStatus approvalStatus;
 
