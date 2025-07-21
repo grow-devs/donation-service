@@ -109,6 +109,7 @@ export default function CreatePostPage() {
       fileInput.value = "";
     }
   };
+  //게시물 에디터 안의 이미지 핸들러
   const imageHandler = useCallback(() => {
     const input = document.createElement("input");
     input.setAttribute("type", "file");
@@ -117,10 +118,18 @@ export default function CreatePostPage() {
 
     input.onchange = async () => {
       const file = input.files[0];
+      console.log(file);
       if (file) {
         try {
           // 실제 이미지 업로드 API 호출 로직
-          const imageUrlToInsert = `https://picsum.photos/640/480?random=${Math.random()}`;
+          const formData = new FormData();
+          formData.append('image', file);
+           
+          const res = await postapi.post("/post/upload", formData);
+          const imageUrlToInsert = res.data.data;
+          console.log(imageUrlToInsert);
+          // 테스트용. 랜덤이미지 url 적용
+          // const imageUrlToInsert = `https://picsum.photos/640/480?random=${Math.random()}`;
 
           const editor = quillRef.current.getEditor();
           const range = editor.getSelection();
@@ -181,8 +190,8 @@ export default function CreatePostPage() {
   );
 
   // handleSubmit 함수를 async로 변경
-  const handleSubmit = async (event) => {
-    // <-- 여기에 async 키워드를 추가했습니다.
+  const handleSubmit = async (event) => { // <-- 여기에 async 키워드를 추가했습니다.
+    
     event.preventDefault();
 
     if (
