@@ -31,6 +31,7 @@ public class PostDto {
         private MultipartFile imageFile;
     }
 
+
     @Getter
     @Builder
     @NoArgsConstructor
@@ -61,7 +62,7 @@ public class PostDto {
         private List<PostResponse> resultList;
         private long totalCount;
     }
-
+    // todo 게시물 상세 조회와 게시물 목록 조회에서 보이는 데이터가 다름에 따라 dto가 상세조회용과 목록조회용으로 다를 필요성
     public static PostResponse from(Post post) {
         return PostResponse.builder()
                 .id(post.getId())
@@ -71,7 +72,7 @@ public class PostDto {
                 .currentAmount(post.getCurrentAmount())
                 .targetAmount(post.getTargetAmount())
                 .deadline(post.getDeadline())
-                .imageUrl(post.getImageUrl())
+                .imageUrl(post.getThumnbnailImageUrl()) // 썸네일용 imageurl
                 .approvalStatus(post.getApprovalStatus())
                 .teamId(post.getTeam() != null ? post.getTeam().getId() : null)
                 .categoryId(post.getCategory() != null ? post.getCategory().getId() : null)
@@ -79,5 +80,7 @@ public class PostDto {
                 .build();
 
     }
+
+
 
 }
