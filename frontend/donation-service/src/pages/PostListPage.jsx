@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate} from "react-router-dom";
 import {
   Container,
   Grid,
@@ -8,12 +8,13 @@ import {
   MenuItem,
   Box,
   Typography,
+  Button,
 } from "@mui/material";
 import CategoryTabs from "../components/CategoryTabs";
 import PostCard from "../components/PostCard";
 import PostCardSkeleton from "../components/PostCardSkeleton";
 import postapi from "../apis/postapi";
-
+import EditNoteIcon from "@mui/icons-material/EditNote";
 const categories = [
   { id: 0, name: "전체" },
   { id: 1, name: "아동·청소년" },
@@ -26,6 +27,7 @@ const categories = [
 ];
 
 export default function PostListPage() {
+  const navigate = useNavigate();
   const daysLeft = null;
   const { categoryId } = useParams();
   const [selectedCategory, setSelectedCategory] = useState(
@@ -90,7 +92,7 @@ export default function PostListPage() {
     setLastParticipants(null);
 
     setHasMore(true);
-    
+
     fetchPosts(true); // isInitial이 true (초기 데이터 요청)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCategory, sortOrder]); // sortOrder도 의존성 배열에 포함
@@ -133,7 +135,7 @@ export default function PostListPage() {
         break;
     }
 
-     postapi
+    postapi
       .get("/post", { params })
       .then((res) => {
         const postListResult = res.data.data; // Result 객체의 'data' 필드에 접근
@@ -208,7 +210,7 @@ export default function PostListPage() {
         <CategoryTabs
           categories={categories}
           selected={selectedCategory}
-          onChange={(handleCategoryChange)}
+          onChange={handleCategoryChange}
         />
       </Box>
 
@@ -222,7 +224,11 @@ export default function PostListPage() {
         }}
       >
         <Typography variant="h5" sx={{ color: "black", fontWeight: "bold" }}>
-          진행중 모금함 {totalPostsCount} {/* 전체 카테 제외한 개수 */}
+          진행중 모금함 {totalPostsCount} {/* 진행중 모금함 수 */}
+          <Button color="" onClick={() => navigate("/createPost")}>
+            <EditNoteIcon sx={{ color: "rgba(97, 97, 97, 1)" }} />
+            <Typography variant="body2">모금 제안</Typography>
+          </Button>
         </Typography>
         <FormControl variant="standard" size="small">
           <Select
