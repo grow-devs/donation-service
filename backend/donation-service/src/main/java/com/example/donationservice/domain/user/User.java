@@ -1,24 +1,31 @@
 package com.example.donationservice.domain.user;
 
+import com.example.donationservice.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "\"user\"")
 @Getter
-@NoArgsConstructor
-public class User {
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class User extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true, nullable = false)
     private String email;
 
     private String password;
 
     private String username;
 
+    private String nickName;
+
     private UserRole userRole;
 
 }
+
+

@@ -1,24 +1,43 @@
 package com.example.donationservice.domain.comment;
 
+import com.example.donationservice.common.entity.BaseTimeEntity;
 import com.example.donationservice.domain.post.Post;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
-@NoArgsConstructor
-public class Comment {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
+public class Comment extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String message;
 
+    private Integer likesCount;
+
+    // todo: 유저 엔티티와 연관관계 설정할건지 말건지, 추가하면 n+1 문제 발생여부 확인
     private Long userId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
 
+    // likesCount 증가
+    public void incrementLikesCount() {
+        if (this.likesCount == null) {
+            this.likesCount = 0;
+        }
+        this.likesCount++;
+    }
+
+    // likesCount 감소
+    public void decrementLikesCount() {
+        if (this.likesCount != null && this.likesCount > 0) {
+            this.likesCount--;
+        }
+    }
 }

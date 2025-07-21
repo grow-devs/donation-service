@@ -7,7 +7,6 @@ import VolunteerActivismSharpIcon from '@mui/icons-material/VolunteerActivismSha
  */
 export default function TodayStats({ stats }) {
 
-
   return (
     <Card
       sx={{
@@ -17,8 +16,8 @@ export default function TodayStats({ stats }) {
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
-        
       }}
+     
     >
       {/* Optional: 헤더 */}
       <Box sx={{ p: 2, backgroundColor: 'primary.main', }}>

@@ -1,5 +1,6 @@
 package com.example.donationservice.domain.like;
 
+import com.example.donationservice.common.entity.BaseTimeEntity;
 import com.example.donationservice.domain.post.Post;
 import com.example.donationservice.domain.user.User;
 import jakarta.persistence.*;
