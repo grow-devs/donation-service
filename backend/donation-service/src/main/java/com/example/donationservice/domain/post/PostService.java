@@ -23,4 +23,6 @@ public interface PostService {
             Long categoryId,
             int size,
             boolean isInitial);
+
+    PostDto.PostDetailResponse getPostDetilById(Long postId);
 }
