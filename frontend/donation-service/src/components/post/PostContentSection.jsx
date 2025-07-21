@@ -34,7 +34,7 @@ function PostContentSection({ post, activeTab, setActiveTab, donations }) {
 
   return (
     <SectionContainer>
-      <PostImage src={post.imageUrl} alt={post.title} />
+      <PostImage src={post.displayImageUrl} alt={post.title} />
 
       <TabMenu activeTab={activeTab} onTabChange={handleTabChange} />
 

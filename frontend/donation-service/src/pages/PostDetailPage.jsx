@@ -1,9 +1,10 @@
 // PostDetailPage.jsx
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import styled from 'styled-components';
 import PostContentSection from '../components/post/PostContentSection';
 import FundraisingSummary from '../components/post/FundraisingSummary';
 import CommentSection from '../components/post/CommentSection';
+import api from '../apis/api';
 
 import { postData, donationSummaryData, donationListData, commentsData } from '../components/post/dummyData';
 
@@ -59,7 +60,66 @@ function PostDetailPage() {
   // '모금소개'와 '기부현황' 탭 상태 관리
   // PostContentSection과 TabMenu가 이 상태를 공유합니다.
   const [activeTab, setActiveTab] = useState('story'); 
-  const testPostId = 83;
+  const testPostId = 4; // todo : 동적으로 바꿔야함
+
+  const [post, setPost] = useState(null); // ✨ 게시물 데이터를 저장할 state
+  const [loading, setLoading] = useState(true); // ✨ 로딩 상태 관리
+  const [error, setError] = useState(null); // ✨ 에러 상태 관리
+
+  useEffect(() => {
+    const fetchPostDetail = async () => {
+      try {
+        setLoading(true); // 데이터 가져오기 시작 시 로딩 true
+        setError(null); // 에러 초기화
+
+        // ✨ 백엔드 API 호출
+        const response = await api.get(`/post/${testPostId}`);
+        console.log('~~~~ : ', response.data.data);
+        setPost(response.data.data); // ✨ 가져온 데이터를 post state에 저장
+      } catch (err) {
+        console.error("게시물 상세 정보 불러오기 실패:", err);
+        setError("게시물 정보를 불러오는 데 실패했습니다."); // ✨ 에러 메시지 설정
+        alert(err.response?.data?.message || '게시글 상세 정보를 불러오지 못했습니다.'); // 사용자에게 알림
+      } finally {
+        setLoading(false); // 데이터 가져오기 완료 시 로딩 false
+      }
+    };
+
+    fetchPostDetail(); // 컴포넌트 마운트 시 데이터 가져오기 함수 호출
+  }, [testPostId]); // testPostId가 변경될 때마다 재실행 (현재는 고정값)
+
+  // ✨ 로딩 중일 때 표시할 내용
+  if (loading) {
+    return (
+      <PageContainer>
+        <ContentWrapper>
+          <p>게시물 정보를 불러오는 중입니다...</p>
+        </ContentWrapper>
+      </PageContainer>
+    );
+  }
+
+  // ✨ 에러 발생 시 표시할 내용
+  if (error) {
+    return (
+      <PageContainer>
+        <ContentWrapper>
+          <p>오류 발생: {error}</p>
+        </ContentWrapper>
+      </PageContainer>
+    );
+  }
+
+  // ✨ 게시물 데이터가 성공적으로 로드되지 않았을 때 (예: 404 Not Found)
+  if (!post) {
+    return (
+      <PageContainer>
+        <ContentWrapper>
+          <p>게시물을 찾을 수 없습니다.</p>
+        </ContentWrapper>
+      </PageContainer>
+    );
+  }
 
   return (
     <PageContainer>
@@ -67,10 +127,11 @@ function PostDetailPage() {
         {/* 좌측 2/3 메인 콘텐츠 영역 */}
         <MainContentArea>
           <PostContentSection 
-            post={postData} 
+            post={post}
+            // post={post} 
             activeTab={activeTab} 
             setActiveTab={setActiveTab} 
-            donations={donationListData} 
+            donations={donationListData} /* 더미 데이터 */
           />
           {/* 댓글 섹션은 탭과 관계없이 항상 아래에 표시됨 */}
           <CommentSection postId={testPostId} />
@@ -80,7 +141,7 @@ function PostDetailPage() {
         <SidebarArea>
           <FundraisingSummary 
             summary={donationSummaryData} 
-            post={postData} 
+            post={post} 
           />
         </SidebarArea>
       </ContentWrapper>
