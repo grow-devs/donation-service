@@ -23,7 +23,7 @@ export default function MainPage() {
 
   return (
     <Container maxWidth={300} sx={{ py: 5, md: 'auto' }}>
-      <Grid><TestProtectedButton /></Grid>
+      {/* <Grid><TestProtectedButton /></Grid> */}
       <Grid container spacing={4} alignItems="flex-start" justifyContent="center" columnSpacing={{ xs: 4, sm: 5, md: 10 }}>
         <Grid item xs={12} sm={6} md={8} container spacing={4} direction="column" justifyContent="center">
           <MainCategory />
