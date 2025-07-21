@@ -18,7 +18,7 @@ public class CommentLikeController {
 
     private final CommentLikeService commentLikeService;
 
-    @PostMapping("/{commentId}/likes")
+    @PostMapping("/{commentId}")
     public ResponseEntity<Result> toggleCommentLike(
             @AuthenticationPrincipal CustomUserDetail userDetails,
             @PathVariable Long commentId) {

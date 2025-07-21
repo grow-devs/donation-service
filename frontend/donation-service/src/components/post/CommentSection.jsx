@@ -177,7 +177,10 @@ function CommentSection({ postId }) {
         },
       });
 
-      const fetchedComments = response.data.data.comments;
+      const pagedCommentResponse = response.data.data;
+      const fetchedComments = pagedCommentResponse.comments; // 이 fetchedComments 안에 likesCount와 isLikedByCurrentUser 포함
+      // const fetchedComments = response.data.data.comments;
+      
       if (page === 0) { // 첫 페이지 로드 (초기 로드 또는 정렬 변경 시)
         setComments(fetchedComments); // 기존 댓글 초기화 후 새 댓글로 채움
       } else { // '더보기'로 다음 페이지 로드
@@ -246,6 +249,18 @@ function CommentSection({ postId }) {
     }
   };
 
+  // ✨ 추가: CommentItem에서 좋아요 상태가 변경되었을 때 호출될 콜백 함수
+  const handleCommentItemLikeToggle = (commentId, updatedLikesCount, newIsLikedStatus) => {
+    setComments((prevComments) =>
+      prevComments.map((comment) =>
+        // 변경된 댓글을 찾아서 likesCount와 isLikedByCurrentUser 필드를 업데이트
+        comment.id === commentId
+          ? { ...comment, likesCount: updatedLikesCount, isLikedByCurrentUser: newIsLikedStatus }
+          : comment
+      )
+    );
+  };
+
   return (
     <SectionContainer>
       <CommentTitle>댓글</CommentTitle>
@@ -293,7 +308,10 @@ function CommentSection({ postId }) {
       <CommentList>
         {comments.length > 0 ? ( // ✨ 수정: sortedComments 대신 comments 상태 사용
           comments.map((comment) => (
-            <CommentItem key={comment.id} comment={comment} />
+            <CommentItem 
+              key={comment.id} comment={comment} 
+              onLikeToggle={handleCommentItemLikeToggle} // 콜백 전달
+            />
           ))
         ) : (
           // ✨ 수정: 로딩 중이 아닐 때만 "댓글 없음" 메시지 표시

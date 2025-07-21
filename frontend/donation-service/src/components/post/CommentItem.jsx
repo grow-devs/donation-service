@@ -116,7 +116,7 @@ function CommentItem({ comment , onLikeToggle}) {
   const handleLikeClick = async () => {
     try {
       // 백엔드 좋아요 토글 API 호출
-      const response = await api.post(`/comment-like/${id}/likes`);
+      const response = await api.post(`/comment-like/${id}`);
 
       // 백엔드 응답에서 업데이트된 좋아요 수와 좋아요 상태를 가져옴
       // 백엔드 CommentLikeToggleResponse DTO의 필드명에 맞춰 접근 (currentLikesCount, isLiked)
