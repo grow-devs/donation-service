@@ -36,7 +36,7 @@ public class PostDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class PostResponse {
+    public static class PostResponse { // admin 요청하 게시물 목록조회 + 게시물 목록조회
         private Long id;
         private String title;
         private String content;
@@ -45,7 +45,7 @@ public class PostDto {
         private Long currentAmount;
         private Long targetAmount;
         private LocalDateTime deadline;
-        private String imageUrl;
+        private String imageUrl; // 썸네일 용 imageurl
         private ApprovalStatus approvalStatus;
         private Long teamId;
         private String teamName;
@@ -81,6 +81,26 @@ public class PostDto {
 
     }
 
-
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class PostDetailResponse { // admin 요청하 게시물 목록조회 + 게시물 목록조회
+        private Long id;
+        private String title;
+        private String content; // html
+        private LocalDateTime createdAt; // 최신순 정렬을 위한 만들어진 시간 응답
+        private LocalDateTime updatedAt;
+        private Long currentAmount;
+        private Long targetAmount;
+        private LocalDateTime deadline;
+        private String displayImageUrl; // 대표 이미지
+        private ApprovalStatus approvalStatus;
+        private Long teamId;
+        private String teamName;
+        private Long categoryId;
+        private String categoryName;
+        private Long participants;
+    }
 
 }
