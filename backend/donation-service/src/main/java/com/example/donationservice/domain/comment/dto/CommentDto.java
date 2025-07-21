@@ -31,18 +31,8 @@ public class CommentDto {
         private Long userId;
         private String nickname; // 댓글 작성자의 닉네임
         private LocalDateTime createdAt; // 댓글 작성 시간
-
-        // 필요하다면 User 엔터티에서 사용자 닉네임 등을 가져와 추가할 수 있습니다.
-        // private String username;
-        public static CommentResponse from(Comment comment, String nickname) {
-            return CommentResponse.builder()
-                    .id(comment.getId())
-                    .message(comment.getMessage())
-                    .userId(comment.getUserId())
-                    .nickname(nickname)
-                    .createdAt(comment.getCreatedAt())
-                    .build();
-        }
+        private Integer likesCount; // 댓글 좋아요 수
+        private boolean isLikedByCurrentUser; // 현재 사용자가 좋아요를 눌렀는지 여부
     }
 
     @Getter

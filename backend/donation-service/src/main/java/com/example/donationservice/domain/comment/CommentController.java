@@ -18,8 +18,6 @@ public class CommentController {
 
     private final CommentService commentService;
 
-    // todo : Result추가해서 front 코드 변경해야함
-
     @PostMapping
     public ResponseEntity<Result> createComment(@AuthenticationPrincipal CustomUserDetail userDetails,
                                                 @RequestBody CommentDto.CreateCommentRequest request) {
@@ -34,10 +32,11 @@ public class CommentController {
 
     @GetMapping("/list/{postId}")
     public ResponseEntity<Result> getCommentsByPostId(
+            @AuthenticationPrincipal CustomUserDetail userDetails,
             @PathVariable Long postId,
             @PageableDefault(size = 10, sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        CommentDto.PagedCommentResponse response = commentService.getCommentsByPostId(postId, pageable);
+        CommentDto.PagedCommentResponse response = commentService.getCommentsByPostId(userDetails.getUserId(), postId, pageable);
         return ResponseEntity.ok(
                 Result.builder()
                         .message("댓글 조회 성공")
