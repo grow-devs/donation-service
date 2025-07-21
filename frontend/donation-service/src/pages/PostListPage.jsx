@@ -96,7 +96,6 @@ export default function PostListPage() {
   }, [selectedCategory, sortOrder]); // sortOrder도 의존성 배열에 포함
 
   // API 요청 함수 (isInitial: 초기 요청 여부)
-  // API 요청 함수 (isInitial: 초기 요청 여부)
   const fetchPosts = (isInitial = false) => {
     if (loading) return;
     if (!hasMore && !isInitial) return;
