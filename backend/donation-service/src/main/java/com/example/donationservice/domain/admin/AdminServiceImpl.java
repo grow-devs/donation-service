@@ -73,7 +73,7 @@ public class AdminServiceImpl implements AdminService{
                 .currentAmount(post.getCurrentAmount())
                 .targetAmount(post.getTargetAmount())
                 .deadline(post.getDeadline())
-                .imageUrl(post.getImageUrl())
+                .imageUrl(post.getThumnbnailImageUrl()) //게시물 목록에서는 썸네일 url을 보냄
                 .approvalStatus(post.getApprovalStatus())
                 .teamId(post.getTeam().getId())
                 .teamName(post.getTeam().getName())
