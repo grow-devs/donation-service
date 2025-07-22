@@ -148,12 +148,24 @@ public class PostServiceImpl implements PostService {
         // 허용할 HTML 태그와 속성을 정의하는 정책 생성
         // Quill이 생성하는 일반적인 태그와 속성을 포함하되, script, iframe 등 위험 요소는 제외
         PolicyFactory policy = new HtmlPolicyBuilder()
+                // 허용할 HTML 태그 정의
                 .allowElements("a", "p", "div", "br", "strong", "em", "u", "s", "ol", "ul", "li",
-                        "h1", "h2", "h3", "blockquote", "img", "pre", "code")
+                        "h1", "h2", "h3", "blockquote", "img", "pre", "code", // 기존 태그들
+                        "span", "font") // Quill이 사용할 수 있는 추가 태그 (필요하다면)
+
+                // 각 태그에 허용할 속성 정의
                 .allowAttributes("href").onElements("a")
-                .allowAttributes("src").onElements("img")
+                .allowAttributes("src").onElements("img") // img 태그에 src 속성 허용
                 .allowAttributes("alt", "title", "width", "height").onElements("img")
-                .allowAttributes("class").onElements("p", "div", "strong", "em", "u", "s", "ol", "ul", "li", "h1", "h2", "h3", "blockquote", "pre", "code") // Quill 스타일링을 위한 class 허용 (예: ql-align-center)
+                .allowAttributes("class").onElements("p", "div", "strong", "em", "u", "s", "ol", "ul", "li",
+                        "h1", "h2", "h3", "blockquote", "pre", "code", "span")
+                .allowAttributes("style").onElements("p", "div", "span", "img") // 인라인 스타일을 허용할 경우 (필요 없으면 제거)
+                .allowAttributes("target").onElements("a") // 링크 새 창 열기
+
+                // ⭐ 이 부분이 핵심입니다: 허용할 URL 프로토콜 정의 ⭐
+                .allowUrlProtocols("http", "https")
+                // .allowUrlProtocols("http", "https", "data") // data:URI (Base64 인코딩 이미지)를 허용하려면 'data'도 추가
+
                 .toFactory();
 
         return policy.sanitize(htmlContent);
