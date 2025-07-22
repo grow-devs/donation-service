@@ -156,7 +156,7 @@ function CommentSection({ postId }) {
   const [hasMore, setHasMore] = useState(true); // ✨ 추가: 더 불러올 댓글이 있는지 여부
   const [loading, setLoading] = useState(false); // ✨ 추가: API 호출 로딩 중 여부
 
-  const [currentSort, setCurrentSort] = useState('updatedAt,desc');
+  const [currentSort, setCurrentSort] = useState('createdAt,desc');
 
   // 실제 앱에서는 로그인한 사용자의 아바타를 가져와야 합니다.
   const currentUserAvatar = ''; // 현재 사용자의 아바타 (더미)
@@ -226,7 +226,7 @@ function CommentSection({ postId }) {
         // ✨ 수정: api.js에서 가져온 api 인스턴스 사용
         await api.post('/comment', {
           postId: postId, // 댓글 등록 시 게시물 ID 필요
-          comment: newComment,
+          message: newComment,
           // teamId: 필요하다면 CommentDto.CreateCommentRequest에 맞춰 추가
         });
         setNewComment(''); // 입력창 비우기
@@ -288,17 +288,17 @@ function CommentSection({ postId }) {
         <SortOptions>
           <SortButton
             // ✨ 수정: 활성화 조건과 클릭 핸들러
-            $isActive={currentSort === 'updatedAt,desc'}
-            onClick={() => handleSortChange('updatedAt,desc')}
+            $isActive={currentSort === 'createdAt,desc'}
+            onClick={() => handleSortChange('createdAt,desc')}
           >
             최신순
           </SortButton>
           <SortButton
             // ✨ 수정: 활성화 조건과 클릭 핸들러 (예: '응원순' 대신 '오래된순'으로 매핑)
-            $isActive={currentSort === 'createdAt,asc'}
-            onClick={() => handleSortChange('createdAt,asc')}
+            $isActive={currentSort === 'likesCount,desc'}
+            onClick={() => handleSortChange('likesCount,desc')}
           >
-            오래된순
+            좋아요순
           </SortButton>
         </SortOptions>
       </CommentListHeader>
