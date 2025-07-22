@@ -65,7 +65,7 @@ const CommentTextArea = styled.textarea`
 
 const SubmitButton = styled.button`
   background-color: var(--primary-color);
-  color: white;
+  color: gray;
   padding: 10px 20px;
   border-radius: 5px;
   font-weight: bold;
@@ -74,7 +74,7 @@ const SubmitButton = styled.button`
   align-self: flex-end; /* 아래쪽에 정렬 */
   
   &:hover {
-    background-color: #e0acb2; /* 호버 시 약간 어두워지게 */
+    background-color: #c0d6f0; /* 호버 시 약간 어두워지게 */
   }
   &:disabled {
     background-color: var(--light-gray);
