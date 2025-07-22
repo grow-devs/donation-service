@@ -204,6 +204,12 @@ export default function PostListPage() {
     setInitialLoad(true); // 정렬 변경 시 initialLoad를 true로 설정
     setTotalPostsCount(0); // 새 정렬 로드 시 총 개수 초기화
   };
+
+  // ✨✨✨ 새로 추가되는 함수: PostCard 클릭 시 상세 페이지로 이동 ✨✨✨
+  const handlePostClick = (postId) => {
+    navigate(`/post-detail/${postId}`);
+  };
+
   return (
     <Container sx={{ mt: 3 }}>
       <Box sx={{ display: "flex", justifyContent: "center" }}>
@@ -275,7 +281,9 @@ export default function PostListPage() {
             if (index === posts.length - 1) {
               return (
                 //posts.map 내부의 마지막 PostCard를 감시하기 위해 ref={lastPostElementRef}로 연결
-                <Box key={post.id} sx={{ width: 270 }} ref={lastPostElementRef}>
+                <Box key={post.id} sx={{ width: 270, cursor: 'pointer' }} ref={lastPostElementRef}
+                    onClick={() => handlePostClick(post.id)}
+                >
                   <PostCard
                     post={post}
                     sortOrder={sortOrder}
@@ -285,7 +293,9 @@ export default function PostListPage() {
               );
             }
             return (
-              <Box key={post.id} sx={{ width: 270 }}>
+              <Box key={post.id} sx={{ width: 270, cursor: 'pointer' }}
+              onClick={() => handlePostClick(post.id)}
+              >
                 <PostCard
                   post={post}
                   sortOrder={sortOrder}

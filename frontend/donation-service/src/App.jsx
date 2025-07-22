@@ -37,7 +37,7 @@ export default function App() {
         <Route path="/postListPage/:categoryId" element={<PostListPage />} />
         <Route path="/postListPage/" element={<PostListPage />} />
         <Route path="/createPost/" element={<CreatePostPage />} />
-        <Route path='/post-detail' element={<PostDetailPage />} />
+        <Route path='/post-detail/:postId' element={<PostDetailPage />} />
       </Routes>
     </Router>
   );
