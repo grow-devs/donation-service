@@ -187,8 +187,8 @@ function CommentSection({ postId }) {
         setComments((prevComments) => [...prevComments, ...fetchedComments]); // 기존 댓글에 새 댓글 추가
       }
 
-      setCurrentPage(response.data.data.currentPage + 1); // 백엔드에서 받은 현재 페이지 번호 + 1 (다음 요청 시 사용)
-      setHasMore(response.data.data.hasNext); // 백엔드 응답에서 다음 페이지 존재 여부 확인
+      setCurrentPage(pagedCommentResponse.currentPage + 1); // 백엔드에서 받은 현재 페이지 번호 + 1 (다음 요청 시 사용)
+      setHasMore(pagedCommentResponse.hasNext); // 백엔드 응답에서 다음 페이지 존재 여부 확인
     } catch (error) {
       console.error("댓글 불러오기 실패:", error);
       // 에러 처리 (예: 사용자에게 메시지 표시)
@@ -224,7 +224,7 @@ function CommentSection({ postId }) {
       setLoading(true); // 등록 중 로딩 상태 표시
       try {
         // ✨ 수정: api.js에서 가져온 api 인스턴스 사용
-        await api.post('/api/comment', {
+        await api.post('/comment', {
           postId: postId, // 댓글 등록 시 게시물 ID 필요
           comment: newComment,
           // teamId: 필요하다면 CommentDto.CreateCommentRequest에 맞춰 추가
