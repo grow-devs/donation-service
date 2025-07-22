@@ -16,7 +16,6 @@ public class CommentDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class CreateCommentRequest {
-        private Long teamId; // todo: 필요 없을 수도 있다
         private Long postId;
         private String message;
     }

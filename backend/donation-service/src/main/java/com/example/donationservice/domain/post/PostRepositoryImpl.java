@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 // Q클래스 임포트 (QPost는 프로젝트 빌드 시 자동으로 생성됩니다)
 import static com.example.donationservice.domain.post.QPost.post;
+import static com.example.donationservice.domain.user.ApprovalStatus.ACCEPTED;
 
 @Repository
 @RequiredArgsConstructor
@@ -42,7 +43,10 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
         // 2. 카테고리 필터링 조건
         BooleanExpression categoryCondition = (categoryId != null && categoryId != 0) ? post.category.id.eq(categoryId) : null;
 
-        // 3. 정렬 조건 (OrderSpecifier) 구성
+        // 3. 수락한 게시물 필터링 조건
+//        BooleanExpression approvalCondition = post.approvalStatus.eq(ACCEPTED); // todo 시나리오 테스트를 할 시에는 "PENDING"상태여도 조회할 수 있게 주석
+
+        // 4. 정렬 조건 (OrderSpecifier) 구성
         // 정렬 순서에 따라 동적으로 OrderSpecifier를 생성합니다.
         OrderSpecifier<?>[] orderSpecifiers = createOrderSpecifiers(sortBy);
 

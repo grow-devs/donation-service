@@ -6,18 +6,17 @@ import com.example.donationservice.config.redis.RedisTokenService;
 import com.example.donationservice.domain.user.dto.UserDto;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
 
 import static com.example.donationservice.common.exception.CommonErrorCode.LOGIN_FAILED;
+import static com.example.donationservice.common.exception.CommonErrorCode.USER_ID_ALREADY_EXISTS;
 
 @Service
 @RequiredArgsConstructor
@@ -80,7 +79,7 @@ public class UserServiceImpl implements UserService {
 
         if(userRepository.findByEmail(signupRequest.getEmail()).isPresent()){
             // todo GLobalException 있으면 에러발생
-            throw new RuntimeException();
+            throw new RestApiException(USER_ID_ALREADY_EXISTS);
         }
         User user = User.builder()
                 .email(signupRequest.getEmail())

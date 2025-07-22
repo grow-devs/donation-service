@@ -65,7 +65,7 @@ const CommentTextArea = styled.textarea`
 
 const SubmitButton = styled.button`
   background-color: var(--primary-color);
-  color: white;
+  color: gray;
   padding: 10px 20px;
   border-radius: 5px;
   font-weight: bold;
@@ -74,7 +74,7 @@ const SubmitButton = styled.button`
   align-self: flex-end; /* 아래쪽에 정렬 */
   
   &:hover {
-    background-color: #e0acb2; /* 호버 시 약간 어두워지게 */
+    background-color: #c0d6f0; /* 호버 시 약간 어두워지게 */
   }
   &:disabled {
     background-color: var(--light-gray);
@@ -156,7 +156,7 @@ function CommentSection({ postId }) {
   const [hasMore, setHasMore] = useState(true); // ✨ 추가: 더 불러올 댓글이 있는지 여부
   const [loading, setLoading] = useState(false); // ✨ 추가: API 호출 로딩 중 여부
 
-  const [currentSort, setCurrentSort] = useState('updatedAt,desc');
+  const [currentSort, setCurrentSort] = useState('createdAt,desc');
 
   // 실제 앱에서는 로그인한 사용자의 아바타를 가져와야 합니다.
   const currentUserAvatar = ''; // 현재 사용자의 아바타 (더미)
@@ -187,8 +187,8 @@ function CommentSection({ postId }) {
         setComments((prevComments) => [...prevComments, ...fetchedComments]); // 기존 댓글에 새 댓글 추가
       }
 
-      setCurrentPage(response.data.data.currentPage + 1); // 백엔드에서 받은 현재 페이지 번호 + 1 (다음 요청 시 사용)
-      setHasMore(response.data.data.hasNext); // 백엔드 응답에서 다음 페이지 존재 여부 확인
+      setCurrentPage(pagedCommentResponse.currentPage + 1); // 백엔드에서 받은 현재 페이지 번호 + 1 (다음 요청 시 사용)
+      setHasMore(pagedCommentResponse.hasNext); // 백엔드 응답에서 다음 페이지 존재 여부 확인
     } catch (error) {
       console.error("댓글 불러오기 실패:", error);
       // 에러 처리 (예: 사용자에게 메시지 표시)
@@ -224,9 +224,9 @@ function CommentSection({ postId }) {
       setLoading(true); // 등록 중 로딩 상태 표시
       try {
         // ✨ 수정: api.js에서 가져온 api 인스턴스 사용
-        await api.post('/api/comment', {
+        await api.post('/comment', {
           postId: postId, // 댓글 등록 시 게시물 ID 필요
-          comment: newComment,
+          message: newComment,
           // teamId: 필요하다면 CommentDto.CreateCommentRequest에 맞춰 추가
         });
         setNewComment(''); // 입력창 비우기
@@ -288,17 +288,17 @@ function CommentSection({ postId }) {
         <SortOptions>
           <SortButton
             // ✨ 수정: 활성화 조건과 클릭 핸들러
-            $isActive={currentSort === 'updatedAt,desc'}
-            onClick={() => handleSortChange('updatedAt,desc')}
+            $isActive={currentSort === 'createdAt,desc'}
+            onClick={() => handleSortChange('createdAt,desc')}
           >
             최신순
           </SortButton>
           <SortButton
             // ✨ 수정: 활성화 조건과 클릭 핸들러 (예: '응원순' 대신 '오래된순'으로 매핑)
-            $isActive={currentSort === 'createdAt,asc'}
-            onClick={() => handleSortChange('createdAt,asc')}
+            $isActive={currentSort === 'likesCount,desc'}
+            onClick={() => handleSortChange('likesCount,desc')}
           >
-            오래된순
+            좋아요순
           </SortButton>
         </SortOptions>
       </CommentListHeader>

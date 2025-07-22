@@ -92,7 +92,16 @@ const LikeButton = styled.button`
 
 const LikeIcon = styled(FaHeart)`
   margin-right: 5px;
-  color: ${props => (props.$isLiked ? 'var(--primary-color)' : '#999')}; /* 좋아요 눌린 상태 색상 */
+  // ✨ prop 이름을 $isLikedByCurrentUser로 일치시킵니다.
+  color: ${props => (props.$isLikedByCurrentUser ? 'red' : '#999')}; /* 좋아요 눌린 상태 색상 */
+  transition: color 0.2s ease; // 부드러운 전환 효과 추가 (선택 사항)
+`;
+
+// ✨ LikeCountText 스타일 추가: 좋아요 수 텍스트의 색상을 결정
+const LikeCountText = styled.span`
+  // ✨ $isCurrentlyLiked prop에 따라 색상을 'red' 또는 '#999'로 설정
+  color: ${props => props.$isCurrentlyLiked ? 'red' : '#999'};
+  transition: color 0.2s ease; /* 색상 변경 시 부드러운 전환 효과 */
 `;
 
 
@@ -101,10 +110,6 @@ function CommentItem({ comment , onLikeToggle}) {
   // ✨ 로컬 상태로 좋아요 수와 현재 사용자의 좋아요 여부 관리
   const [currentLikesCount, setCurrentLikesCount] = React.useState(likesCount);
   const [isCurrentlyLiked, setIsCurrentlyLiked] = React.useState(isLikedByCurrentUser);
-
-  // 실제 앱에서는 좋아요 상태를 관리하는 로직이 필요합니다.
-  // 여기서는 단순히 좋아요 수를 표시합니다.
-  const isLiked = false; // 더미 상태
 
   // ✨ 수정: 백엔드 응답 필드에 맞게 comment 객체 속성 사용
   const displayAuthor = comment.nickname || `사용자 ${comment.userId}`; // 닉네임 없으면 userId 사용
@@ -155,7 +160,10 @@ function CommentItem({ comment , onLikeToggle}) {
           {/* ✨ LikeButton에 클릭 핸들러와 현재 좋아요 상태 전달 */}
           <LikeButton onClick={handleLikeClick}>
             <LikeIcon $isLikedByCurrentUser={isCurrentlyLiked} />
-              좋아요 {currentLikesCount} {/* currentLikesCount 값으로 좋아요 수 표시 */}
+            {/* ✨ LikeCountText 컴포넌트를 사용하여 좋아요 텍스트의 색상을 제어합니다. */}
+            <LikeCountText $isCurrentlyLiked={isCurrentlyLiked}>
+              좋아요 {currentLikesCount}
+            </LikeCountText>
           </LikeButton>
           {/* <button>답글 달기</button> (옵션) */}
         </CommentActions>

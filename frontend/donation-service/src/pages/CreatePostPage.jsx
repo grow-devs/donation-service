@@ -123,8 +123,8 @@ export default function CreatePostPage() {
         try {
           // 실제 이미지 업로드 API 호출 로직
           const formData = new FormData();
-          formData.append('image', file);
-           
+          formData.append("image", file);
+
           const res = await postapi.post("/post/upload", formData);
           const imageUrlToInsert = res.data.data;
           console.log(imageUrlToInsert);
@@ -190,8 +190,9 @@ export default function CreatePostPage() {
   );
 
   // handleSubmit 함수를 async로 변경
-  const handleSubmit = async (event) => { // <-- 여기에 async 키워드를 추가했습니다.
-    
+  const handleSubmit = async (event) => {
+    // <-- 여기에 async 키워드를 추가했습니다.
+
     event.preventDefault();
 
     if (
@@ -239,7 +240,9 @@ export default function CreatePostPage() {
 
     try {
       console.log("API 호출 시도 중...");
-      const res = await postapi.post("/post", formData, 
+      const res = await postapi.post(
+        "/post",
+        formData
         // postData 대신 formData 사용
         // headers: {
         //   "Content-Type": "multipart/form-data", // 필수
@@ -292,21 +295,38 @@ export default function CreatePostPage() {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
-        <Paper elevation={3} sx={{ p: 4 }}>
+        <Paper
+          borderRadius={10}
+          elevation={3}
+          sx={{
+            border: "1px solid #f9c76bff", // 2px 두께의 연한 회색 테두리
+            borderRadius: "12px", // 모서리를 둥글게 (선택 사항)
+            backgroundColor: "#ffffff", // 배경색 (선택 사항)
+            padding: "24px", // 내부여백
+            p: 4,
+          }}
+        >
           <Typography
-            variant="h4"
+            variant="h6" // h4에서 다시 h5로 변경하거나, 더 작게 h6도 고려
             component="h1"
             gutterBottom
             align="center"
-            sx={{ mb: 4, fontWeight: "bold" }}
+            sx={{
+              mb: 4, // 아래쪽 마진을 살짝 줄이거나 유지
+              fontWeight: "fontWeightSemiBold", // "bold"보다 약간 덜 굵은 'semi-bold' (MUI 기본 폰트에 따라 적용될 수도 있고 안 될 수도 있음)
+              // 혹은 '600' 같은 숫자 값으로 직접 지정
+              color: "text.primary", // 기본 텍스트 색상 사용
+              // letterSpacing: '0.02em', // 글자 간격도 살짝 줄여서 과하지 않게
+            }}
           >
-            새 게시물 등록
+            따뜻한 변화를 위한 첫걸음, <br />
+            새로운 모금함을 제안해주세요!
           </Typography>
           <form onSubmit={handleSubmit}>
             <Stack spacing={3}>
               {/* 제목 입력 */}
               <TextField
-                label="게시물 제목"
+                label="모금함 제목"
                 variant="outlined"
                 fullWidth
                 value={title}
@@ -315,7 +335,12 @@ export default function CreatePostPage() {
               />
 
               {/* 내용 입력 (Quill 에디터) */}
-              <Box sx={{ minHeight: 300, "& .ql-editor": { minHeight: 250 } }}>
+              <Box
+                sx={{
+                  minHeight: 300,
+                  "& .ql-editor": { minHeight: 280, fontSize: "0.8rem" },
+                }}
+              >
                 <ReactQuill
                   ref={quillRef}
                   theme="snow"
