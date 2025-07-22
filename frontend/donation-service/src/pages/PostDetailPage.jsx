@@ -5,7 +5,7 @@ import PostContentSection from '../components/post/PostContentSection';
 import FundraisingSummary from '../components/post/FundraisingSummary';
 import CommentSection from '../components/post/CommentSection';
 import api from '../apis/api';
-
+import { useParams } from 'react-router-dom';
 import { postData, donationSummaryData, donationListData, commentsData } from '../components/post/dummyData';
 
 const PageContainer = styled.div`
@@ -59,8 +59,9 @@ const SidebarArea = styled.div`
 function PostDetailPage() {
   // '모금소개'와 '기부현황' 탭 상태 관리
   // PostContentSection과 TabMenu가 이 상태를 공유합니다.
-  const [activeTab, setActiveTab] = useState('story'); 
-  const testPostId = 4; // todo : 동적으로 바꿔야함
+  const [activeTab, setActiveTab] = useState('story');
+  const { postId } = useParams(); 
+  // const testPostId = 4; // todo : 동적으로 바꿔야함
 
   const [post, setPost] = useState(null); // ✨ 게시물 데이터를 저장할 state
   const [loading, setLoading] = useState(true); // ✨ 로딩 상태 관리
@@ -68,12 +69,21 @@ function PostDetailPage() {
 
   useEffect(() => {
     const fetchPostDetail = async () => {
+      // ✨✨✨ postId가 유효한 숫자인지 확인합니다. ✨✨✨
+      // URL 파라미터는 문자열이므로 Number()로 변환해야 한다 - 근데 필수는 아니고 그냥 postId를 api 요청해도 된다.
+      const idToFetch = Number(postId);
+      if (isNaN(idToFetch) || idToFetch <= 0) {
+        setError("유효하지 않은 게시물 ID입니다.");
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true); // 데이터 가져오기 시작 시 로딩 true
         setError(null); // 에러 초기화
 
         // ✨ 백엔드 API 호출
-        const response = await api.get(`/post/${testPostId}`);
+        const response = await api.get(`/post/${idToFetch}`);
         console.log('~~~~ : ', response.data.data);
         setPost(response.data.data); // ✨ 가져온 데이터를 post state에 저장
       } catch (err) {
@@ -86,7 +96,7 @@ function PostDetailPage() {
     };
 
     fetchPostDetail(); // 컴포넌트 마운트 시 데이터 가져오기 함수 호출
-  }, [testPostId]); // testPostId가 변경될 때마다 재실행 (현재는 고정값)
+  }, [postId]); // testPostId가 변경될 때마다 재실행 (현재는 고정값)
 
   // ✨ 로딩 중일 때 표시할 내용
   if (loading) {
@@ -134,7 +144,7 @@ function PostDetailPage() {
             donations={donationListData} /* 더미 데이터 */
           />
           {/* 댓글 섹션은 탭과 관계없이 항상 아래에 표시됨 */}
-          <CommentSection postId={testPostId} />
+          <CommentSection postId={Number(postId)} /> 
         </MainContentArea>
 
         {/* 우측 1/3 사이드바 영역 */}
