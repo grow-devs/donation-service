@@ -180,7 +180,7 @@ function CommentSection({ postId }) {
       const pagedCommentResponse = response.data.data;
       const fetchedComments = pagedCommentResponse.comments; // 이 fetchedComments 안에 likesCount와 isLikedByCurrentUser 포함
       // const fetchedComments = response.data.data.comments;
-      
+      console.log(response.data.data.comments);
       if (page === 0) { // 첫 페이지 로드 (초기 로드 또는 정렬 변경 시)
         setComments(fetchedComments); // 기존 댓글 초기화 후 새 댓글로 채움
       } else { // '더보기'로 다음 페이지 로드
@@ -255,7 +255,7 @@ function CommentSection({ postId }) {
       prevComments.map((comment) =>
         // 변경된 댓글을 찾아서 likesCount와 isLikedByCurrentUser 필드를 업데이트
         comment.id === commentId
-          ? { ...comment, likesCount: updatedLikesCount, isLikedByCurrentUser: newIsLikedStatus }
+          ? { ...comment, likesCount: updatedLikesCount, likedByCurrentUser: newIsLikedStatus }
           : comment
       )
     );

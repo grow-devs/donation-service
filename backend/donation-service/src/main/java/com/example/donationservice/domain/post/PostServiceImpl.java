@@ -138,6 +138,7 @@ public class PostServiceImpl implements PostService {
     /**
      * quill에디터를 통해 html이 string 값으로 들어온 content는 script 공격이 들어올 수 있다.
      * 백엔드단에서 살균을 통해 이를 방지한다.
+     *
      * @param htmlContent
      * @return
      */
