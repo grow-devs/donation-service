@@ -27,6 +27,17 @@ public class User extends BaseTimeEntity {
     private UserRole userRole;
 
     private Long points; // 사용자의 현재 포인트 잔액
+
+    // 사용자 points를 감소
+    public void decreasePoints(Long amount) {
+        if (amount < 0) {
+            throw new IllegalArgumentException("감소할 포인트는 0보다 커야 합니다.");
+        }
+        if (this.points < amount) {
+            throw new IllegalArgumentException("포인트가 부족합니다.");
+        }
+        this.points -= amount;
+    }
 }
 
 

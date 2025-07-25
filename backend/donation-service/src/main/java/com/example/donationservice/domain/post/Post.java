@@ -54,4 +54,8 @@ public class Post extends BaseTimeEntity {
         this.approvalStatus = approvalStatus;
     }
 
+    // 현재 기부 금액 업데이트
+    public void addCurrentAmount(Long amount) {
+        this.currentAmount += amount;
+    }
 }
