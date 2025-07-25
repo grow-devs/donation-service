@@ -22,7 +22,7 @@ export default function MainAppBar() {
   const nickName = useAuthStore((state) => state.nickName);
 
   return (
-    <Box sx={{ mb: 11 }}>
+    <Box sx={{ mb: 9 }}>
       <Paper
         elevation={1}
         sx={{
