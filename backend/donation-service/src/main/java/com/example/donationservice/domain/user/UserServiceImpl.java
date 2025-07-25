@@ -87,6 +87,7 @@ public class UserServiceImpl implements UserService {
                 .username(signupRequest.getUserName())
                 .userRole(signupRequest.getUserRole())
                 .nickName(signupRequest.getNickName())
+                .points(10000L) // 회원가입 시 기본 포인트 10000L 부여
                 .build();
         //객체 저장
         userRepository.save(user);

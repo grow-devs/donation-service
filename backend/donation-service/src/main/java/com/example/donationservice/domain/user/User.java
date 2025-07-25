@@ -26,6 +26,7 @@ public class User extends BaseTimeEntity {
 
     private UserRole userRole;
 
+    private Long points; // 사용자의 현재 포인트 잔액
 }
 
 
