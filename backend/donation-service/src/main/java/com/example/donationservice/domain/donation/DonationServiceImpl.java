@@ -8,6 +8,8 @@ import com.example.donationservice.domain.post.PostRepository;
 import com.example.donationservice.domain.user.User;
 import com.example.donationservice.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,5 +61,23 @@ public class DonationServiceImpl implements DonationService{
         donationRepository.save(donation);
 
         // todo : 비동기 알람 메일 전송
+    }
+
+    @Override
+    @Transactional
+    public Page<DonationDto.response> getDonationsByPostId(Long userId, Long postId, Pageable pageable) {
+        // 도네이션 목록 페이지 조회
+        Page<Donation> donationPage = donationRepository.findByPostIdOrderByCreatedAtDesc(postId, pageable);
+
+        // 도네이션 페이지를 DTO로 변환
+        return donationPage.map(donation -> DonationDto.response.builder()
+                .id(donation.getId())
+                .postId(donation.getPost().getId())
+                .userId(donation.getUser().getId())
+                .nickname(donation.getUser().getNickName())
+                .points(donation.getPoint())
+                .message(donation.getMessage())
+                .createdAt(donation.getCreatedAt())
+                .build());
     }
 }
