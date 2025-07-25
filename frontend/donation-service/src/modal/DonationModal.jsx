@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
-import api from '../apis/api';
+import api from "../apis/api";
 // Snackbar 및 Alert 관련 import 제거 (더 이상 사용하지 않음)
 // import { Snackbar } from "@mui/material";
 // import MuiAlert from '@mui/material/Alert';
@@ -34,15 +34,15 @@ const ModalContainer = styled.div`
   padding: 0; /* 내부 콘텐츠가 padding을 가질 것이므로 컨테이너 자체는 0 */
   width: 100%;
   max-width: 420px; /* 가로 크기 제한 */
-  
+
   /* 중요: flexbox를 사용하여 Header, Body, Footer를 세로로 배치 */
   display: flex;
   flex-direction: column;
-  
+
   /* ModalOverlay의 padding을 고려하여 ModalContainer가 화면을 벗어나지 않도록 최대 높이 설정 */
   /* 100vh (뷰포트 높이) - 16px (상단 패딩) - 16px (하단 패딩) = calc(100vh - 32px) */
-  max-height: calc(100vh - 32px); 
-  
+  max-height: calc(100vh - 32px);
+
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
   animation: modalSlideUp 0.3s ease-out;
 
@@ -345,7 +345,7 @@ const ThankYouMessageContainer = styled.div`
 const ThankYouText = styled.p`
   font-size: 1.8em;
   font-weight: 700;
-  color: #FF69B4; /* 핑크색 강조 */
+  color: #ff69b4; /* 핑크색 강조 */
   margin-bottom: 10px;
   line-height: 1.3;
 `;
@@ -356,7 +356,6 @@ const ThankYouSubText = styled.p`
   color: #666;
   line-height: 1.5;
 `;
-
 
 function DonationModal({ isOpen, onClose, post }) {
   const [selectedAmount, setSelectedAmount] = useState(null);
@@ -370,7 +369,7 @@ function DonationModal({ isOpen, onClose, post }) {
   // useRef 훅을 사용하여 onMouseDown 이벤트가 시작된 요소를 추적합니다.
   const mouseDownTargetRef = useRef(null);
   // Ref to store the scroll position when the modal opens
-  const scrollYRef = useRef(0); 
+  const scrollYRef = useRef(0);
 
   const presetAmounts = [10000, 30000, 50000, 100000, 300000, 500000];
 
@@ -410,7 +409,7 @@ function DonationModal({ isOpen, onClose, post }) {
     if (!currentAmount || currentAmount < 1000) {
       newErrors.amount = "최소 기부 금액은 1,000원입니다.";
     }
-    
+
     // 약관 동의 필수 조건
     if (!agreeTerms) {
       newErrors.terms = "개인정보 처리방침에 동의해주세요.";
@@ -422,8 +421,8 @@ function DonationModal({ isOpen, onClose, post }) {
 
   const resetFormState = () => {
     setSelectedAmount(null);
-    setCustomAmount('');
-    setMessage('');
+    setCustomAmount("");
+    setMessage("");
     setAgreeTerms(false); // 약관 동의 초기화
     setErrors({});
     setShowThankYouMessage(false); // 메시지 상태도 초기화
@@ -438,12 +437,8 @@ function DonationModal({ isOpen, onClose, post }) {
 
     const donationData = {
       postId: post.id,
-      amount: getCurrentAmount(),
-      // 기부자명과 연락처는 선택사항이므로, 값이 없으면 빈 문자열로 전송
-      donorName: "", 
-      donorPhone: "", 
+      points: getCurrentAmount(),
       message: message.trim(),
-      timestamp: new Date().toISOString(),
     };
 
     console.log("기부 데이터:", donationData);
@@ -451,26 +446,28 @@ function DonationModal({ isOpen, onClose, post }) {
     try {
       console.log("API 호출 시도 중...");
       // 실제 API 호출 (api import가 없으므로 임시로 주석 처리하고 성공 응답 가정)
-      const res = await api.post("/donation", donationData); 
-    //   const res = { status: 200, data: { message: "기부 성공!" } }; // 임시 성공 응답 가정
+      const res = await api.post("/donation", donationData);
+      //   const res = { status: 200, data: { message: "기부 성공!" } }; // 임시 성공 응답 가정
 
       if (res.status === 201 || res.status === 200) {
         setShowThankYouMessage(true); // 성공 메시지 표시
-        // 2초 후에 모달 닫고 폼 상태 초기화
-        
       } else {
         // API 호출 실패 시 (서버 응답이 200/201이 아닐 경우)
-          console.error("기부하기에 실패했습니다:", res.data?.message || "알 수 없는 오류");
-          alert("기부하기에 실패했습니다:", res.data?.message || "알 수 없는 오류");
         // 에러 메시지 표시 (필요하다면 모달 내부에 표시 로직 추가)
-        // 현재는 별도 UI 피드백 없이 모달이 닫히지 않고 유효성 검사 에러만 표시됨
+        console.error(
+          "기부하기에 실패했습니다:",
+          res.data?.message || "알 수 없는 오류"
+        );
+        alert(
+          "기부하기에 실패했습니다:",
+          res.data?.message || "알 수 없는 오류"
+        );
       }
     } catch (err) {
-        console.error("기부하기 중 오류 발생:", err);
-        alert("기부하기에 실패했습니다:");
-
       // 네트워크 오류 등 예외 발생 시
       // 에러 메시지 표시 (필요하다면 모달 내부에 표시 로직 추가)
+      console.error("기부하기 중 오류 발생:", err);
+      alert("기부하기에 실패했습니다:");
     }
     // alert("기부가 완료되었습니다! 감사합니다."); // alert 제거
   };
@@ -567,7 +564,9 @@ function DonationModal({ isOpen, onClose, post }) {
           {showThankYouMessage ? (
             <ThankYouMessageContainer>
               <ThankYouText>소중한 기부 감사합니다! ^^</ThankYouText>
-              <ThankYouSubText>따뜻한 마음이 잘 전달되었습니다.</ThankYouSubText>
+              <ThankYouSubText>
+                따뜻한 마음이 잘 전달되었습니다.
+              </ThankYouSubText>
             </ThankYouMessageContainer>
           ) : (
             <>
@@ -588,7 +587,9 @@ function DonationModal({ isOpen, onClose, post }) {
                   <AmountInput
                     type="text"
                     placeholder="직접 입력"
-                    value={customAmount ? formatAmount(parseInt(customAmount)) : ""}
+                    value={
+                      customAmount ? formatAmount(parseInt(customAmount)) : ""
+                    }
                     onChange={handleCustomAmountChange}
                   />
                   <CurrencyLabel>원</CurrencyLabel>
@@ -663,7 +664,9 @@ function DonationModal({ isOpen, onClose, post }) {
           <ModalFooter>
             <DonateButton
               // 기부 금액과 약관 동의만 필수 조건으로 변경
-              disabled={!getCurrentAmount() || !agreeTerms} /* agreeTerms 조건 추가 */
+              disabled={
+                !getCurrentAmount() || !agreeTerms
+              } /* agreeTerms 조건 추가 */
               onClick={handleSubmit}
             >
               {getCurrentAmount()
