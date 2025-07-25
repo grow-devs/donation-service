@@ -6,5 +6,5 @@ import org.springframework.data.domain.Pageable;
 
 public interface DonationService {
     void createDonation(Long userId, DonationDto.createRequest request);
-    Page<DonationDto.response> getDonationsByPostId(Long userId, Long postId, Pageable pageable);
+    Page<DonationDto.response> getDonationsByPostId(Long postId, Pageable pageable);
 }

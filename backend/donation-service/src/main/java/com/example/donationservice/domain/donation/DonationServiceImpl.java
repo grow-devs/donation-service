@@ -65,7 +65,7 @@ public class DonationServiceImpl implements DonationService{
 
     @Override
     @Transactional
-    public Page<DonationDto.response> getDonationsByPostId(Long userId, Long postId, Pageable pageable) {
+    public Page<DonationDto.response> getDonationsByPostId(Long postId, Pageable pageable) {
         // 도네이션 목록 페이지 조회
         Page<Donation> donationPage = donationRepository.findByPostIdOrderByCreatedAtDesc(postId, pageable);
 

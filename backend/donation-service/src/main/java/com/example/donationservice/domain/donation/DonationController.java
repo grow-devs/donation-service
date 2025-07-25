@@ -34,11 +34,10 @@ public class DonationController {
 
     @GetMapping("/{postId}")
     public ResponseEntity<Result> getDonationsByPostId(
-            @AuthenticationPrincipal CustomUserDetail userDetail,
             @PathVariable Long postId,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<DonationDto.response> response = donationService.getDonationsByPostId(userDetail.getUserId(), postId, pageable);
+        Page<DonationDto.response> response = donationService.getDonationsByPostId(postId, pageable);
         return ResponseEntity.ok(
                 Result.builder()
                         .message("기부 조회 성공")
