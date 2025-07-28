@@ -41,6 +41,8 @@ public class Post extends BaseTimeEntity {
 
     private Long participants;//Donation 발생 시 트랜잭션 내에서 이 필드를 업데이트하는 카운터 캐싱을 한다.
 
+    private Boolean goalReached; // 목표 금액 도달 여부
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_id")
     private Team team;
@@ -57,5 +59,10 @@ public class Post extends BaseTimeEntity {
     // 현재 기부 금액 업데이트
     public void addCurrentAmount(Long amount) {
         this.currentAmount += amount;
+    }
+
+    // 목표 금액 도달 여부 업데이트
+    public void updateGoalReached() {
+        this.goalReached = true;
     }
 }

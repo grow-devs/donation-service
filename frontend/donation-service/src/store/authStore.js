@@ -8,12 +8,14 @@ const useAuthStore = create(
         userRole: null,
         nickName: null,
         login: () => set({ isLoggedIn: true }),
-        logout: () =>
+        logout: () => {
+          localStorage.removeItem('accessToken');
           set({
             isLoggedIn: false,
             userRole: null,
             nickName: null,
-          }),
+          });
+        },
         setUserRole: (role) => set({ userRole: role }),
         setNickName: (nickname) => set({ nickName: nickname }),
       }),

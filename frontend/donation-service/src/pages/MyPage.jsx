@@ -55,7 +55,6 @@ export default function MyPage() {
               size="small"
               onClick={() => {
                 logout();
-                localStorage.removeItem('accessToken');
                 navigate("/");
                 alert("로그아웃 했습니다.");
               }}
