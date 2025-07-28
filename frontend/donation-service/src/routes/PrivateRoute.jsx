@@ -8,12 +8,12 @@ export default function PrivateRoute({ children, adminOnly = false }) {
   const userRole = useAuthStore(state => state.userRole);
 
   if (!isLoggedIn) {
-      alert('로그인이 필요합니다.');
+      // alert('로그인이 필요합니다.');
       return <Navigate to="/" replace />;
   }
 
   if (adminOnly && userRole !== 'ADMIN_ROLE') {
-      alert('관리자만 접근할 수 있습니다.');
+      // alert('관리자만 접근할 수 있습니다.');
       return <Navigate to="/" replace />;
   }
 
