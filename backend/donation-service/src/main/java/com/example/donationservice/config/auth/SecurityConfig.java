@@ -77,7 +77,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/team").permitAll()
                         .requestMatchers("/api/user/test").authenticated()
                         .requestMatchers(HttpMethod.POST,"/api/post").authenticated()
-                        .requestMatchers(HttpMethod.GET,"/api/post").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/post/**").permitAll() // todo "/**"를 붙임으로써 post관련 get 요청을 모두 허용한다.
+//                        .requestMatchers(HttpMethod.GET,"/api/comment/**").permitAll() // todo "/**"를 붙임으로써 comment관련 get 요청을 모두 허용한다.
                         .requestMatchers(HttpMethod.POST, "/api/team").authenticated()
                         .requestMatchers("/api/admin/**").authenticated()
                         .anyRequest().authenticated()
