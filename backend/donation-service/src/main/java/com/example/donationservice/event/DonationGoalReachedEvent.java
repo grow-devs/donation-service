@@ -8,10 +8,14 @@ import java.util.List;
 public class DonationGoalReachedEvent {
 
     private final Long postId;
+    private final String postTitle;
+    private final Long currentAmount;
     private final List<String> donorUserEmails;
 
-    public DonationGoalReachedEvent(Long postId, List<String> donorUserEmails) {
+    public DonationGoalReachedEvent(Long postId, String postTitle, Long currentAmount, List<String> donorUserEmails) {
         this.postId = postId;
+        this.postTitle = postTitle;
+        this.currentAmount = currentAmount;
         this.donorUserEmails = donorUserEmails;
     }
 }

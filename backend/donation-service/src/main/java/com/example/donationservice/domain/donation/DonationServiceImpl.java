@@ -76,7 +76,7 @@ public class DonationServiceImpl implements DonationService{
             List<String> donorEmails = donationRepository.findDistinctUserEmailsByPostId(post.getId());
 
             // 이벤트 발행 (비동기 메일 전송 트리거)
-            donationGoalReachedEventPublisher.publish(post.getId(), donorEmails);
+            donationGoalReachedEventPublisher.publish(post, donorEmails);
 
             // TODO : 알람 저장
         }

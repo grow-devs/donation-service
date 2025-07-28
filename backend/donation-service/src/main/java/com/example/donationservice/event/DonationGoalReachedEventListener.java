@@ -19,7 +19,7 @@ public class DonationGoalReachedEventListener {
     public void handle(DonationGoalReachedEvent event) {
         for(String email : event.getDonorUserEmails()) {
             try{
-                mailService.sendDonationGoalReachedMail(email, event.getPostId());
+                mailService.sendDonationGoalReachedMail(email, event.getPostTitle(), event.getCurrentAmount());
             } catch (Exception e) {
                 log.error("메일 전송 실패 - postId: {}, email: {}, error: {}",
                         event.getPostId(), email, e.getMessage(), e);

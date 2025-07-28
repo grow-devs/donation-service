@@ -18,13 +18,13 @@ public class MailServiceImpl implements MailService {
     private final JavaMailSender javaMailSender;
 
     @Override
-    public void sendDonationGoalReachedMail(String toEmail, Long postId) {
+    public void sendDonationGoalReachedMail(String toEmail, String postTitle, Long currentAmount) {
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
             String subject = "[기부 알림] 게시물의 목표 금액이 달성되었습니다!";
-            String htmlContent = buildHtmlContent(postId);
+            String htmlContent = buildHtmlContent(postTitle, currentAmount);
 
             helper.setTo(toEmail);
             helper.setSubject(subject);
@@ -38,18 +38,19 @@ public class MailServiceImpl implements MailService {
         }
     }
 
-    private String buildHtmlContent(Long postId) {
+    private String buildHtmlContent(String postTitle, Long currentAmount) {
         return """
                 <html>
                     <body>
                         <h2>🎉 기부 목표 달성 알림 🎉</h2>
-                        <p>회원님이 참여하신 게시물(ID: <strong>%d</strong>)이 목표 금액을 달성하였습니다.</p>
+                        <p><strong>게시물 제목:</strong> %s</p>
+                        <p><strong>달성된 금액:</strong> %d 포인트</p>
+                        <p>회원님이 참여하신 게시물이 목표 금액을 달성하였습니다.</p>
                         <p>소중한 기부에 감사드립니다! 🙏</p>
                         <hr />
-                        <p><a href="https://your-donation-platform.com/posts/%d">👉 게시물 보러가기</a></p>
                     </body>
                 </html>
-                """.formatted(postId, postId);
+                """.formatted(postTitle, currentAmount);
     }
 
 }
