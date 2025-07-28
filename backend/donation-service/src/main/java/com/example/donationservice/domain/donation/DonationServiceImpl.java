@@ -7,19 +7,25 @@ import com.example.donationservice.domain.post.Post;
 import com.example.donationservice.domain.post.PostRepository;
 import com.example.donationservice.domain.user.User;
 import com.example.donationservice.domain.user.UserRepository;
+import com.example.donationservice.event.DonationGoalReachedEventPublisher;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DonationServiceImpl implements DonationService{
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final DonationRepository donationRepository;
+    private final DonationGoalReachedEventPublisher donationGoalReachedEventPublisher;
 
     @Override
     @Transactional
@@ -45,10 +51,10 @@ public class DonationServiceImpl implements DonationService{
 //                .orElseThrow(() -> new RestApiException(CommonErrorCode.POST_NOT_FOUND));
 
         // 목표 금액 도달 시
-        System.out.println("~~~ 현재 금액 : " + post.getCurrentAmount() + ", 목표 금액 : " + post.getTargetAmount() + " ~~~");
-        if( post.getCurrentAmount().equals(post.getTargetAmount()) ) {
-            System.out.println("이퀄이퀄이퀄 ~~~ 현재 금액 : " + post.getCurrentAmount() + ", 목표 금액 : " + post.getTargetAmount() + " ~~~");
-        }
+//        System.out.println("~~~ 현재 금액 : " + post.getCurrentAmount() + ", 목표 금액 : " + post.getTargetAmount() + " ~~~");
+//        if( post.getCurrentAmount().equals(post.getTargetAmount()) ) {
+//            System.out.println("이퀄이퀄이퀄 ~~~ 현재 금액 : " + post.getCurrentAmount() + ", 목표 금액 : " + post.getTargetAmount() + " ~~~");
+//        }
 
         // 도네이션 세이브
         Donation donation = Donation.builder()
@@ -60,7 +66,20 @@ public class DonationServiceImpl implements DonationService{
 
         donationRepository.save(donation);
 
-        // todo : 비동기 알람 메일 전송
+        // 최초로 목표 금액에 도달했을 때만 이벤트 발행
+        if( post.getCurrentAmount() >= post.getTargetAmount() &&
+                !post.getGoalReached()) {
+            log.info("목표 금액 도달! postId = {}", post.getId());
+
+            post.updateGoalReached();
+            // 해당 게시물에 기부한 유저들의 이메일을 추출 (중복 제거)
+            List<String> donorEmails = donationRepository.findDistinctUserEmailsByPostId(post.getId());
+
+            // 이벤트 발행 (비동기 메일 전송 트리거)
+            donationGoalReachedEventPublisher.publish(post.getId(), donorEmails);
+
+            // TODO : 알람 저장
+        }
     }
 
     @Override

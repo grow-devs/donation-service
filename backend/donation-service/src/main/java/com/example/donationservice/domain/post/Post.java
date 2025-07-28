@@ -60,4 +60,9 @@ public class Post extends BaseTimeEntity {
     public void addCurrentAmount(Long amount) {
         this.currentAmount += amount;
     }
+
+    // 목표 금액 도달 여부 업데이트
+    public void updateGoalReached() {
+        this.goalReached = true;
+    }
 }
