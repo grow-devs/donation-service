@@ -60,6 +60,7 @@ public class PostServiceImpl implements PostService {
                     .thumnbnailImageUrl(result.getThumbnailUrl())
                     .team(team)
                     .category(category)
+                    .goalReached(false)
                     .build();
 
             postRepository.save(post);
