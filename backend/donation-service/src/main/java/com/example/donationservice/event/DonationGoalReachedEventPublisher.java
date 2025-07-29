@@ -14,7 +14,7 @@ public class DonationGoalReachedEventPublisher {
     private final ApplicationEventPublisher eventPublisher;
 
     public void publish(Post post, List<String> donorUserEmails) {
-        DonationGoalReachedEvent event = new DonationGoalReachedEvent(post.getId(), post.getTitle(), post.getCurrentAmount(), donorUserEmails);
+        DonationGoalReachedMailEvent event = new DonationGoalReachedMailEvent(post.getId(), post.getTitle(), post.getCurrentAmount(), donorUserEmails);
         eventPublisher.publishEvent(event);
     }
 

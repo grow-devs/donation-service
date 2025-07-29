@@ -5,14 +5,14 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-public class DonationGoalReachedEvent {
+public class DonationGoalReachedMailEvent {
 
     private final Long postId;
     private final String postTitle;
     private final Long currentAmount;
     private final List<String> donorUserEmails;
 
-    public DonationGoalReachedEvent(Long postId, String postTitle, Long currentAmount, List<String> donorUserEmails) {
+    public DonationGoalReachedMailEvent(Long postId, String postTitle, Long currentAmount, List<String> donorUserEmails) {
         this.postId = postId;
         this.postTitle = postTitle;
         this.currentAmount = currentAmount;
