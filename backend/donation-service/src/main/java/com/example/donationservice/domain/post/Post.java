@@ -65,4 +65,9 @@ public class Post extends BaseTimeEntity {
     public void updateGoalReached() {
         this.goalReached = true;
     }
+
+    // 게시물의 참여자 수 증가
+    public void incrementParticipants() {
+        this.participants++;
+    }
 }
