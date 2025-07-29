@@ -14,4 +14,6 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
     // 특정 게시물에 기부한 유저들의 이메일을 추출 (중복 제거)
     @Query("SELECT DISTINCT d.user.email FROM Donation d WHERE d.post.id = :postId")
     List<String> findDistinctUserEmailsByPostId(Long postId);
+
+    boolean existsByUserIdAndPostId(Long userId, Long postId);
 }

@@ -37,18 +37,17 @@ public class DonationServiceImpl implements DonationService{
 
 //         ddd 방식
         post.addCurrentAmount(request.getPoints());
+        // 참여자 증가 단 한명이 여러번 기부해도 1명 증가
+        boolean isFirstDonor = !donationRepository.existsByUserIdAndPostId(userId, post.getId());
+        if(isFirstDonor) {
+            post.incrementParticipants();
+        }
 
         // user 포인트 감소
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RestApiException(CommonErrorCode.USER_NOT_FOUND));
 
         user.decreasePoints(request.getPoints());
-
-        // db atomic update 방식
-//        postRepository.addDonationAmount(request.getPostId(), request.getPoints());
-//
-//        Post post = postRepository.findById(request.getPostId())
-//                .orElseThrow(() -> new RestApiException(CommonErrorCode.POST_NOT_FOUND));
 
         // 도네이션 세이브
         Donation donation = Donation.builder()
