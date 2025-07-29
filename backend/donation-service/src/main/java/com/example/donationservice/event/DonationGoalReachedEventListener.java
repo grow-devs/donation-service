@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.event.TransactionalEventListener;
+import org.springframework.transaction.event.TransactionPhase;
 
 @Component
 @RequiredArgsConstructor
@@ -15,7 +17,8 @@ public class DonationGoalReachedEventListener {
     private final MailService mailService;
 
     @Async
-    @EventListener
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+//    @EventListener
     public void handle(DonationGoalReachedEvent event) {
         for(String email : event.getDonorUserEmails()) {
             try{

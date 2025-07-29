@@ -50,12 +50,6 @@ public class DonationServiceImpl implements DonationService{
 //        Post post = postRepository.findById(request.getPostId())
 //                .orElseThrow(() -> new RestApiException(CommonErrorCode.POST_NOT_FOUND));
 
-        // 목표 금액 도달 시
-//        System.out.println("~~~ 현재 금액 : " + post.getCurrentAmount() + ", 목표 금액 : " + post.getTargetAmount() + " ~~~");
-//        if( post.getCurrentAmount().equals(post.getTargetAmount()) ) {
-//            System.out.println("이퀄이퀄이퀄 ~~~ 현재 금액 : " + post.getCurrentAmount() + ", 목표 금액 : " + post.getTargetAmount() + " ~~~");
-//        }
-
         // 도네이션 세이브
         Donation donation = Donation.builder()
                 .point(request.getPoints())
