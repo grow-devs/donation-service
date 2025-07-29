@@ -3,6 +3,7 @@ package com.example.donationservice.domain.post;
 import com.example.donationservice.domain.post.dto.PostDto;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -79,20 +80,34 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
             return null;
         }
 
+//        case "latest":
+
         // 다음 페이지 요청 시, sortBy에 따라 적절한 커서 조건을 반환
         switch (sortBy) {
             case "latest": // 최신순 (createdAt DESC, id DESC)
-                return post.createdAt.lt(lastCreatedAt)
-                        .or(post.createdAt.eq(lastCreatedAt).and(post.id.lt(lastId)));
+                return Expressions.booleanTemplate(
+                        "( {0}, {1} ) < ( {2}, {3} )",
+                        post.createdAt, post.id,
+                        lastCreatedAt, lastId
+                ); // 복합 인덱스 활용을 위해 코드 변경
             case "deadlineAsc": // 종료임박순 (endDate ASC, id ASC)
-                return post.deadline.gt(lastEndDate)
-                        .or(post.deadline.eq(lastEndDate).and(post.id.gt(lastId)));
+                return Expressions.booleanTemplate(
+                        "( {0}, {1} ) < ( {2}, {3} )",
+                        post.deadline,post.id,
+                        lastEndDate,lastId
+                );
             case "amountDesc": // 모금액 많은 순 (currentFundingAmount DESC, id DESC)
-                return post.currentAmount.lt(lastFundingAmount)
-                        .or(post.currentAmount.eq(lastFundingAmount).and(post.id.lt(lastId)));
+                return Expressions.booleanTemplate(
+                        "( {0}, {1} ) < ( {2}, {3} )",
+                        post.currentAmount,post.id,
+                        lastFundingAmount,lastId
+                );
             case "participantsDesc": // 참여인원 많은 순 (participants DESC, id DESC)
-                return post.participants.lt(lastParticipants)
-                        .or(post.participants.eq(lastParticipants).and(post.id.lt(lastId)));
+                return Expressions.booleanTemplate(
+                        "( {0}, {1} ) < ( {2}, {3} )",
+                        post.participants,post.id,
+                        lastParticipants,lastId
+                );
             default:
                 // 기본값 (예: latest)에 대한 조건. 없으면 첫 페이지 로드와 동일하게 동작
                 return post.createdAt.lt(lastCreatedAt)

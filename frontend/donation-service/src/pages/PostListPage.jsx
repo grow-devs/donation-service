@@ -144,10 +144,7 @@ export default function PostListPage() {
         const newPosts = postListResult.resultList; // PostListResultDto의 'resultList' 필드 접근
         const totalCount = postListResult.totalCount; // PostListResultDto의 'totalCount' 필드 접근
 
-        // 초기 요청일 때만 totalPostsCount를 업데이트
-        if (isInitial) {
           setTotalPostsCount(totalCount);
-        }
 
         setPosts((prev) => (isInitial ? newPosts : [...prev, ...newPosts]));
 
@@ -239,7 +236,7 @@ export default function PostListPage() {
         <FormControl variant="standard" size="small">
           <Select
             value={sortOrder}
-            onChange={(e) => setSortOrder(e.target.value)}
+            onChange={handleSortOrderChange}
             disableUnderline
             sx={{ bgcolor: "transparent", "& fieldset": { border: "none" } }}
           >
