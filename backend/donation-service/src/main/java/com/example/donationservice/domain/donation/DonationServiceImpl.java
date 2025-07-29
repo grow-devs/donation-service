@@ -72,7 +72,11 @@ public class DonationServiceImpl implements DonationService{
             // 이벤트 발행 (비동기 메일 전송 트리거)
             donationGoalReachedEventPublisher.publish(post, donorEmails);
 
-            // TODO : 알람 저장
+            // 퍼블리셔나 리스너에서 조회하면 이미 트랜잭션이 끝난 이후이기 때문에 지연 로딩 실패나 LazyInitializationException이 발생할 수 있음.
+            // 리스너/퍼블리셔는 인프라 역할에 집중 그러므로 여기서 user엔터티 리스트를 조회한다.
+            List<User> donorUsers = userRepository.findByEmailIn(donorEmails);
+
+            donationGoalReachedEventPublisher.publishAlarmEvent(post, donorUsers);
         }
     }
 
