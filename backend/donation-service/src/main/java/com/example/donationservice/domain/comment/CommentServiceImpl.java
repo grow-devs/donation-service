@@ -37,7 +37,7 @@ public class CommentServiceImpl implements CommentService {
         userRepository.findById(userId)
                 .orElseThrow(() -> new RestApiException(USER_NOT_FOUND));
 
-        Post post = postRepository.findById(request.getPostId())
+        Post post = postRepository.findByIdWithLock(request.getPostId())
                 .orElseThrow(() -> new RestApiException(POST_NOT_FOUND));
 
         // 댓글 생성
@@ -49,7 +49,7 @@ public class CommentServiceImpl implements CommentService {
 
         commentRepository.save(comment);
 
-        // todo: 기부금 100원 기부
+        post.addCurrentAmount(100L);
     }
 
     @Override
