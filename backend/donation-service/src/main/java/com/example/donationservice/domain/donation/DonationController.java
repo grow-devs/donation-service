@@ -40,7 +40,7 @@ public class DonationController {
         Page<DonationDto.response> response = donationService.getDonationsByPostId(postId, pageable);
         return ResponseEntity.ok(
                 Result.builder()
-                        .message("기부 조회 성공")
+                        .message("기부 목록 조회 성공")
                         .data(response)
                         .build()
         );

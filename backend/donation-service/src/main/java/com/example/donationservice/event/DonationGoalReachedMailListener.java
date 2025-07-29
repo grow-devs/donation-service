@@ -3,20 +3,22 @@ package com.example.donationservice.event;
 import com.example.donationservice.common.mail.MailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.event.TransactionalEventListener;
+import org.springframework.transaction.event.TransactionPhase;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class DonationGoalReachedEventListener {
+public class DonationGoalReachedMailListener {
 
     private final MailService mailService;
 
     @Async
-    @EventListener
-    public void handle(DonationGoalReachedEvent event) {
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+//    @EventListener
+    public void handle(DonationGoalReachedMailEvent event) {
         for(String email : event.getDonorUserEmails()) {
             try{
                 mailService.sendDonationGoalReachedMail(email, event.getPostTitle(), event.getCurrentAmount());
