@@ -6,7 +6,7 @@ import FundraisingSummary from '../components/post/FundraisingSummary';
 import CommentSection from '../components/post/CommentSection';
 import api from '../apis/api';
 import { useParams } from 'react-router-dom';
-import { postData, donationSummaryData, donationListData, commentsData } from '../components/post/dummyData';
+import { donationSummaryData } from '../components/post/dummyData';
 
 const PageContainer = styled.div`
   display: flex;
@@ -64,6 +64,7 @@ function PostDetailPage() {
   // const testPostId = 4; // todo : 동적으로 바꿔야함
 
   const [post, setPost] = useState(null); // ✨ 게시물 데이터를 저장할 state
+  const [donations, setDonations] = useState([]); // ✨ 기부 목록 데이터를 저장할 state
   const [loading, setLoading] = useState(true); // ✨ 로딩 상태 관리
   const [error, setError] = useState(null); // ✨ 에러 상태 관리
 
@@ -83,9 +84,17 @@ function PostDetailPage() {
         setError(null); // 에러 초기화
 
         // ✨ 백엔드 API 호출
-        const response = await api.get(`/post/${idToFetch}`);
-        console.log('~~~~ : ', response.data.data);
-        setPost(response.data.data); // ✨ 가져온 데이터를 post state에 저장
+        // 1. 게시물 상세 정보 가져오기
+        const postResponse = await api.get(`/post/${idToFetch}`);
+        // console.log('~~~~ : ', postResponse.data.data);
+        setPost(postResponse.data.data); // ✨ 가져온 데이터를 post state에 저장
+
+        // 2. 해당 게시물의 기부 목록 가져오기 (페이지네이션 기본값 적용)
+        // 백엔드 DonationController의 @GetMapping("/{postId}")에 맞춰 호출
+        const donationResponse = await api.get(`/donation/${idToFetch}`);
+        // axios 응답 구조: response.data.data.content 에 실제 기부 목록 배열이 있음 (Page 객체)
+        setDonations(donationResponse.data.data.content); // ✨ 기부 목록 데이터 설정
+
       } catch (err) {
         console.error("게시물 상세 정보 불러오기 실패:", err);
         setError("게시물 정보를 불러오는 데 실패했습니다."); // ✨ 에러 메시지 설정
@@ -141,7 +150,7 @@ function PostDetailPage() {
             // post={post} 
             activeTab={activeTab} 
             setActiveTab={setActiveTab} 
-            donations={donationListData} /* 더미 데이터 */
+            donations={donations}
           />
           {/* 댓글 섹션은 탭과 관계없이 항상 아래에 표시됨 */}
           <CommentSection postId={Number(postId)} /> 
