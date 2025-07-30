@@ -15,7 +15,7 @@ import lombok.*;
         name = "post_like",
         uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "post_id"})
 )
-public class PostLike {
+public class PostLike extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

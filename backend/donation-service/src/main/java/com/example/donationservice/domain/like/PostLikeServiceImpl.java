@@ -2,7 +2,6 @@ package com.example.donationservice.domain.like;
 
 import com.example.donationservice.common.exception.CommonErrorCode;
 import com.example.donationservice.common.exception.RestApiException;
-import com.example.donationservice.domain.comment.Comment;
 import com.example.donationservice.domain.like.dto.PostLikeDto;
 import com.example.donationservice.domain.post.Post;
 import com.example.donationservice.domain.post.PostRepository;
@@ -24,7 +23,7 @@ public class PostLikeServiceImpl implements PostLikeService {
 
     @Override
     @Transactional
-    public PostLikeDto.PostLikeToggleResponse addLike(Long userId, Long postId) {
+    public PostLikeDto.PostLikeResponse addLike(Long userId, Long postId) {
         // 1. 사용자가 게시글을 좋아요 했는지 확인
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RestApiException(CommonErrorCode.USER_NOT_FOUND));
@@ -48,9 +47,24 @@ public class PostLikeServiceImpl implements PostLikeService {
             post.incrementLikesCount(); // 게시글 좋아요 수 증가
         }
 
-        return PostLikeDto.PostLikeToggleResponse.builder()
+        return PostLikeDto.PostLikeResponse.builder()
                 .currentLikesCount(post.getLikesCount())
                 .build();
 
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean checkLike(Long userId, Long postId) {
+        // todo : 굳이 user랑 post를 확인하는 절차가 필요있을까?
+        // 확인하는 이유는 사용자가 존재하는지, 게시글이 존재하는지 확인하기 위함이다.
+        // 그런데 사실상 있어서 쿼러만 더 늘어나는 것 같기도 하다.
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RestApiException(CommonErrorCode.USER_NOT_FOUND));
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RestApiException(CommonErrorCode.POST_NOT_FOUND));
+
+        return postLikeRepository.findByUserAndPost(user, post).isPresent();
     }
 }

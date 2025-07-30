@@ -11,7 +11,7 @@ public class PostLikeDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class PostLikeToggleResponse {
+    public static class PostLikeResponse {
         private int currentLikesCount; // 현재 게시글의 총 좋아요 수
     }
 }
