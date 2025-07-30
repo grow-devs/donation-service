@@ -28,7 +28,8 @@ public class PostLikeServiceImpl implements PostLikeService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RestApiException(CommonErrorCode.USER_NOT_FOUND));
 
-        Post post = postRepository.findById(postId)
+        // 비관락으로 게시글을 조회한다.
+        Post post = postRepository.findByIdWithLock(postId)
                 .orElseThrow(() -> new RestApiException(CommonErrorCode.POST_NOT_FOUND));
 
         Optional<PostLike> existingLike = postLikeRepository.findByUserAndPost(user, post);
@@ -45,6 +46,7 @@ public class PostLikeServiceImpl implements PostLikeService {
 
             postLikeRepository.save(postLike);
             post.incrementLikesCount(); // 게시글 좋아요 수 증가
+            post.addCurrentAmount(100L); // 게시글 좋아요 시 100 포인트 추가
         }
 
         return PostLikeDto.PostLikeResponse.builder()
