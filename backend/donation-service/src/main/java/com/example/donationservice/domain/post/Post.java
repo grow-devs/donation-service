@@ -39,6 +39,8 @@ public class Post extends BaseTimeEntity {
 
     private ApprovalStatus approvalStatus;
 
+    private Integer likesCount;// 게시물 좋아요 수
+
     private Long participants;//Donation 발생 시 트랜잭션 내에서 이 필드를 업데이트하는 카운터 캐싱을 한다.
 
     private Boolean goalReached; // 목표 금액 도달 여부
@@ -69,5 +71,13 @@ public class Post extends BaseTimeEntity {
     // 게시물의 참여자 수 증가
     public void incrementParticipants() {
         this.participants++;
+    }
+
+    // likesCount 증가
+    public void incrementLikesCount() {
+        if (this.likesCount == null) {
+            this.likesCount = 0;
+        }
+        this.likesCount++;
     }
 }

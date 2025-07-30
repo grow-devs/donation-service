@@ -132,6 +132,7 @@ public class PostServiceImpl implements PostService {
                 .teamName(team != null ? team.getName() : null)
                 .categoryId(category != null ? category.getId() : null)
                 .categoryName(category != null ? category.getName() : null)
+                .likesCount(post.getLikesCount() != null ? post.getLikesCount() : 0)
                 .participants(post.getParticipants())
                 .build();
     }

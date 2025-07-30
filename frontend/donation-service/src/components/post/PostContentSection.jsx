@@ -27,7 +27,7 @@ const PostImage = styled.img`
   margin-bottom: 20px;
 `;
 
-function PostContentSection({ post, activeTab, setActiveTab, donations }) {
+function PostContentSection({ post, activeTab, setActiveTab, postId }) {
   const handleTabChange = (tabName) => {
     setActiveTab(tabName);
   };
@@ -41,7 +41,7 @@ function PostContentSection({ post, activeTab, setActiveTab, donations }) {
       {activeTab === 'story' ? (
         <StoryTabContent post={post} />
       ) : (
-        <DonationListTabContent donations={donations} />
+        <DonationListTabContent postId={postId} />
       )}
     </SectionContainer>
   );

@@ -83,6 +83,7 @@ public class PostDto {
         private String teamName;
         private Long categoryId;
         private String categoryName;
+        private Integer likesCount; // 게시물 좋아요 수
         private Long participants;
     }
 

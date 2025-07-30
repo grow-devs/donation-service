@@ -4,13 +4,18 @@ import com.example.donationservice.common.entity.BaseTimeEntity;
 import com.example.donationservice.domain.post.Post;
 import com.example.donationservice.domain.user.User;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
-@NoArgsConstructor
-public class PostLike {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
+@Table(
+        name = "post_like",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "post_id"})
+)
+public class PostLike extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

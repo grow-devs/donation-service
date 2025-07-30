@@ -3,6 +3,8 @@
 
 import React from 'react';
 import styled from 'styled-components';
+import {format} from 'date-fns';
+import { ko } from 'date-fns/locale'; // 한국어 로케일 임포트
 
 const CardWrapper = styled.div`
   display: flex;
@@ -84,26 +86,44 @@ const DateText = styled.span`
 
 function DonationCard({ donation }) {
   const formatAmount = (amount) => {
-    return new Intl.NumberFormat('ko-KR').format(amount);
+    // points가 숫자가 아닐 경우를 대비해 0으로 기본값 설정
+    if (typeof amount === 'number') {
+      return new Intl.NumberFormat('ko-KR').format(amount);
+    }
+    return '0';
+  };
+
+  // 날짜 포맷팅 함수 (ISO 8601 문자열을 YYYY.MM.DD HH:mm 형식으로 변환)
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    try {
+      // 서버에서 LocalDateTime이 ISO 8601 문자열로 온다고 가정
+      const date = new Date(dateString);
+      // 'yyyy.MM.dd HH:mm' 또는 'yyyy년 M월 d일 HH시 mm분' 등으로 변경 가능
+      return format(date, 'yyyy.MM.dd HH:mm', { locale: ko });
+    } catch (e) {
+      console.error("날짜 포맷팅 오류:", e);
+      return dateString; // 오류 시 원본 문자열 반환
+    }
   };
 
   return (
     <CardWrapper>
       <Header>
         {donation.profileImg ? (
-          <ProfileImage src={donation.profileImg} alt={`${donation.userId} 프로필`} />
+          <ProfileImage src={donation.profileImg} alt={`${donation.nickname} 프로필`} />
         ) : (
           <DefaultProfileImage>
-            {donation.userId.charAt(0)}
+            {donation.nickname.charAt(0)}
           </DefaultProfileImage>
         )}
         <UserInfo>
-          <UserId>{donation.userId}</UserId>
-          <Amount>{formatAmount(donation.amount)}원</Amount>
+          <UserId>{donation.nickname}</UserId>
+          <Amount>{formatAmount(donation.points)}원</Amount>
         </UserInfo>
       </Header>
-      <Comment>{donation.comment}</Comment>
-      <DateText>{donation.date}</DateText>
+      <Comment>{donation.message}</Comment>
+      <DateText>{formatDate(donation.createdAt)}</DateText>
     </CardWrapper>
   );
 }
