@@ -1,8 +1,11 @@
 package com.example.donationservice.domain.alarm;
 
+import com.example.donationservice.domain.alarm.dto.AlarmDto;
 import com.example.donationservice.domain.user.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +27,7 @@ public class AlarmServiceImpl implements AlarmService {
                             .type(AlarmType.GOAL_REACHED)
                             .message("게시물 [" + postTitle + "]의 목표 금액이 달성되었습니다.")
                             .postId(postId)
+                            .isRead(false)
                             .user(user)
                             .build())
                     .toList();
@@ -36,4 +40,30 @@ public class AlarmServiceImpl implements AlarmService {
         }
 
     }
+
+    @Override
+    public Slice<AlarmDto.ResponseForList> getAlarmsByUserId(Long userId, Pageable pageable) {
+        // 읽은 여부와 상관없이 해당 유저의 알림을 모두 보여준다.
+        Slice<Alarm> alarms = alarmRepository.findByUserId(userId, pageable);
+
+        // Slice<Alarm> -> Slice<AlarmDto.ResponseForList>로 맵핑
+        return alarms.map(AlarmDto::from);
+    }
+
+    @Override
+    //update를 위한 transactional
+    @Transactional
+    public void readAlarm(Long alarmId) {
+        // 직접 db update
+        // alarm을 조회하고 set할 필요가 없다.
+        alarmRepository.UpdateReadByAlarmId(alarmId);
+    }
+
+    @Override
+    public int countUnreadAlarms(Long userId) {
+        //읽지 않은 알람 카운트 쿼리
+        //todo 인덱스 사용 고려 (모든 유저의 알림을 가져오는거)
+        return alarmRepository.countByUserIdAndIsReadFalse(userId);
+    }
+
 }
