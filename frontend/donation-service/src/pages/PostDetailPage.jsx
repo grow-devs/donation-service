@@ -64,7 +64,7 @@ function PostDetailPage() {
   // const testPostId = 4; // todo : 동적으로 바꿔야함
 
   const [post, setPost] = useState(null); // ✨ 게시물 데이터를 저장할 state
-  const [donations, setDonations] = useState([]); // ✨ 기부 목록 데이터를 저장할 state
+  // const [donations, setDonations] = useState([]); // ✨ 기부 목록 데이터를 저장할 state
   const [loading, setLoading] = useState(true); // ✨ 로딩 상태 관리
   const [error, setError] = useState(null); // ✨ 에러 상태 관리
 
@@ -89,11 +89,11 @@ function PostDetailPage() {
         // console.log('~~~~ : ', postResponse.data.data);
         setPost(postResponse.data.data); // ✨ 가져온 데이터를 post state에 저장
 
-        // 2. 해당 게시물의 기부 목록 가져오기 (페이지네이션 기본값 적용)
-        // 백엔드 DonationController의 @GetMapping("/{postId}")에 맞춰 호출
-        const donationResponse = await api.get(`/donation/${idToFetch}`);
-        // axios 응답 구조: response.data.data.content 에 실제 기부 목록 배열이 있음 (Page 객체)
-        setDonations(donationResponse.data.data.content); // ✨ 기부 목록 데이터 설정
+        // // 2. 해당 게시물의 기부 목록 가져오기 (페이지네이션 기본값 적용)
+        // // 백엔드 DonationController의 @GetMapping("/{postId}")에 맞춰 호출
+        // const donationResponse = await api.get(`/donation/${idToFetch}`);
+        // // axios 응답 구조: response.data.data.content 에 실제 기부 목록 배열이 있음 (Page 객체)
+        // setDonations(donationResponse.data.data.content); // ✨ 기부 목록 데이터 설정
 
       } catch (err) {
         console.error("게시물 상세 정보 불러오기 실패:", err);
@@ -150,7 +150,8 @@ function PostDetailPage() {
             // post={post} 
             activeTab={activeTab} 
             setActiveTab={setActiveTab} 
-            donations={donations}
+            // donations={donations}
+            postId={Number(postId)} // ✨ PostId를 전달합니다.
           />
           {/* 댓글 섹션은 탭과 관계없이 항상 아래에 표시됨 */}
           <CommentSection postId={Number(postId)} /> 
