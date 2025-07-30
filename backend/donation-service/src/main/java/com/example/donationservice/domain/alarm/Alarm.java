@@ -2,6 +2,7 @@ package com.example.donationservice.domain.alarm;
 
 import com.example.donationservice.common.entity.BaseTimeEntity;
 import com.example.donationservice.domain.user.User;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,6 +24,9 @@ public class Alarm extends BaseTimeEntity {
     private String message;
 
     private Long postId; // 게시글로 이동하기 위해서
+
+    @JsonProperty("isRead")
+    private boolean isRead;// 알림 읽기 상태 구분
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
