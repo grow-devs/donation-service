@@ -78,10 +78,11 @@ public class SecurityConfig {
                         .requestMatchers("/api/user/test").authenticated()
                         .requestMatchers(HttpMethod.POST,"/api/post").authenticated()
                         .requestMatchers(HttpMethod.GET,"/api/post/**").permitAll() // todo "/**"를 붙임으로써 post관련 get 요청을 모두 허용한다.
-//                        .requestMatchers(HttpMethod.GET,"/api/comment/**").permitAll() // todo "/**"를 붙임으로써 comment관련 get 요청을 모두 허용한다.
+                        .requestMatchers(HttpMethod.POST,"/api/comment/**").authenticated() // todo  "/**"를 붙임으로써 comment관련 get 요청을 user만 할 수 있게 한다.
+                        .requestMatchers(HttpMethod.GET,"/api/comment/**").permitAll() // todo  "/**"를 붙임으로써 comment관련 POST 요청허용
                         .requestMatchers(HttpMethod.POST, "/api/team").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/alarm/**").authenticated() //todo "/**"를 붙임으로써 alarm관련 get 요청을 user만 할 수 있게 한다.
-                        .requestMatchers("/api/admin/**").authenticated()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
 //                        .requestMatchers("/api/admin/**").hasRole("ADMIN_ROLE")  // ADMIN 만접근!
                 // 참고로 "ADMIN" 만적으면 sercurity가 자동으로 "ROLE_ADMIN"로 변환해준다. 근데 나는 이름 자체가 ADMIN_ROLE 이니까 "ADMIN_ROLE"을 써야해
