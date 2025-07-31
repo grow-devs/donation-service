@@ -11,7 +11,7 @@ export default function SignupForm({ onSwitchMode }) {
     password: '',
     userName: '',
     nickName: '',
-    userRole: 'USER_ROLE',
+    userRole: 'USER',
   });
   const [error, setError] = useState('');
 
@@ -48,8 +48,8 @@ export default function SignupForm({ onSwitchMode }) {
       <TextField fullWidth select SelectProps={{ native: true }}
         label="권한" name="userRole" margin="normal"
         value={form.userRole} onChange={handleChange}>
-        <option value="USER_ROLE">USER</option>
-        <option value="ADMIN_ROLE">ADMIN</option>
+        <option value="USER">USER</option>
+        <option value="ADMIN">ADMIN</option>
       </TextField>
 
       {error && <Typography color="error" variant="body2">{error}</Typography>}
