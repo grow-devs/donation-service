@@ -1,10 +1,13 @@
 package com.example.donationservice.domain.user;
 
+import com.example.donationservice.common.exception.CommonErrorCode;
 import com.example.donationservice.common.exception.RestApiException;
 import com.example.donationservice.config.auth.jwt.JwtService;
 import com.example.donationservice.config.redis.RedisTokenService;
+import com.example.donationservice.domain.donation.DonationRepository;
+import com.example.donationservice.domain.sponsor.TeamRepository;
 import com.example.donationservice.domain.user.dto.UserDto;
-import jakarta.transaction.Transactional;
+import com.example.donationservice.domain.user.dto.UserInfoProjection;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -12,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -97,5 +101,25 @@ public class UserServiceImpl implements UserService {
                 .build();
         //객체 저장
         userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public UserDto.userInfoResponse getUserInfo(Long userId) {
+
+        UserInfoProjection userInfo = userRepository.findUserInfoById(userId)
+                .orElseThrow(() -> new RestApiException(CommonErrorCode.USER_NOT_FOUND));
+
+        return UserDto.userInfoResponse.builder()
+                .userId(userId)
+                .email(userInfo.getEmail())
+                .userName(userInfo.getUsername())
+                .nickName(userInfo.getNickName())
+                .userRole(userInfo.getUserRole())
+                .points(userInfo.getPoints())
+                .teamName(userInfo.getTeamName())
+                .donationAmount(userInfo.getTotalDonationAmount())
+                .totalDonationCount(userInfo.getDonationCount())
+                .build();
     }
 }
