@@ -2,15 +2,12 @@ package com.example.donationservice.domain.user;
 
 import com.example.donationservice.common.dto.Result;
 import com.example.donationservice.domain.user.dto.UserDto;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 
 @RestController
 @RequestMapping("/api/user")
@@ -38,6 +35,17 @@ public class UserController {
                 Result.builder()
                         .message("회원가입 성공")
                         .data(null)
+                        .build()
+        );
+    }
+
+    @GetMapping("/info")
+    public ResponseEntity<Result> getUserInfo(@AuthenticationPrincipal CustomUserDetail userDetails) {
+        UserDto.userInfoResponse userInfo = userService.getUserInfo(userDetails.getUserId());
+        return ResponseEntity.ok(
+                Result.builder()
+                        .message("유저 정보 조회 성공")
+                        .data(userInfo)
                         .build()
         );
     }

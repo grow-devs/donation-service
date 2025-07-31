@@ -1,11 +1,14 @@
 package com.example.donationservice.domain.donation;
 
+import com.example.donationservice.domain.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface DonationRepository extends JpaRepository<Donation, Long> {
 
@@ -16,4 +19,11 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
     List<String> findDistinctUserEmailsByPostId(Long postId);
 
     boolean existsByUserIdAndPostId(Long userId, Long postId);
+
+    Optional<Donation> findByUser(User user);
+
+    // fetcj join으로
+    @Query("select d from Donation d join fetch d.post where d.user.id = :userId")
+    List<Donation> findAllByUserIdWithPost(@Param("userId") Long userId);
+
 }
