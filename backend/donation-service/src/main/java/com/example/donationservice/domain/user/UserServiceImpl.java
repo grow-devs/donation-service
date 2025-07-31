@@ -44,22 +44,24 @@ public class UserServiceImpl implements UserService {
                     )
             );
 
-            // [3] 인증 성공 후, 인증 객체에서 검증된 사용자 email(또는 username) 가져오기
-            // authentication.getName() 값은 UserDetailsService에서 반환한 UserDetails의 getUsername() 값과 동일
-            String authenticatedEmail = authentication.getName();
-
+            // [3] 인증 성공 후, Authentication 객체에서 CustomUserDetails 추출
+            // authentication.getPrincipal()은 Object 타입이므로 CustomUserDetails로 캐스팅
+            Object principal = authentication.getPrincipal();
+            // 캐스팅 전에 null 체크 및 타입 확인
+            if (!(principal instanceof CustomUserDetail customUserDetail)) {
+                // CustomUserDetail 타입이 아닌 경우 (예: 인증 실패 후에도 이 코드가 실행되거나 다른 Principal 타입이 들어온 경우)
+                throw new IllegalStateException("인증 객체가 CustomUserDetail타입이 아닙니다.");
+            }
             // [4] JWT Access Token 생성 (email을 claim에 넣어 발급)
-            String accessToken = jwtService.generateToken(authenticatedEmail);
+            String accessToken = jwtService.generateToken(customUserDetail);
 
             // [5] 랜덤 UUID로 Refresh Token 생성
             // -> Refresh Token 자체에는 사용자 정보 같은 payload를 담지 않음 (추적 불가한 순수 식별용)
             String refreshToken = UUID.randomUUID().toString();
             // [6] Refresh Token을 Redis에 저장 (key: email, value: refreshToken)
-            redisTokenService.saveRefreshToken(authenticatedEmail, refreshToken, 1000L * 60 * 60 * 24 * 10);
+            redisTokenService.saveRefreshToken(customUserDetail.getUsername(), refreshToken, 1000L * 60 * 60 * 24 * 10);
 
-            // [7] 클라이언트에게 nickName,accessToken,userRole전달.
-            CustomUserDetail customUserDetail = (CustomUserDetail) authentication.getPrincipal();
-            return  UserDto.loginResponse.builder()
+            return UserDto.loginResponse.builder()
                     .accessToken(accessToken)
                     .nickName(customUserDetail.getNickName())
                     .userRole(customUserDetail.getUserRole())
@@ -69,15 +71,19 @@ public class UserServiceImpl implements UserService {
             System.out.println("인증실패");
             // [2] 인증 실패 시 예외를 잡아 처리
             throw new RestApiException(LOGIN_FAILED);
+        }catch (IllegalArgumentException e) {
+            // UserRole.valueOf(roleName)에서 발생할 수 있는 예외 (토큰에 유효하지 않은 역할이 있을 경우)
+            System.out.println("유효하지 않은 역할 정보: " + e.getMessage());
+            throw new RestApiException(LOGIN_FAILED);
         }
     }
 
 
     @Override
     @Transactional
-    public void signup(UserDto.signupRequest signupRequest){
+    public void signup(UserDto.signupRequest signupRequest) {
 
-        if(userRepository.findByEmail(signupRequest.getEmail()).isPresent()){
+        if (userRepository.findByEmail(signupRequest.getEmail()).isPresent()) {
             // todo GLobalException 있으면 에러발생
             throw new RestApiException(USER_ID_ALREADY_EXISTS);
         }

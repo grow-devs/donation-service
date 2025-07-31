@@ -373,7 +373,7 @@ export default function MainAppBar() {
                 </Typography>
               </IconButton>
 
-              {userRole === "ADMIN_ROLE" && (
+              {userRole === "ADMIN" && (
                 <IconButton
                   size="large"
                   onClick={() => navigate("/admin-page")}

@@ -1,5 +1,7 @@
 package com.example.donationservice.config.auth.jwt;
 
+import com.example.donationservice.domain.user.CustomUserDetail;
+import com.example.donationservice.domain.user.UserRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -10,8 +12,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
-import java.util.Date;
+import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class JwtService {
@@ -26,24 +29,28 @@ public class JwtService {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
-
-    // claim 없이 token generate하기
-//    public String generateToken(
-//            CustomUserDetail customUserDetail
-//    ){
-//        return generateToken(new HashMap<>(),customUserDetail);
-//    }
-
+    /**
+     *
+     * @param userDetails
+     * @return
+     */
     public String generateToken(
-            String subject
+            CustomUserDetail userDetails
     ) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("email", userDetails.getUsername()); // ✅ 'email'이라는 이름으로 이메일 추가
+        claims.put("role", userDetails.getUserRole().name());       // 'role' 클레임 추가
+
+        // 만료 시간을 상수로 정의하여 관리하는 것이 좋습니다. (예: application.properties)
+        // 여기서는 예시를 위해 직접 계산합니다.
+        long expirationMillis = System.currentTimeMillis() + 1000 * 60 * 60 * 2; // 2시간
+
         return Jwts.builder()
-                .setSubject(subject)
-//                .claim("role", role) // 기본적으로 ROLE_USER로 설정
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                //todo 만료 시점 설정
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 2)) // 만료 시점 2시간
-                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .setClaims(claims)           // 클레임 설정 (userEmail,role)
+                .setSubject(String.valueOf(userDetails.getUserId()))         // subject에 userId (String으로 변환)
+                .setIssuedAt(new Date(System.currentTimeMillis())) // 발행 시점
+                .setExpiration(new Date(expirationMillis))         // 만료 시점
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256) // 서명
                 .compact();
     }
 
@@ -56,40 +63,41 @@ public class JwtService {
                 .parseClaimsJws(token) // ExpiredJwtException
                 .getBody();
     }
+
     //jwt를 검증하는 method
-    public boolean isTokenValid(String token, UserDetails userDetails){
-        final String username = getUserNameFromJwtToken(token);
-        return username.equals(userDetails.getUsername())&& ! isTokenExpired(token);
+    public boolean isTokenValid(String token) {
+        return !isTokenExpired(token);
     }
+
     //jwt가 만료되었는지 확인하는 method
-    public boolean isTokenExpired(String token){
+    public boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
+
     //현재 헤더에서 넘어온 jwt의 expriation을 추출하는 method
-    public Date extractExpiration(String token){
-        return extractClaim(token,Claims::getExpiration);
+    public Date extractExpiration(String token) {
+        return extractClaim(token, Claims::getExpiration);
     }
 
     private Key getSignInKey() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
         return Keys.hmacShaKeyFor(keyBytes);
     }
-    // token으로 유저 이름 가져오기
-    public String getUserNameFromJwtToken(String token){
-        // 만료되더라도 이름은 가져올 수 있게 try catch
-        try {
-            return Jwts.parserBuilder()
-                    .setSigningKey(getSignInKey())
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody().getSubject();
-        }
-        catch(ExpiredJwtException e)
-        {
-            return e.getClaims().getSubject();
-        }
 
+    // ✅ JWT에서 userId (subject) 추출
+    public Long getUserIdFromJwtToken(String token) {
+        return Long.parseLong(extractClaim(token, Claims::getSubject));
     }
+
+    // ✅ JWT에서 userEmail (custom claim) 추출
+    public String getUserEmailFromJwtToken(String token) {
+        return extractClaim(token, claims -> (String) claims.get("email"));
+    }
+    // ✅ JWT에서 역할(role) 추출 (수정된 generateToken에 맞춰)
+    public String getRoleFromJwtToken(String token) {
+        return extractClaim(token, claims -> (String)claims.get("role")); // 역할이 없는 경우 빈 리스트 반환
+    }
+
 
     // 리프레시 토큰 생성
     public String generateRefreshToken(String subject) {
