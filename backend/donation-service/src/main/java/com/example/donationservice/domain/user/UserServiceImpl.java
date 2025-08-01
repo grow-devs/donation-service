@@ -5,9 +5,11 @@ import com.example.donationservice.common.exception.RestApiException;
 import com.example.donationservice.config.auth.jwt.JwtService;
 import com.example.donationservice.config.redis.RedisTokenService;
 import com.example.donationservice.domain.donation.DonationRepository;
+import com.example.donationservice.domain.like.PostLikeRepository;
 import com.example.donationservice.domain.user.dto.UserDonationInfoProjection;
 import com.example.donationservice.domain.user.dto.UserDto;
 import com.example.donationservice.domain.user.dto.UserInfoProjection;
+import com.example.donationservice.domain.user.dto.UserPostLikeInfoProjection;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +32,8 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final DonationRepository donationRepository;
+    private final PostLikeRepository postLikeRepository;
+
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
@@ -131,5 +135,12 @@ public class UserServiceImpl implements UserService {
     public Page<UserDonationInfoProjection> getUserDonationInfo(Long userId, Pageable pageable) {
 
         return donationRepository.findUserDonationInfoByUserId(userId, pageable);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<UserPostLikeInfoProjection> getUserPostLikeInfo(Long userId, Pageable pageable) {
+
+        return postLikeRepository.findLikedPostsByUserId(userId, pageable);
     }
 }

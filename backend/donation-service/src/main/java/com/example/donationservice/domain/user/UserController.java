@@ -3,6 +3,7 @@ package com.example.donationservice.domain.user;
 import com.example.donationservice.common.dto.Result;
 import com.example.donationservice.domain.user.dto.UserDonationInfoProjection;
 import com.example.donationservice.domain.user.dto.UserDto;
+import com.example.donationservice.domain.user.dto.UserPostLikeInfoProjection;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -59,12 +60,26 @@ public class UserController {
     @GetMapping("/donation-list")
     public ResponseEntity<Result> getUserDonationInfo(
             @AuthenticationPrincipal CustomUserDetail userDetails,
-            @PageableDefault(size = 10, sort = "updatedAt", direction = Sort.Direction.DESC)Pageable pageable) {
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)Pageable pageable) {
         Page<UserDonationInfoProjection> userDonationInfo = userService.getUserDonationInfo(userDetails.getUserId(), pageable);
         return ResponseEntity.ok(
                 Result.builder()
                         .message("유저 기부 내역 조회 성공")
                         .data(userDonationInfo)
+                        .build()
+        );
+    }
+
+    // 내가 좋아요 누른 게시글 목록 조회
+    @GetMapping("/post-like-list")
+    public ResponseEntity<Result> getUserPostLikeInfo(
+            @AuthenticationPrincipal CustomUserDetail userDetails,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<UserPostLikeInfoProjection> userPostLikeInfo = userService.getUserPostLikeInfo(userDetails.getUserId(), pageable);
+        return ResponseEntity.ok(
+                Result.builder()
+                        .message("유저 좋아요 게시글 조회 성공")
+                        .data(userPostLikeInfo)
                         .build()
         );
     }
