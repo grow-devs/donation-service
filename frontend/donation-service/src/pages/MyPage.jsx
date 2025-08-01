@@ -5,6 +5,7 @@ import {
   Typography,
   Card,
   CardContent,
+  Grid,
   Tabs,
   Tab,
   Button,
@@ -15,7 +16,8 @@ import {
   TableBody,
   Pagination,
   Stack,
-  PaginationItem,
+  CardMedia,
+  TableContainer
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import useAuthStore from '../store/authStore';
@@ -28,11 +30,9 @@ export default function MyPage() {
   const logout = useAuthStore(state => state.logout);
 
   const navigate = useNavigate();
-  const [userInfo, setUserInfo] = useState(null); // ✨ 사용자 정보를 저장할 state 추가
-  // const [loading, setLoading] = useState(true); // ✨ 로딩 상태 추가
-  // const [error, setError] = useState(null); // ✨ 에러 상태 추가
-  const [userInfoLoading, setUserInfoLoading] = useState(true);
-  const [userInfoError, setUserInfoError] = useState(null);
+  const [userInfo, setUserInfo] = useState(null); // ✨ 사용자 정보를 저장할 state
+  const [userInfoLoading, setUserInfoLoading] = useState(true); // ✨ 로딩 상태
+  const [userInfoError, setUserInfoError] = useState(null); // ✨ 에러 상태
 
   // ✨ 기부 내역 상태
   const [donations, setDonations] = useState([]);
@@ -41,12 +41,25 @@ export default function MyPage() {
   const [donationsLoading, setDonationsLoading] = useState(false);
   const [donationsError, setDonationsError] = useState(null);
 
+  // 즐겨 찾기 상태 (새로 추가됨)
+  const [favorites, setFavorites] = useState([]);
+  const [favoritesCurrentPage, setFavoritesCurrentPage] = useState(0);
+  const [favoritesTotalPages, setFavoritesTotalPages] = useState(0);
+  const [favoritesLoading, setFavoritesLoading] = useState(false);
+  const [favoritesError, setFavoritesError] = useState(null);
+
   // 백엔드와 동일한 정렬 조건과 페이지 사이즈
-  const pageSize = 10;
-  const sort = 'updatedAt,desc';
+  const pageSize = 3;
+  const sort = 'createdAt,desc';
 
   const handleChange = (event, newValue) => {
     setTab(newValue);
+    // 탭 변경 시 페이지를 0으로 리셋
+    if (newValue === 0) {
+      setDonationCurrentPage(0);
+    } else {
+      setFavoritesCurrentPage(0);
+    }
   };
 
   // ✨ 컴포넌트 마운트 시 사용자 정보 불러오기
@@ -93,12 +106,34 @@ export default function MyPage() {
     }
   };
 
-  // 탭이 변경될 때 '기부 내역' 탭이면 데이터를 로드
+  /**
+ * 즐겨찾기(좋아요) 게시물 리스트를 불러오는 함수 (새로 추가됨)
+ * @param {number} page - 요청할 페이지 번호 (0-based)
+ */
+  const fetchFavoritesList = async (page) => {
+    try {
+      setFavoritesLoading(true);
+      setFavoritesError(null);
+      const params = { page: page, size: pageSize, sort: 'createdAt,desc' }; // 즐겨찾기 목록은 createdAt 기준 정렬
+      const res = await api.get('/user/post-like-list', { params });
+      setFavorites(res.data.data?.content || []);
+      setFavoritesTotalPages(res.data.data?.totalPages || 0);
+    } catch (err) {
+      console.error('즐겨찾기 목록 불러오기 실패:', err);
+      setFavoritesError('즐겨찾기 목록을 불러오는 데 실패했습니다.');
+    } finally {
+      setFavoritesLoading(false);
+    }
+  };
+
+  // 탭이 변경되거나 페이지가 변경될 때 데이터를 로드하는 useEffect
   useEffect(() => {
     if (tab === 0) {
       fetchDonationList(donationCurrentPage);
+    } else if (tab === 1) {
+      fetchFavoritesList(favoritesCurrentPage);
     }
-  }, [tab, donationCurrentPage]); // tab 또는 donationCurrentPage가 변경될 때 재실행
+  }, [tab, donationCurrentPage, favoritesCurrentPage]); // tab 또는 donationCurrentPage가 변경될 때 재실행
 
   /**
    * 기부 내역 페이지 변경 핸들러
@@ -108,6 +143,16 @@ export default function MyPage() {
   const handleDonationPageChange = (event, value) => {
     const newPage = value - 1; // 백엔드는 0-based 페이지 번호를 사용하므로 1을 빼줌
     setDonationCurrentPage(newPage);
+  };
+
+  /**
+   * 즐겨찾기 페이지 변경 핸들러 (새로 추가됨)
+   * @param {object} event - 이벤트 객체
+   * @param {number} value - 변경된 페이지 번호 (Material-UI Pagination은 1-based)
+   */
+  const handleFavoritesPageChange = (event, value) => {
+    const newPage = value - 1;
+    setFavoritesCurrentPage(newPage);
   };
 
   // ✨ 로딩 중 또는 에러 발생 시 처리
@@ -129,7 +174,7 @@ export default function MyPage() {
 
   return (
     <Box sx={{ maxWidth: 550, mx: "auto", mt: 4, px: 1 }}>
-      {/* 프로필 */}
+      {/* 프로필 영역 */}
       <Card sx={{ mb: 3, boxShadow: "0 4px 12px rgba(0,0,0,0.12)" }}>
         <CardContent>
           {/* 상단: 프로필 + 버튼 */}
@@ -210,7 +255,7 @@ export default function MyPage() {
         </CardContent> */}
       </Card>
 
-      {/* 기부내역 */}
+      {/* 기부내역 요약 */}
       <Card sx={{ mb: 3, boxShadow: "0 4px 12px rgba(0,0,0,0.12)" }}>
         <CardContent sx={{ py: 2 }}>
           <Typography variant="h5" sx={{ mb: 1, fontWeight: "bold" }}>
@@ -246,7 +291,7 @@ export default function MyPage() {
                   총 기부 횟수
                 </Typography>
                 <Typography variant="subtitle1" align="center">
-                  {userInfo.totalDonationCount + " 회"}
+                  {userInfo.totalDonationCount ? userInfo.totalDonationCount : 0} 회
                 </Typography>
               </Box>
             </Box>
@@ -260,7 +305,7 @@ export default function MyPage() {
       <Box>
         <Tabs value={tab} onChange={handleChange} centered size="small">
           <Tab label="기부 내역" />
-          <Tab label="참여 내역" />
+          <Tab label="즐겨 찾기" />
         </Tabs>
         <Box sx={{ mt: 1 }}>
           {tab === 0 && (
@@ -271,24 +316,27 @@ export default function MyPage() {
                 <Box sx={{ p: 2, textAlign: 'center' }}><Typography color="error">{donationsError}</Typography></Box>
               ) : donations.length > 0 ? (
                 <>
-                  <Table>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>게시물 제목</TableCell>
-                        <TableCell align="center">기부 금액</TableCell>
-                        <TableCell align="right">기부 날짜</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {donations.map((donation, index) => (
-                        <TableRow key={index}>
-                          <TableCell>{donation.postTitle}</TableCell>
-                          <TableCell align="center">{donation.donationAmount.toLocaleString()} P</TableCell>
-                          <TableCell align="right">{format(new Date(donation.donationDate), 'yyyy.MM.dd')}</TableCell>
+                  <TableContainer>
+                    <Table>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>게시물 제목</TableCell>
+                          <TableCell align="center">기부 금액</TableCell>
+                          <TableCell align="right">기부 날짜</TableCell>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                      </TableHead>
+                      <TableBody>
+                        {donations.map((donation, index) => (
+                          <TableRow key={index}>
+                            <TableCell>{donation.postTitle}</TableCell>
+                            <TableCell align="center">{donation.donationAmount.toLocaleString()} P</TableCell>
+                            <TableCell align="right">{format(new Date(donation.donationDate), 'yyyy.MM.dd')}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+
                   <Stack spacing={2} sx={{ mt: 3, alignItems: 'center' }}>
                     <Pagination
                       count={donationTotalPages}
@@ -308,9 +356,53 @@ export default function MyPage() {
               sx={{ p: 1, boxShadow: "0 4px 12px rgba(0,0,0,0.12)" }}
               variant="outlined"
             >
-              <Typography variant="body2">
-                참여 내역 상세를 불러오는 영역입니다.
-              </Typography>
+              {favoritesLoading ? (
+                <Box sx={{ p: 2, textAlign: 'center' }}><Typography>즐겨찾기 목록을 불러오는 중입니다...</Typography></Box>
+              ) : favoritesError ? (
+                <Box sx={{ p: 2, textAlign: 'center' }}><Typography color="error">{favoritesError}</Typography></Box>
+              ) : favorites.length > 0 ? (
+                <>
+                  <Grid container spacing={2} sx={{ mt: 2, p: 2 }}>
+                    {favorites.map((favorite, index) => (
+                      <Grid item xs={12} key={index}>
+                        <Card sx={{ display: 'flex' }}>
+                          <CardMedia
+                            component="img"
+                            sx={{ width: 151, height: 151, flexShrink: 0 }}
+                            image={favorite.thumbnailImageUrl || "https://placehold.co/151x151/E0E0E0/555555?text=No+Image"}
+                            alt={favorite.postTitle}
+                          />
+                          <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+                            <CardContent sx={{ flex: '1 0 auto' }}>
+                              <Typography component="div" variant="h6">
+                                {favorite.postTitle}
+                              </Typography>
+                              <Typography variant="subtitle1" color="text.secondary" component="div">
+                                현재 금액: {favorite.currentAmount.toLocaleString()} P
+                              </Typography>
+                              <Typography variant="body2" color="text.secondary" component="div">
+                                목표 금액: {favorite.targetAmount.toLocaleString()} P
+                              </Typography>
+                              <Typography variant="body2" color="text.secondary" component="div">
+                                마감일: {format(new Date(favorite.deadline), 'yyyy.MM.dd')}
+                              </Typography>
+                            </CardContent>
+                          </Box>
+                        </Card>
+                      </Grid>
+                    ))}
+                  </Grid>
+                  <Stack spacing={2} sx={{ mt: 3, alignItems: 'center' }}>
+                    <Pagination
+                      count={favoritesTotalPages}
+                      page={favoritesCurrentPage + 1}
+                      onChange={handleFavoritesPageChange}
+                    />
+                  </Stack>
+                </>
+              ) : (
+                <Box sx={{ p: 2, textAlign: 'center' }}><Typography>즐겨찾기한 게시물이 없습니다.</Typography></Box>
+              )}
             </Card>
           )}
         </Box>
