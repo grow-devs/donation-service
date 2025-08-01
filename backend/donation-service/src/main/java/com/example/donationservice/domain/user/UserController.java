@@ -3,6 +3,7 @@ package com.example.donationservice.domain.user;
 import com.example.donationservice.common.dto.Result;
 import com.example.donationservice.domain.user.dto.UserDonationInfoProjection;
 import com.example.donationservice.domain.user.dto.UserDto;
+import com.example.donationservice.domain.user.dto.UserPostInfoProjection;
 import com.example.donationservice.domain.user.dto.UserPostLikeInfoProjection;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -79,6 +80,20 @@ public class UserController {
                 Result.builder()
                         .message("유저 좋아요 게시글 조회 성공")
                         .data(userPostLikeInfo)
+                        .build()
+        );
+    }
+
+    // 내가 작성한 게시물 목록 조회
+    @GetMapping("/my-posts")
+    public ResponseEntity<Result> getMyPosts(
+            @AuthenticationPrincipal CustomUserDetail userDetails,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<UserPostInfoProjection> myPosts = userService.getMyPosts(userDetails.getUserId(), pageable);
+        return ResponseEntity.ok(
+                Result.builder()
+                        .message("내 게시물 목록 조회 성공")
+                        .data(myPosts)
                         .build()
         );
     }
