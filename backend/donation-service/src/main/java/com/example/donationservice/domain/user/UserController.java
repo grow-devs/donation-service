@@ -1,8 +1,13 @@
 package com.example.donationservice.domain.user;
 
 import com.example.donationservice.common.dto.Result;
+import com.example.donationservice.domain.user.dto.UserDonationInfoProjection;
 import com.example.donationservice.domain.user.dto.UserDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -49,6 +54,21 @@ public class UserController {
                         .build()
         );
     }
+
+    // 내가 기부한 내역 목록 조회
+    @GetMapping("/donation-list")
+    public ResponseEntity<Result> getUserDonationInfo(
+            @AuthenticationPrincipal CustomUserDetail userDetails,
+            @PageableDefault(size = 10, sort = "updatedAt", direction = Sort.Direction.DESC)Pageable pageable) {
+        Page<UserDonationInfoProjection> userDonationInfo = userService.getUserDonationInfo(userDetails.getUserId(), pageable);
+        return ResponseEntity.ok(
+                Result.builder()
+                        .message("유저 기부 내역 조회 성공")
+                        .data(userDonationInfo)
+                        .build()
+        );
+    }
+
 
     /**
      * TODO. 파라미터로 Authentication 대신 @AuthenticationPrincipal CustomUserDetail을 통해 인증된 객체를 바로 주입받는다.

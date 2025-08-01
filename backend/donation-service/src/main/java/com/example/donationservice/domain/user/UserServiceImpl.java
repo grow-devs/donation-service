@@ -4,9 +4,13 @@ import com.example.donationservice.common.exception.CommonErrorCode;
 import com.example.donationservice.common.exception.RestApiException;
 import com.example.donationservice.config.auth.jwt.JwtService;
 import com.example.donationservice.config.redis.RedisTokenService;
+import com.example.donationservice.domain.donation.DonationRepository;
+import com.example.donationservice.domain.user.dto.UserDonationInfoProjection;
 import com.example.donationservice.domain.user.dto.UserDto;
 import com.example.donationservice.domain.user.dto.UserInfoProjection;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,6 +29,7 @@ import static com.example.donationservice.common.exception.CommonErrorCode.USER_
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final DonationRepository donationRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
@@ -119,5 +124,12 @@ public class UserServiceImpl implements UserService {
                 .totalDonationAmount(userInfo.getTotalDonationAmount())
                 .totalDonationCount(userInfo.getDonationCount())
                 .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<UserDonationInfoProjection> getUserDonationInfo(Long userId, Pageable pageable) {
+
+        return donationRepository.findUserDonationInfoByUserId(userId, pageable);
     }
 }
