@@ -159,7 +159,7 @@ export default function MyPage() {
             {/* 왼쪽: 총 기부금 */}
             <Box sx={{ flex: 1 }}>
               <Typography variant="body2" color="text.secondary">
-                {userInfo.donationAmount}
+                {userInfo.totalDonationAmount}
               </Typography>
               <Typography variant="h6" sx={{}}>
                 
@@ -177,7 +177,7 @@ export default function MyPage() {
                   참여한 캠페인
                 </Typography>
                 <Typography variant="subtitle1" align="center">
-                  {userInfo.totalDonationAmount}
+                  데이터 없음
                 </Typography>
               </Box>
               <Box>

@@ -4,8 +4,6 @@ import com.example.donationservice.common.exception.CommonErrorCode;
 import com.example.donationservice.common.exception.RestApiException;
 import com.example.donationservice.config.auth.jwt.JwtService;
 import com.example.donationservice.config.redis.RedisTokenService;
-import com.example.donationservice.domain.donation.DonationRepository;
-import com.example.donationservice.domain.sponsor.TeamRepository;
 import com.example.donationservice.domain.user.dto.UserDto;
 import com.example.donationservice.domain.user.dto.UserInfoProjection;
 import lombok.RequiredArgsConstructor;
@@ -118,7 +116,7 @@ public class UserServiceImpl implements UserService {
                 .userRole(userInfo.getUserRole())
                 .points(userInfo.getPoints())
                 .teamName(userInfo.getTeamName())
-                .donationAmount(userInfo.getTotalDonationAmount())
+                .totalDonationAmount(userInfo.getTotalDonationAmount())
                 .totalDonationCount(userInfo.getDonationCount())
                 .build();
     }
