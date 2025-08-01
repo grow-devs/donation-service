@@ -24,6 +24,72 @@ import useAuthStore from '../store/authStore';
 import { format } from "date-fns";
 import api from "../apis/api";
 
+// 게시물 목록 아이템을 렌더링하는 재사용 가능한 컴포넌트
+const PostCard = ({ post }) => {
+  const [imageSrc, setImageSrc] = useState(
+    "https://placehold.co/151x151/E0E0E0/555555?text=No+Image"
+  );
+  const [imageLoading, setImageLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchImage = async () => {
+      if (!post.thumnbnailImageUrl) {
+        setImageLoading(false);
+        return;
+      }
+
+      try {
+        const response = await api.get(post.thumnbnailImageUrl, {
+          responseType: "blob",
+        });
+        
+        const imageUrl = URL.createObjectURL(response.data);
+        setImageSrc(imageUrl);
+      } catch (err) {
+        console.error("이미지 불러오기 실패:", err);
+      } finally {
+        setImageLoading(false);
+      }
+    };
+
+    fetchImage();
+
+    return () => {
+      if (imageSrc && imageSrc.startsWith('blob:')) {
+        URL.revokeObjectURL(imageSrc);
+      }
+    };
+  }, [post.thumnbnailImageUrl]);
+
+  return (
+    <Grid item xs={12}>
+      <Card sx={{ display: 'flex', width: '100%' }}>
+        <CardMedia
+          component="img"
+          sx={{ width: 151, height: 151, flexShrink: 0 }}
+          image={imageSrc}
+          alt={post.postTitle}
+        />
+        <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, minWidth: 0 }}>
+          <CardContent sx={{ flex: '1 0 auto' }}>
+            <Typography component="div" variant="h6" sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {post.postTitle}
+            </Typography>
+            <Typography variant="subtitle1" color="text.secondary" component="div">
+              현재 금액: {post.currentAmount ? post.currentAmount.toLocaleString() : 0} P
+            </Typography>
+            <Typography variant="body2" color="text.secondary" component="div">
+              목표 금액: {post.targetAmount ? post.targetAmount.toLocaleString() : 0} P
+            </Typography>
+            <Typography variant="body2" color="text.secondary" component="div">
+              마감일: {post.deadline ? format(new Date(post.deadline), 'yyyy.MM.dd') : '날짜 없음'}
+            </Typography>
+          </CardContent>
+        </Box>
+      </Card>
+    </Grid>
+  );
+};
 
 export default function MyPage() {
   const [tab, setTab] = useState(0);
@@ -48,17 +114,25 @@ export default function MyPage() {
   const [favoritesLoading, setFavoritesLoading] = useState(false);
   const [favoritesError, setFavoritesError] = useState(null);
 
+  // 내가 작성한 게시글 상태 (새로 추가)
+  const [myPosts, setMyPosts] = useState([]);
+  const [myPostsCurrentPage, setMyPostsCurrentPage] = useState(0);
+  const [myPostsTotalPages, setMyPostsTotalPages] = useState(0);
+  const [myPostsLoading, setMyPostsLoading] = useState(false);
+  const [myPostsError, setMyPostsError] = useState(null);
+
   // 백엔드와 동일한 정렬 조건과 페이지 사이즈
   const pageSize = 3;
-  const sort = 'createdAt,desc';
+  const createAtDesc = 'createdAt,desc'; // 즐겨찾기, 내가 작성한 게시글은 동일한 정렬 사용
 
   const handleChange = (event, newValue) => {
     setTab(newValue);
-    // 탭 변경 시 페이지를 0으로 리셋
     if (newValue === 0) {
       setDonationCurrentPage(0);
-    } else {
+    } else if (newValue === 1) {
       setFavoritesCurrentPage(0);
+    } else if (newValue === 2) { // 내가 작성한 게시글 탭
+      setMyPostsCurrentPage(0);
     }
   };
 
@@ -93,7 +167,7 @@ export default function MyPage() {
     try {
       setDonationsLoading(true);
       setDonationsError(null);
-      const params = { page: page, size: pageSize, sort: sort };
+      const params = { page: page, size: pageSize, sort: createAtDesc };
       const res = await api.get('/user/donation-list', { params });
       console.log('Donation List API Response:', res.data.data); // 응답 데이터 확인
       setDonations(res.data.data?.content || []);
@@ -114,7 +188,7 @@ export default function MyPage() {
     try {
       setFavoritesLoading(true);
       setFavoritesError(null);
-      const params = { page: page, size: pageSize, sort: 'createdAt,desc' }; // 즐겨찾기 목록은 createdAt 기준 정렬
+      const params = { page: page, size: pageSize, sort: createAtDesc }; // 즐겨찾기 목록은 createdAt 기준 정렬
       const res = await api.get('/user/post-like-list', { params });
       setFavorites(res.data.data?.content || []);
       setFavoritesTotalPages(res.data.data?.totalPages || 0);
@@ -126,14 +200,33 @@ export default function MyPage() {
     }
   };
 
+  // 내가 작성한 게시글 목록을 불러오는 함수 (새로 추가)
+  const fetchMyPostsList = async (page) => {
+    try {
+      setMyPostsLoading(true);
+      setMyPostsError(null);
+      const params = { page: page, size: pageSize, sort: createAtDesc };
+      const res = await api.get('/user/my-posts', { params });
+      setMyPosts(res.data.data?.content || []);
+      setMyPostsTotalPages(res.data.data?.totalPages || 0);
+    } catch (err) {
+      console.error('내가 작성한 게시물 목록 불러오기 실패:', err);
+      setMyPostsError('내가 작성한 게시물 목록을 불러오는 데 실패했습니다.');
+    } finally {
+      setMyPostsLoading(false);
+    }
+  };
+
   // 탭이 변경되거나 페이지가 변경될 때 데이터를 로드하는 useEffect
   useEffect(() => {
     if (tab === 0) {
       fetchDonationList(donationCurrentPage);
     } else if (tab === 1) {
       fetchFavoritesList(favoritesCurrentPage);
+    } else if (tab === 2) {
+      fetchMyPostsList(myPostsCurrentPage);
     }
-  }, [tab, donationCurrentPage, favoritesCurrentPage]); // tab 또는 donationCurrentPage가 변경될 때 재실행
+  }, [tab, donationCurrentPage, favoritesCurrentPage, myPostsCurrentPage]); // tab 또는 donationCurrentPage가 변경될 때 재실행
 
   /**
    * 기부 내역 페이지 변경 핸들러
@@ -153,6 +246,12 @@ export default function MyPage() {
   const handleFavoritesPageChange = (event, value) => {
     const newPage = value - 1;
     setFavoritesCurrentPage(newPage);
+  };
+
+  // 내가 작성한 게시글 페이지 변경 핸들러 (새로 추가)
+  const handleMyPostsPageChange = (event, value) => {
+    const newPage = value - 1;
+    setMyPostsCurrentPage(newPage);
   };
 
   // ✨ 로딩 중 또는 에러 발생 시 처리
@@ -306,8 +405,10 @@ export default function MyPage() {
         <Tabs value={tab} onChange={handleChange} centered size="small">
           <Tab label="기부 내역" />
           <Tab label="즐겨 찾기" />
+          <Tab label="내가 작성한 게시글" />
         </Tabs>
         <Box sx={{ mt: 1 }}>
+          {/* 기부 내역 탭 */}
           {tab === 0 && (
             <Card sx={{ p: 1, boxShadow: "0 4px 12px rgba(0,0,0,0.12)" }} variant="outlined">
               {donationsLoading ? (
@@ -351,6 +452,7 @@ export default function MyPage() {
             </Card>
           )}
 
+          {/* 즐겨 찾기 탭 */}
           {tab === 1 && (
             <Card
               sx={{ p: 1, boxShadow: "0 4px 12px rgba(0,0,0,0.12)" }}
@@ -364,32 +466,33 @@ export default function MyPage() {
                 <>
                   <Grid container spacing={2} sx={{ mt: 2, p: 2 }}>
                     {favorites.map((favorite, index) => (
-                      <Grid item xs={12} key={index}>
-                        <Card sx={{ display: 'flex' }}>
-                          <CardMedia
-                            component="img"
-                            sx={{ width: 151, height: 151, flexShrink: 0 }}
-                            image={favorite.thumbnailImageUrl || "https://placehold.co/151x151/E0E0E0/555555?text=No+Image"}
-                            alt={favorite.postTitle}
-                          />
-                          <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
-                            <CardContent sx={{ flex: '1 0 auto' }}>
-                              <Typography component="div" variant="h6">
-                                {favorite.postTitle}
-                              </Typography>
-                              <Typography variant="subtitle1" color="text.secondary" component="div">
-                                현재 금액: {favorite.currentAmount.toLocaleString()} P
-                              </Typography>
-                              <Typography variant="body2" color="text.secondary" component="div">
-                                목표 금액: {favorite.targetAmount.toLocaleString()} P
-                              </Typography>
-                              <Typography variant="body2" color="text.secondary" component="div">
-                                마감일: {format(new Date(favorite.deadline), 'yyyy.MM.dd')}
-                              </Typography>
-                            </CardContent>
-                          </Box>
-                        </Card>
-                      </Grid>
+                      // <Grid item xs={12} key={index}>
+                      //   <Card sx={{ display: 'flex' }}>
+                      //     <CardMedia
+                      //       component="img"
+                      //       sx={{ width: 151, height: 151, flexShrink: 0 }}
+                      //       image={favorite.thumbnailImageUrl || "https://placehold.co/151x151/E0E0E0/555555?text=No+Image"}
+                      //       alt={favorite.postTitle}
+                      //     />
+                      //     <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+                      //       <CardContent sx={{ flex: '1 0 auto' }}>
+                      //         <Typography component="div" variant="h6">
+                      //           {favorite.postTitle}
+                      //         </Typography>
+                      //         <Typography variant="subtitle1" color="text.secondary" component="div">
+                      //           현재 금액: {favorite.currentAmount.toLocaleString()} P
+                      //         </Typography>
+                      //         <Typography variant="body2" color="text.secondary" component="div">
+                      //           목표 금액: {favorite.targetAmount.toLocaleString()} P
+                      //         </Typography>
+                      //         <Typography variant="body2" color="text.secondary" component="div">
+                      //           마감일: {format(new Date(favorite.deadline), 'yyyy.MM.dd')}
+                      //         </Typography>
+                      //       </CardContent>
+                      //     </Box>
+                      //   </Card>
+                      // </Grid>
+                      <PostCard key={index} post={favorite} />
                     ))}
                   </Grid>
                   <Stack spacing={2} sx={{ mt: 3, alignItems: 'center' }}>
@@ -405,6 +508,35 @@ export default function MyPage() {
               )}
             </Card>
           )}
+
+          {/* 내가 작성한 게시글 탭 (새로 추가) */}
+          {tab === 2 && (
+            <Card sx={{ p: 1, boxShadow: "0 4px 12px rgba(0,0,0,0.12)" }} variant="outlined">
+              {myPostsLoading ? (
+                <Box sx={{ p: 2, textAlign: 'center' }}><Typography>내가 작성한 게시글 목록을 불러오는 중입니다...</Typography></Box>
+              ) : myPostsError ? (
+                <Box sx={{ p: 2, textAlign: 'center' }}><Typography color="error">{myPostsError}</Typography></Box>
+              ) : myPosts.length > 0 ? (
+                <>
+                  <Grid container spacing={2} sx={{ mt: 2, p: 2 }}>
+                    {myPosts.map((post, index) => (
+                      <PostCard key={index} post={post} />
+                    ))}
+                  </Grid>
+                  <Stack spacing={2} sx={{ mt: 3, alignItems: 'center' }}>
+                    <Pagination
+                      count={myPostsTotalPages}
+                      page={myPostsCurrentPage + 1}
+                      onChange={handleMyPostsPageChange}
+                    />
+                  </Stack>
+                </>
+              ) : (
+                <Box sx={{ p: 2, textAlign: 'center' }}><Typography>작성한 게시글이 없습니다.</Typography></Box>
+              )}
+            </Card>
+          )}
+
         </Box>
       </Box>
     </Box>
