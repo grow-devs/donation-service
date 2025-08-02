@@ -29,6 +29,7 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
 
     @Query(value = """
         SELECT
+            p.id AS postId,
             p.title AS postTitle,
             d.createdAt AS donationDate,
             d.point AS donationAmount

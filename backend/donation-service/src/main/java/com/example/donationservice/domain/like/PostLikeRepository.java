@@ -17,6 +17,7 @@ public interface PostLikeRepository extends JpaRepository<PostLike, Long> {
 
     @Query("""
     SELECT 
+        p.id AS postId,
         p.title AS postTitle,
         p.thumnbnailImageUrl AS thumnbnailImageUrl,
         p.currentAmount AS currentAmount,

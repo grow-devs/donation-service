@@ -35,6 +35,7 @@ public interface PostRepository extends JpaRepository<Post,Long>,PostRepositoryC
     // 특정 userId의 팀이 작성한 게시물 목록을 페이징하여 조회하는 쿼리 (내가 작성한 게시글 조회)
     @Query("""
     SELECT 
+        p.id AS postId,
         p.title AS postTitle,
         p.thumnbnailImageUrl AS thumnbnailImageUrl,
         p.currentAmount AS currentAmount,

@@ -25,7 +25,7 @@ import { format } from "date-fns";
 import api from "../apis/api";
 
 // 게시물 목록 아이템을 렌더링하는 재사용 가능한 컴포넌트
-const PostCard = ({ post }) => {
+const PostCard = ({ post, navigate }) => {
   const [imageSrc, setImageSrc] = useState(
     "https://placehold.co/151x151/E0E0E0/555555?text=No+Image"
   );
@@ -61,9 +61,19 @@ const PostCard = ({ post }) => {
     };
   }, [post.thumnbnailImageUrl]);
 
+  // 클릭 이벤트 핸들러 추가
+  const handlePostClick = () => {
+    if (post.postId) {
+      navigate(`/post-detail/${post.postId}`);
+    }
+  };
+
   return (
     <Grid item xs={12}>
-      <Card sx={{ display: 'flex', width: '100%' }}>
+      <Card
+        sx={{ display: 'flex', width: '100%', cursor: 'pointer' }}
+        onClick={handlePostClick}
+      >
         <CardMedia
           component="img"
           sx={{ width: 151, height: 151, flexShrink: 0 }}
@@ -107,14 +117,14 @@ export default function MyPage() {
   const [donationsLoading, setDonationsLoading] = useState(false);
   const [donationsError, setDonationsError] = useState(null);
 
-  // 즐겨 찾기 상태 (새로 추가됨)
+  // 즐겨 찾기 상태
   const [favorites, setFavorites] = useState([]);
   const [favoritesCurrentPage, setFavoritesCurrentPage] = useState(0);
   const [favoritesTotalPages, setFavoritesTotalPages] = useState(0);
   const [favoritesLoading, setFavoritesLoading] = useState(false);
   const [favoritesError, setFavoritesError] = useState(null);
 
-  // 내가 작성한 게시글 상태 (새로 추가)
+  // 내가 작성한 게시글 상태
   const [myPosts, setMyPosts] = useState([]);
   const [myPostsCurrentPage, setMyPostsCurrentPage] = useState(0);
   const [myPostsTotalPages, setMyPostsTotalPages] = useState(0);
@@ -123,7 +133,7 @@ export default function MyPage() {
 
   // 백엔드와 동일한 정렬 조건과 페이지 사이즈
   const pageSize = 3;
-  const createAtDesc = 'createdAt,desc'; // 즐겨찾기, 내가 작성한 게시글은 동일한 정렬 사용
+  const createdAtDesc = 'createdAt,desc'; // 즐겨찾기, 내가 작성한 게시글은 동일한 정렬 사용
 
   const handleChange = (event, newValue) => {
     setTab(newValue);
@@ -163,11 +173,11 @@ export default function MyPage() {
    * @param {number} page - 요청할 페이지 번호 (0-based)
    */
   const fetchDonationList = async (page) => {
-    if (tab !== 0) return; // '기부 내역' 탭이 아닐 경우 실행하지 않음
+    // if (tab !== 0) return; // '기부 내역' 탭이 아닐 경우 실행하지 않음
     try {
       setDonationsLoading(true);
       setDonationsError(null);
-      const params = { page: page, size: pageSize, sort: createAtDesc };
+      const params = { page: page, size: pageSize, sort: createdAtDesc };
       const res = await api.get('/user/donation-list', { params });
       console.log('Donation List API Response:', res.data.data); // 응답 데이터 확인
       setDonations(res.data.data?.content || []);
@@ -188,7 +198,7 @@ export default function MyPage() {
     try {
       setFavoritesLoading(true);
       setFavoritesError(null);
-      const params = { page: page, size: pageSize, sort: createAtDesc }; // 즐겨찾기 목록은 createdAt 기준 정렬
+      const params = { page: page, size: pageSize, sort: createdAtDesc };
       const res = await api.get('/user/post-like-list', { params });
       setFavorites(res.data.data?.content || []);
       setFavoritesTotalPages(res.data.data?.totalPages || 0);
@@ -205,7 +215,7 @@ export default function MyPage() {
     try {
       setMyPostsLoading(true);
       setMyPostsError(null);
-      const params = { page: page, size: pageSize, sort: createAtDesc };
+      const params = { page: page, size: pageSize, sort: createdAtDesc };
       const res = await api.get('/user/my-posts', { params });
       setMyPosts(res.data.data?.content || []);
       setMyPostsTotalPages(res.data.data?.totalPages || 0);
@@ -226,7 +236,7 @@ export default function MyPage() {
     } else if (tab === 2) {
       fetchMyPostsList(myPostsCurrentPage);
     }
-  }, [tab, donationCurrentPage, favoritesCurrentPage, myPostsCurrentPage]); // tab 또는 donationCurrentPage가 변경될 때 재실행
+  }, [tab, donationCurrentPage, favoritesCurrentPage, myPostsCurrentPage]);
 
   /**
    * 기부 내역 페이지 변경 핸들러
@@ -254,6 +264,11 @@ export default function MyPage() {
     setMyPostsCurrentPage(newPage);
   };
 
+  // '기부 내역'의 테이블 행 클릭 핸들러
+  const handleDonationRowClick = (postId) => {
+    navigate(`/post-detail/${postId}`);
+  };
+
   // ✨ 로딩 중 또는 에러 발생 시 처리
   if (userInfoLoading) {
     return (
@@ -272,7 +287,7 @@ export default function MyPage() {
   }
 
   return (
-    <Box sx={{ maxWidth: 550, mx: "auto", mt: 4, px: 1 }}>
+    <Box sx={{ maxWidth: 700, mx: "auto", mt: 4, px: 1 }}>
       {/* 프로필 영역 */}
       <Card sx={{ mb: 3, boxShadow: "0 4px 12px rgba(0,0,0,0.12)" }}>
         <CardContent>
@@ -369,7 +384,7 @@ export default function MyPage() {
 
             {/* 오른쪽: 참여한 캠페인 / 기부 횟수 */}
             <Box sx={{ display: "flex", flexDirection: "column", ml: 2 }}>
-              <Box sx={{ mb: 1 }}>
+              {/* <Box sx={{ mb: 1 }}>
                 <Typography
                   variant="body2"
                   color="text.secondary"
@@ -380,7 +395,7 @@ export default function MyPage() {
                 <Typography variant="subtitle1" align="center">
                   데이터 없음
                 </Typography>
-              </Box>
+              </Box> */}
               <Box>
                 <Typography
                   variant="body2"
@@ -428,7 +443,11 @@ export default function MyPage() {
                       </TableHead>
                       <TableBody>
                         {donations.map((donation, index) => (
-                          <TableRow key={index}>
+                          <TableRow
+                            key={index}
+                            onClick={() => handleDonationRowClick(donation.postId)}
+                            sx={{ cursor: 'pointer', '&:hover': { backgroundColor: '#f5f5f5' } }}
+                          >
                             <TableCell>{donation.postTitle}</TableCell>
                             <TableCell align="center">{donation.donationAmount.toLocaleString()} P</TableCell>
                             <TableCell align="right">{format(new Date(donation.donationDate), 'yyyy.MM.dd')}</TableCell>
@@ -492,7 +511,7 @@ export default function MyPage() {
                       //     </Box>
                       //   </Card>
                       // </Grid>
-                      <PostCard key={index} post={favorite} />
+                      <PostCard key={index} post={favorite} navigate={navigate} />
                     ))}
                   </Grid>
                   <Stack spacing={2} sx={{ mt: 3, alignItems: 'center' }}>
@@ -520,7 +539,7 @@ export default function MyPage() {
                 <>
                   <Grid container spacing={2} sx={{ mt: 2, p: 2 }}>
                     {myPosts.map((post, index) => (
-                      <PostCard key={index} post={post} />
+                      <PostCard key={index} post={post} navigate={navigate} />
                     ))}
                   </Grid>
                   <Stack spacing={2} sx={{ mt: 3, alignItems: 'center' }}>
