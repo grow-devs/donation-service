@@ -98,4 +98,15 @@ public class UserController {
         );
     }
 
+    @PostMapping("/point")
+    public ResponseEntity<Result> addPoints(@AuthenticationPrincipal CustomUserDetail userDetails, @RequestBody UserDto.PointRequest pointsRequest) {
+        Long response = userService.addPoints(userDetails.getUserId(), pointsRequest);
+        return ResponseEntity.ok(
+                Result.builder()
+                        .message("포인트 추가 성공")
+                        .data(response)
+                        .build()
+        );
+    }
+
 }

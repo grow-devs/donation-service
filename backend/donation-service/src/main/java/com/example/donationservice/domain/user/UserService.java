@@ -21,4 +21,6 @@ public interface UserService {
     Page<UserPostLikeInfoProjection> getUserPostLikeInfo(Long userId, Pageable pageable);
 
     Page<UserPostInfoProjection> getMyPosts(Long userId, Pageable pageable);
+
+    Long addPoints(Long userId, UserDto.PointRequest pointRequest);
 }

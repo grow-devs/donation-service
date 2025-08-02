@@ -61,6 +61,14 @@ public class UserDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class PointRequest{
+        private Long points;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class teamRequest{
         private String teamName;
         private String description;

@@ -149,4 +149,14 @@ public class UserServiceImpl implements UserService {
 
         return postRepository.findPostsByTeamUserId(userId, pageable);
     }
+
+    @Override
+    @Transactional
+    public Long addPoints(Long userId, UserDto.PointRequest pointsRequest) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RestApiException(CommonErrorCode.USER_NOT_FOUND));
+        user.addPoints(pointsRequest.getPoints());
+
+        return user.getPoints();
+    }
 }
