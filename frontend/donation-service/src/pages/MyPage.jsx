@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Box,
   Avatar,
@@ -150,27 +150,25 @@ export default function MyPage() {
     }
   };
 
-  // ✨ 컴포넌트 마운트 시 사용자 정보 불러오기
+  // ⭐️ fetchUserInfo 함수를 컴포넌트 최상위 스코프로 이동하고 useCallback으로 감싸줍니다.
+  const fetchUserInfo = useCallback(async () => {
+    try {
+      setUserInfoLoading(true);
+      // 백엔드 /api/user/info 엔드포인트 호출
+      const response = await api.get('/user/info');
+      setUserInfo(response.data.data); // ✨ 불러온 사용자 정보 저장
+    } catch (err) {
+      console.error("사용자 정보 불러오기 실패:", err);
+      setUserInfoError("사용자 정보를 불러오는 데 실패했습니다.");
+    } finally {
+      setUserInfoLoading(false);
+    }
+  }, []); // 의존성 배열이 비어 있으므로, 컴포넌트가 처음 마운트될 때만 함수가 생성됩니다.
+
+  // 컴포넌트 마운트 시 사용자 정보 불러오기
   useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        setUserInfoLoading(true);
-
-        // 백엔드 /api/user/info 엔드포인트 호출
-        const response = await api.get('/user/info');
-        console.log('User Info API Response:', response.data.data); // 응답 데이터 확인용
-        setUserInfo(response.data.data); // ✨ 불러온 사용자 정보 저장
-      } catch (err) {
-        console.error("사용자 정보 불러오기 실패:", err);
-        setUserInfoError("사용자 정보를 불러오는 데 실패했습니다.");
-        // alert(err.response?.data?.message || '사용자 정보를 불러오지 못했습니다.'); // 에러 메시지 알림
-      } finally {
-        setUserInfoLoading(false);
-      }
-    };
-
     fetchUserInfo();
-  }, []); // 빈 배열: 컴포넌트가 처음 마운트될 때 한 번만 실행
+  }, [fetchUserInfo]); // ⭐️ fetchUserInfo 함수를 의존성 배열에 추가하여 함수 변경 시 다시 실행되도록 합니다.
 
   /**
    * 기부 내역 리스트를 불러오는 함수 (탭이 변경되거나 페이지가 변경될 때 호출)
@@ -273,25 +271,6 @@ export default function MyPage() {
     navigate(`/post-detail/${postId}`);
   };
 
-  // '추가' 버튼 클릭 시 실행될 함수
-  // const handleAddPoints = async () => {
-  //   try {
-  //     const pointsToAdd = 1000; // 추가할 포인트 값
-  //     const requestBody = {
-  //       points: pointsToAdd
-  //     };
-      
-  //     const response = await api.post('/user/point', requestBody);
-  //     console.log('포인트 추가 성공:', response.data);
-
-  //     // 포인트 추가 후 사용자 정보 다시 불러오기
-  //     await fetchUserInfo();
-  //   } catch (err) {
-  //     console.error('포인트 추가 실패:', err);
-  //     // 에러 메시지를 사용자에게 보여주는 로직 (예: Snackbar 또는 Dialog 사용)
-  //   }
-  // };
-
   // '추가' 버튼 클릭 시 모달을 여는 함수로 변경
   const handleAddPoints = () => {
     setIsAddPointModalOpen(true);
@@ -351,6 +330,20 @@ export default function MyPage() {
                 </Typography>
                 <Typography variant="body1" color="text.secondary">
                   현재 포인트: {userInfo.points ? userInfo.points.toLocaleString() : 0} P {/* 0 또는 null 처리, 천 단위 콤마 */}
+                  <Button
+                  variant="contained"
+                  size="small"
+                  onClick={handleAddPoints}
+                  sx={{
+                    ml: 1, // 버튼과 텍스트 사이 간격
+                    py: 0.5,
+                    px: 1,
+                    fontSize: '0.8rem',
+                    minWidth: 'auto',
+                  }}
+                >
+                  포인트 충전
+                </Button>
                 </Typography>
               </Box>
             </Box>
@@ -416,20 +409,6 @@ export default function MyPage() {
               {/* <Typography variant="h6">{userInfo.totalDonationAmount ? userInfo.totalDonationAmount.toLocaleString() : 0} P</Typography> */}
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Typography variant="h6">{userInfo.totalDonationAmount ? userInfo.totalDonationAmount.toLocaleString() : 0} P</Typography>
-                <Button
-                  variant="contained"
-                  size="small"
-                  onClick={handleAddPoints}
-                  sx={{
-                    ml: 1, // 버튼과 텍스트 사이 간격
-                    py: 0.5,
-                    px: 1,
-                    fontSize: '0.8rem',
-                    minWidth: 'auto',
-                  }}
-                >
-                  포인트 충전
-                </Button>
               </Box>
             </Box>
 

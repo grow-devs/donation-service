@@ -393,7 +393,6 @@ function AddPointModal({ isOpen, onClose, onPointAdded }) {
         <ModalBody>
           {showThankYouMessage ? (
             <ThankYouMessageContainer>
-              {/* <ThankYouText>포인트 추가가 완료되었습니다! ^^</ThankYouText> */}
               <ThankYouText>{formatAmount(addedPoints)} P가 추가되었습니다! ^^</ThankYouText>
               <ThankYouSubText>
                 총 기부 금액 옆의 내역이 갱신됩니다.
