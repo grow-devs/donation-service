@@ -23,6 +23,7 @@ import { useNavigate } from "react-router-dom";
 import useAuthStore from '../store/authStore';
 import { format } from "date-fns";
 import api from "../apis/api";
+import AddPointModal from "../modal/AddPointModal";
 
 // 게시물 목록 아이템을 렌더링하는 재사용 가능한 컴포넌트
 const PostCard = ({ post, navigate }) => {
@@ -61,7 +62,7 @@ const PostCard = ({ post, navigate }) => {
     };
   }, [post.thumnbnailImageUrl]);
 
-  // 클릭 이벤트 핸들러 추가
+  // 클릭 이벤트 핸들러: postId를 사용하여 게시물 상세 페이지로 이동
   const handlePostClick = () => {
     if (post.postId) {
       navigate(`/post-detail/${post.postId}`);
@@ -130,6 +131,9 @@ export default function MyPage() {
   const [myPostsTotalPages, setMyPostsTotalPages] = useState(0);
   const [myPostsLoading, setMyPostsLoading] = useState(false);
   const [myPostsError, setMyPostsError] = useState(null);
+
+  // 포인트 추가 모달 상태
+  const [isAddPointModalOpen, setIsAddPointModalOpen] = useState(false);
 
   // 백엔드와 동일한 정렬 조건과 페이지 사이즈
   const pageSize = 3;
@@ -269,10 +273,45 @@ export default function MyPage() {
     navigate(`/post-detail/${postId}`);
   };
 
+  // '추가' 버튼 클릭 시 실행될 함수
+  // const handleAddPoints = async () => {
+  //   try {
+  //     const pointsToAdd = 1000; // 추가할 포인트 값
+  //     const requestBody = {
+  //       points: pointsToAdd
+  //     };
+      
+  //     const response = await api.post('/user/point', requestBody);
+  //     console.log('포인트 추가 성공:', response.data);
+
+  //     // 포인트 추가 후 사용자 정보 다시 불러오기
+  //     await fetchUserInfo();
+  //   } catch (err) {
+  //     console.error('포인트 추가 실패:', err);
+  //     // 에러 메시지를 사용자에게 보여주는 로직 (예: Snackbar 또는 Dialog 사용)
+  //   }
+  // };
+
+  // '추가' 버튼 클릭 시 모달을 여는 함수로 변경
+  const handleAddPoints = () => {
+    setIsAddPointModalOpen(true);
+  };
+
+  // 모달 닫기 함수
+  const handleCloseAddPointModal = () => {
+    setIsAddPointModalOpen(false);
+  };
+
+  // 포인트 추가 성공 시 호출될 함수
+  const handlePointAdded = () => {
+    handleCloseAddPointModal(); // 모달 닫기
+    fetchUserInfo(); // 사용자 정보 새로고침
+  };
+
   // ✨ 로딩 중 또는 에러 발생 시 처리
   if (userInfoLoading) {
     return (
-      <Box sx={{ maxWidth: 550, mx: "auto", mt: 4, px: 1, textAlign: 'center' }}>
+      <Box sx={{ maxWidth: 700, mx: "auto", mt: 4, px: 1, textAlign: 'center' }}>
         <Typography>사용자 정보를 불러오는 중입니다...</Typography>
       </Box>
     );
@@ -280,7 +319,7 @@ export default function MyPage() {
 
   if (userInfoError) {
     return (
-      <Box sx={{ maxWidth: 550, mx: "auto", mt: 4, px: 1, textAlign: 'center' }}>
+      <Box sx={{ maxWidth: 700, mx: "auto", mt: 4, px: 1, textAlign: 'center' }}>
         <Typography color="error">{userInfoError}</Typography>
       </Box>
     );
@@ -307,10 +346,10 @@ export default function MyPage() {
               />
               <Box>
                 <Typography variant="h6">{userInfo.nickName}</Typography> {/* ✨ 닉네임 또는 이름 표시 */}
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body1" color="text.secondary">
                   나눔을 실천하는 회원입니다.
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body1" color="text.secondary">
                   현재 포인트: {userInfo.points ? userInfo.points.toLocaleString() : 0} P {/* 0 또는 null 처리, 천 단위 콤마 */}
                 </Typography>
               </Box>
@@ -360,42 +399,42 @@ export default function MyPage() {
           </Box>
         </CardContent>
 
-        {/* <CardContent sx={{ display: 'flex', alignItems: 'center', py: 2 }}>
-          <Avatar sx={{ width: 70, height: 70, mr: 2 }} src="/profile.jpg" />
-          <Box>
-            <Typography variant="h6">홍길동</Typography>
-            <Typography variant="body2" color="text.secondary">나눔을 실천하는 회원입니다.</Typography>
-          </Box>
-        </CardContent> */}
       </Card>
 
       {/* 기부내역 요약 */}
       <Card sx={{ mb: 3, boxShadow: "0 4px 12px rgba(0,0,0,0.12)" }}>
         <CardContent sx={{ py: 2 }}>
-          <Typography variant="h5" sx={{ mb: 1, fontWeight: "bold" }}>
-            기부 내역 요약
-          </Typography>
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
+            <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+              기부 내역 요약
+            </Typography>
+          </Box>
           <Box sx={{ display: "flex", alignItems: "center" }}>
             {/* 왼쪽: 총 기부금 */}
             <Box sx={{ flex: 1 }}>
               <Typography variant="body2" color="text.secondary">총 기부 금액</Typography>
-              <Typography variant="h6">{userInfo.totalDonationAmount ? userInfo.totalDonationAmount.toLocaleString() : 0} P</Typography>
+              {/* <Typography variant="h6">{userInfo.totalDonationAmount ? userInfo.totalDonationAmount.toLocaleString() : 0} P</Typography> */}
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="h6">{userInfo.totalDonationAmount ? userInfo.totalDonationAmount.toLocaleString() : 0} P</Typography>
+                <Button
+                  variant="contained"
+                  size="small"
+                  onClick={handleAddPoints}
+                  sx={{
+                    ml: 1, // 버튼과 텍스트 사이 간격
+                    py: 0.5,
+                    px: 1,
+                    fontSize: '0.8rem',
+                    minWidth: 'auto',
+                  }}
+                >
+                  포인트 충전
+                </Button>
+              </Box>
             </Box>
 
             {/* 오른쪽: 참여한 캠페인 / 기부 횟수 */}
             <Box sx={{ display: "flex", flexDirection: "column", ml: 2 }}>
-              {/* <Box sx={{ mb: 1 }}>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  align="center"
-                >
-                  참여한 캠페인
-                </Typography>
-                <Typography variant="subtitle1" align="center">
-                  데이터 없음
-                </Typography>
-              </Box> */}
               <Box>
                 <Typography
                   variant="body2"
@@ -558,6 +597,14 @@ export default function MyPage() {
 
         </Box>
       </Box>
+
+    {/* 포인트 추가 모달 추가 */}
+    <AddPointModal
+        isOpen={isAddPointModalOpen}
+        onClose={handleCloseAddPointModal}
+        onPointAdded={handlePointAdded}
+      />
+
     </Box>
   );
 }
