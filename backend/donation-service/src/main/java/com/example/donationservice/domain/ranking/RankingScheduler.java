@@ -1,7 +1,6 @@
 package com.example.donationservice.domain.ranking;
 
 import com.example.donationservice.domain.donation.DonationRepository;
-import com.example.donationservice.domain.donation.dto.DonorDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
