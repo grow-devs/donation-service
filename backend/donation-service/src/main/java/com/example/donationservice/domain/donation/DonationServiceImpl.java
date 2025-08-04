@@ -8,6 +8,7 @@ import com.example.donationservice.domain.post.PostRepository;
 import com.example.donationservice.domain.user.User;
 import com.example.donationservice.domain.user.UserRepository;
 import com.example.donationservice.event.DonationGoalReachedEventPublisher;
+import com.example.donationservice.event.DonationUpdateRankingEventPublisher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -26,6 +27,7 @@ public class DonationServiceImpl implements DonationService{
     private final UserRepository userRepository;
     private final DonationRepository donationRepository;
     private final DonationGoalReachedEventPublisher donationGoalReachedEventPublisher;
+    private final DonationUpdateRankingEventPublisher donationUpdateRankingEventPublisher;
 
     @Override
     @Transactional
@@ -77,6 +79,8 @@ public class DonationServiceImpl implements DonationService{
 
             donationGoalReachedEventPublisher.publishAlarmEvent(post, donorUsers);
         }
+        // 기부시에 랭킹을 위한 비동기 update
+        donationUpdateRankingEventPublisher.publish(userId, request.getPoints());
     }
 
     @Override
