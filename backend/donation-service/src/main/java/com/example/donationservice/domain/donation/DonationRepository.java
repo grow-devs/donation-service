@@ -1,6 +1,7 @@
 package com.example.donationservice.domain.donation;
 
 import com.example.donationservice.domain.user.User;
+import com.example.donationservice.domain.user.dto.UserDonationInfoProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,5 +26,17 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
     // fetcj join으로
     @Query("select d from Donation d join fetch d.post where d.user.id = :userId")
     List<Donation> findAllByUserIdWithPost(@Param("userId") Long userId);
+
+    @Query(value = """
+        SELECT
+            p.id AS postId,
+            p.title AS postTitle,
+            d.createdAt AS donationDate,
+            d.point AS donationAmount
+        FROM Donation d
+        JOIN d.post p
+        WHERE d.user.id = :userId
+        """)
+    Page<UserDonationInfoProjection> findUserDonationInfoByUserId(@Param("userId") Long userId, Pageable pageable);
 
 }

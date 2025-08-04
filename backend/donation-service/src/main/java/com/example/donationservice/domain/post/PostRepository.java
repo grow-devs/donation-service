@@ -2,6 +2,7 @@ package com.example.donationservice.domain.post;
 
 
 import com.example.donationservice.domain.user.ApprovalStatus;
+import com.example.donationservice.domain.user.dto.UserPostInfoProjection;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,4 +31,20 @@ public interface PostRepository extends JpaRepository<Post,Long>,PostRepositoryC
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT p FROM Post p WHERE p.id = :postId")
     Optional<Post> findByIdWithLock(@Param("postId") Long postId);
+
+    // 특정 userId의 팀이 작성한 게시물 목록을 페이징하여 조회하는 쿼리 (내가 작성한 게시글 조회)
+    @Query("""
+    SELECT 
+        p.id AS postId,
+        p.title AS postTitle,
+        p.thumnbnailImageUrl AS thumnbnailImageUrl,
+        p.currentAmount AS currentAmount,
+        p.targetAmount AS targetAmount,
+        p.deadline AS deadline,
+        p.id as id
+    FROM Post p
+    JOIN p.team t
+    WHERE t.user.id = :userId
+    """)
+    Page<UserPostInfoProjection> findPostsByTeamUserId(@Param("userId") Long userId, Pageable pageable);
 }
