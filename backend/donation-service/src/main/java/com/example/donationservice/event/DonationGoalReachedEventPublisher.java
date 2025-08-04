@@ -19,7 +19,7 @@ public class DonationGoalReachedEventPublisher {
     }
 
     public void publishAlarmEvent(Post post, List<User> donorUsers) {
-        var event = new DonationGoalReachedAlarmEvent(post.getId(), post.getTitle(), donorUsers);
+        DonationGoalReachedAlarmEvent event = new DonationGoalReachedAlarmEvent(post.getId(), post.getTitle(), donorUsers);
         eventPublisher.publishEvent(event);
     }
 }
