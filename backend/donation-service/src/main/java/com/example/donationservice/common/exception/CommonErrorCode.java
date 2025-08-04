@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 public enum CommonErrorCode implements ErrorCode{
 
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "유저를 조회할 수 없습니다."),
+    RANKING_NOT_FOUND(HttpStatus.NOT_FOUND, "랭킹를 조회할 수 없습니다."),
     USER_ID_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 존재하는 아이디입니다."),
     TEAM_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 후원 단체가 존재합니다."),
     TEAM_NOT_FOUND(HttpStatus.NOT_FOUND, "후원 단체를 찾을 수 없습니다."),

@@ -11,8 +11,11 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User,Long> {
     Optional<User> findByEmail(String email);
+  
     List<User> findByEmailIn(List<String> emails);
-
+  
+    List<User> findByIdIn(List<Long> userIds);
+  
     @Query("""
     select 
         u.id as userId,
@@ -31,5 +34,4 @@ public interface UserRepository extends JpaRepository<User,Long> {
     group by u.id, u.email, u.username, u.nickName, u.userRole, u.points, t.name
     """)
     Optional<UserInfoProjection> findUserInfoById(@Param("userId") Long userId);
-
 }
