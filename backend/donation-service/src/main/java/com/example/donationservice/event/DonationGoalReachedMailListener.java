@@ -15,7 +15,7 @@ public class DonationGoalReachedMailListener {
 
     private final MailService mailService;
 
-    @Async
+    @Async("mailTaskExecutor")
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
 //    @EventListener
     public void handle(DonationGoalReachedMailEvent event) {
