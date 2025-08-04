@@ -16,4 +16,10 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
     List<String> findDistinctUserEmailsByPostId(Long postId);
 
     boolean existsByUserIdAndPostId(Long userId, Long postId);
+
+    // Object를 반환받아 사용하는곳에서 DTO 맵핑
+    // pageable을 사용하지 않고, limit를 사용하기위해 nativeQuery를 사용
+    @Query(value = "SELECT d.user.id, SUM(d.point) FROM Donation d GROUP BY d.user.id")
+    List<Object[]> findDonors();
+
 }
