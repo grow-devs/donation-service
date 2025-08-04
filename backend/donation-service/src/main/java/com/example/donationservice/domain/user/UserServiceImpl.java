@@ -1,17 +1,23 @@
 package com.example.donationservice.domain.user;
 
+import com.example.donationservice.common.exception.CommonErrorCode;
 import com.example.donationservice.common.exception.RestApiException;
 import com.example.donationservice.config.auth.jwt.JwtService;
 import com.example.donationservice.config.redis.RedisTokenService;
-import com.example.donationservice.domain.user.dto.UserDto;
-import jakarta.transaction.Transactional;
+import com.example.donationservice.domain.donation.DonationRepository;
+import com.example.donationservice.domain.like.PostLikeRepository;
+import com.example.donationservice.domain.post.PostRepository;
+import com.example.donationservice.domain.user.dto.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -23,6 +29,10 @@ import static com.example.donationservice.common.exception.CommonErrorCode.USER_
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final DonationRepository donationRepository;
+    private final PostLikeRepository postLikeRepository;
+    private final PostRepository postRepository;
+
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
@@ -97,5 +107,56 @@ public class UserServiceImpl implements UserService {
                 .build();
         //객체 저장
         userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public UserDto.userInfoResponse getUserInfo(Long userId) {
+
+        UserInfoProjection userInfo = userRepository.findUserInfoById(userId)
+                .orElseThrow(() -> new RestApiException(CommonErrorCode.USER_NOT_FOUND));
+
+        return UserDto.userInfoResponse.builder()
+                .userId(userId)
+                .email(userInfo.getEmail())
+                .userName(userInfo.getUsername())
+                .nickName(userInfo.getNickName())
+                .userRole(userInfo.getUserRole())
+                .points(userInfo.getPoints())
+                .teamName(userInfo.getTeamName())
+                .totalDonationAmount(userInfo.getTotalDonationAmount())
+                .totalDonationCount(userInfo.getDonationCount())
+                .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<UserDonationInfoProjection> getUserDonationInfo(Long userId, Pageable pageable) {
+
+        return donationRepository.findUserDonationInfoByUserId(userId, pageable);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<UserPostLikeInfoProjection> getUserPostLikeInfo(Long userId, Pageable pageable) {
+
+        return postLikeRepository.findLikedPostsByUserId(userId, pageable);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<UserPostInfoProjection> getMyPosts(Long userId, Pageable pageable) {
+
+        return postRepository.findPostsByTeamUserId(userId, pageable);
+    }
+
+    @Override
+    @Transactional
+    public Long addPoints(Long userId, UserDto.PointRequest pointsRequest) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RestApiException(CommonErrorCode.USER_NOT_FOUND));
+        user.addPoints(pointsRequest.getPoints());
+
+        return user.getPoints();
     }
 }

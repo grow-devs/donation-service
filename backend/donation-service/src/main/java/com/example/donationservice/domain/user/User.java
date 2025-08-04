@@ -38,6 +38,11 @@ public class User extends BaseTimeEntity {
         }
         this.points -= amount;
     }
+
+    // 사용자 포인트 추가
+    public void addPoints(Long amount) {
+        this.points += amount;
+    }
 }
 
 

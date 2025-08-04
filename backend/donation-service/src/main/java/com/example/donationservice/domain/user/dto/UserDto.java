@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 public class UserDto {
 
     @Getter
@@ -37,6 +39,30 @@ public class UserDto {
         private String accessToken;
         private UserRole userRole;
         private String nickName;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class userInfoResponse{
+        private Long userId;
+        private String email;
+        private String userName;
+        private String nickName;
+        private UserRole userRole;
+        private Long points; // 사용자의 현재 포인트 잔액
+        private String teamName;
+        private Long totalDonationAmount; // 기부한 총 금액
+        private Long totalDonationCount; // 기부한 총 횟수
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class PointRequest{
+        private Long points;
     }
 
     @Getter
