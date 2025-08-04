@@ -13,7 +13,7 @@ import java.util.List;
 public class DonationGoalReachedEventPublisher {
     private final ApplicationEventPublisher eventPublisher;
 
-    public void publish(Post post, List<String> donorUserEmails) {
+    public void publishMailEvent(Post post, List<String> donorUserEmails) {
         DonationGoalReachedMailEvent event = new DonationGoalReachedMailEvent(post.getId(), post.getTitle(), post.getCurrentAmount(), donorUserEmails);
         eventPublisher.publishEvent(event);
     }
