@@ -83,7 +83,7 @@ export default function PostListPage() {
 
   // 카테고리 또는 정렬 변경 시 모든 상태 초기화 및 데이터 재요청
   useEffect(() => {
-    // setPosts([]);
+    setPosts([]);
     // 모든 last 필드를 초기화합니다.
     setLastId(null);
     setLastCreatedAt(null);
@@ -144,7 +144,7 @@ export default function PostListPage() {
         const newPosts = postListResult.resultList; // PostListResultDto의 'resultList' 필드 접근
         const totalCount = postListResult.totalCount; // PostListResultDto의 'totalCount' 필드 접근
 
-          setTotalPostsCount(totalCount);
+        totalCount ? setTotalPostsCount(totalCount) : null;
 
         setPosts((prev) => (isInitial ? newPosts : [...prev, ...newPosts]));
 
