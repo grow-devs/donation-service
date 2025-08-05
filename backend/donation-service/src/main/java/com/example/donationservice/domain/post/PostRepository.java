@@ -47,4 +47,13 @@ public interface PostRepository extends JpaRepository<Post,Long>,PostRepositoryC
     WHERE t.user.id = :userId
     """)
     Page<UserPostInfoProjection> findPostsByTeamUserId(@Param("userId") Long userId, Pageable pageable);
+
+    @Query(value = """
+    SELECT *
+    FROM post
+    WHERE target_amount > 0
+    ORDER BY (current_amount::float / target_amount) DESC
+    LIMIT 1
+    """, nativeQuery = true)
+    Post findTopPostByDonationRate();
 }

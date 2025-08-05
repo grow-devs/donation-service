@@ -25,4 +25,6 @@ public interface PostService {
             boolean isInitial);
 
     PostDto.PostDetailResponse getPostDetilById(Long postId);
+
+    PostDto.TopDonationPostResponse getTopDonationRatePost();
 }

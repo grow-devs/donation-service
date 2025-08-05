@@ -18,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/post")
@@ -111,6 +110,16 @@ public class PostController {
         return ResponseEntity.ok().body(Result.builder()
                 .message("게시글 조회 성공")
                 .data(postDetailResponse)
+                .build());
+    }
+
+    // 기부율이 가장 높은 게시물 조회
+    @GetMapping("/top-donation-rate")
+    public ResponseEntity<Result> getTopDonationRatePost() {
+        PostDto.TopDonationPostResponse topPost = postService.getTopDonationRatePost();
+        return ResponseEntity.ok().body(Result.builder()
+                .message("기부율이 가장 높은 게시물 조회 성공")
+                .data(topPost)
                 .build());
     }
 }

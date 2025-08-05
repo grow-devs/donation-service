@@ -11,13 +11,13 @@ import com.example.donationservice.domain.sponsor.TeamRepository;
 import com.example.donationservice.domain.user.ApprovalStatus;
 import com.example.donationservice.domain.user.User;
 import com.example.donationservice.domain.user.UserRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.owasp.html.HtmlPolicyBuilder;
 import org.owasp.html.PolicyFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -134,6 +134,35 @@ public class PostServiceImpl implements PostService {
                 .categoryName(category != null ? category.getName() : null)
                 .likesCount(post.getLikesCount() != null ? post.getLikesCount() : 0)
                 .participants(post.getParticipants())
+                .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PostDto.TopDonationPostResponse getTopDonationRatePost() {
+        // 기부율이 가장 높은 게시물 조회
+        Post topPost = postRepository.findTopPostByDonationRate();
+
+        if (topPost == null) {
+            throw new RestApiException(CommonErrorCode.POST_NOT_FOUND);
+        }
+
+        return PostDto.TopDonationPostResponse.builder()
+                .id(topPost.getId())
+                .title(topPost.getTitle())
+                .currentAmount(topPost.getCurrentAmount())
+                .targetAmount(topPost.getTargetAmount())
+                .deadline(topPost.getDeadline())
+                .imageUrl(topPost.getThumnbnailImageUrl())
+                .approvalStatus(topPost.getApprovalStatus())
+                .teamId(topPost.getTeam() != null ? topPost.getTeam().getId() : null)
+                .teamName(topPost.getTeam() != null ? topPost.getTeam().getName() : null)
+                .categoryId(topPost.getCategory() != null ? topPost.getCategory().getId() : null)
+                .categoryName(topPost.getCategory() != null ? topPost.getCategory().getName() : null)
+                .createdAt(topPost.getCreatedAt())
+                .updatedAt(topPost.getUpdatedAt())
+                .participants(topPost.getParticipants())
+                .likesCount(topPost.getLikesCount() != null ? topPost.getLikesCount() : 0)
                 .build();
     }
 

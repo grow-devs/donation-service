@@ -75,6 +75,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/team/check-name").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/donation/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/team").permitAll()
+                        .requestMatchers("/api/post/top-donation-rate").permitAll()
                         .requestMatchers("/api/user/test").authenticated()
                         .requestMatchers(HttpMethod.POST,"/api/post").authenticated()
                         .requestMatchers(HttpMethod.GET,"/api/post/**").permitAll() // todo "/**"를 붙임으로써 post관련 get 요청을 모두 허용한다.
