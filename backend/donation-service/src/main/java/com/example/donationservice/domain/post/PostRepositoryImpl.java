@@ -45,7 +45,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
         BooleanExpression categoryCondition = (categoryId != null && categoryId != 0) ? post.category.id.eq(categoryId) : null;
 
         // 3. 수락한 게시물 필터링 조건
-//        BooleanExpression approvalCondition = post.approvalStatus.eq(ACCEPTED); // todo 시나리오 테스트를 할 시에는 "PENDING"상태여도 조회할 수 있게 주석
+//        BooleanExpression approvalCondition = post.approvalStatus.eq(ACCEPTED); // todo 시나리오 테스트를 할 시에는 "PENDING"상태여도 조회할 수 있게 주석 -> 해당 조건이 있어야 인덱스를 탈 것이다.
 
         // 4. 정렬 조건 (OrderSpecifier) 구성
         // 정렬 순서에 따라 동적으로 OrderSpecifier를 생성합니다.
@@ -83,6 +83,10 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
 //        case "latest":
 
         // 다음 페이지 요청 시, sortBy에 따라 적절한 커서 조건을 반환
+        // 인덱싱을 위해서 or 조건
+        // 예시 : (WHERE post.deadline > :lastEndDate OR (post.deadline = :lastEndDate AND post.id > :lastId)
+        // 대신, booleanTemplate을 사용해서 복합 인덱스를 잘 탈 수 있게 한다.
+
         switch (sortBy) {
             case "latest": // 최신순 (createdAt DESC, id DESC)
                 return Expressions.booleanTemplate(
@@ -92,7 +96,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
                 ); // 복합 인덱스 활용을 위해 코드 변경
             case "deadlineAsc": // 종료임박순 (endDate ASC, id ASC)
                 return Expressions.booleanTemplate(
-                        "( {0}, {1} ) < ( {2}, {3} )",
+                        "( {0}, {1} ) > ( {2}, {3} )",
                         post.deadline,post.id,
                         lastEndDate,lastId
                 );
