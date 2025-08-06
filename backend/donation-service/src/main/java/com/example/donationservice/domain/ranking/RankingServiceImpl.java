@@ -151,7 +151,7 @@ public class RankingServiceImpl implements RankingService {
 
         // 랭킹 데이터가 없으면 빈 리스트 반환
         if (rankingSet == null || rankingSet.isEmpty()) {
-            throw new RestApiException(CommonErrorCode.RANKING_NOT_FOUND);
+            return null;
         }
         // todo refator: [1] 과 [2]는 DB에 접근하는데, 이는 랭킹 조회시에 유저의 nickname을 알기 위해서이다.
         //  만일 nickname이 unique하다면 nickname을 redis의 sortedSet의 key로 두어, db접근을 최소화할 수도 있다.
