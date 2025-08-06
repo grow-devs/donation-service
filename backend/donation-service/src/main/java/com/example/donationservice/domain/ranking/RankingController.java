@@ -36,7 +36,6 @@ public class RankingController {
     //오늘의 랭킹
     @GetMapping("/today")
     public ResponseEntity<Result> getTodayRanking(
-            @AuthenticationPrincipal CustomUserDetail userDetails,
             @PageableDefault(size = 10) Pageable pageable
     ) {
         LocalDate today = LocalDate.now();
@@ -44,14 +43,11 @@ public class RankingController {
                 .message("오늘의 랭킹 조회 성공")
                 .data(rankingService.getRanking(RankingType.TODAY, today, pageable))
                 .build());
-
-
     }
 
     //최근 30일 랭킹
     @GetMapping("/monthly")
     public ResponseEntity<Result> getMonthlyRanking(
-            @AuthenticationPrincipal CustomUserDetail userDetails,
             @PageableDefault(size = 10) Pageable pageable
     ) {
         LocalDate today = LocalDate.now();
@@ -59,8 +55,6 @@ public class RankingController {
                 .message("최근 30일 랭킹 조회 성공")
                 .data(rankingService.getRanking(RankingType.LAST_30_DAYS, today, pageable))
                 .build());
-
-
     }
 
     //명예의 전당 랭킹(전체 랭킹)
