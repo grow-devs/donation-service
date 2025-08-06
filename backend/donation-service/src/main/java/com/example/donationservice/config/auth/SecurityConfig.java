@@ -76,6 +76,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/donation/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/team").permitAll()
                         .requestMatchers("/api/post/top3-current-amount").permitAll()
+                        .requestMatchers("/api/post/earliest-end-date").permitAll()
                         .requestMatchers("/api/post/top-donation-rate").permitAll()
                         .requestMatchers("/api/user/test").authenticated()
                         .requestMatchers(HttpMethod.POST,"/api/post").authenticated()

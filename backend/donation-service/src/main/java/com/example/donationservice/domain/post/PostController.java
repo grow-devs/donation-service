@@ -123,6 +123,16 @@ public class PostController {
                 .build());
     }
 
+    // 데드라인이 가장 남지 않은 게시물 조회
+    @GetMapping("/earliest-end-date")
+    public ResponseEntity<Result> getPostWithEarliestEndDate() {
+        PostDto.PostMainResponse earliestPost = postService.getPostWithEarliestEndDate();
+        return ResponseEntity.ok().body(Result.builder()
+                .message("데드라인이 가장 남지 않은 게시물 조회 성공")
+                .data(earliestPost)
+                .build());
+    }
+
     // 기부율이 가장 높은 게시물 조회
     @GetMapping("/top-donation-rate")
     public ResponseEntity<Result> getTopDonationRatePost() {

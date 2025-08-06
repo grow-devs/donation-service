@@ -25,5 +25,8 @@ public interface PostService {
 
     List<PostDto.PostMainResponse> getTop3CurrentAmountPosts();
 
+    // 데드라인이 가장 남지 않은 게시물 하나 조회
+    PostDto.PostMainResponse getPostWithEarliestEndDate();
+
     PostDto.PostMainResponse getTopDonationRatePost();
 }

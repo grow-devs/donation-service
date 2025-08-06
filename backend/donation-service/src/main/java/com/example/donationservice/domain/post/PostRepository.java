@@ -50,6 +50,8 @@ public interface PostRepository extends JpaRepository<Post,Long>,PostRepositoryC
 
     List<Post> findTop3ByOrderByCurrentAmountDesc();
 
+    Optional<Post> findTopByOrderByDeadlineAsc();
+
     @Query(value = """
     SELECT *
     FROM post

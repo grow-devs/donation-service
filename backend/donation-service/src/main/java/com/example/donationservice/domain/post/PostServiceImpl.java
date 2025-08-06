@@ -133,6 +133,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<PostDto.PostMainResponse> getTop3CurrentAmountPosts() {
         // 현재 금액이 가장 높은 게시물 3개 조회
         List<Post> topPosts = postRepository.findTop3ByOrderByCurrentAmountDesc();
@@ -156,6 +157,35 @@ public class PostServiceImpl implements PostService {
                         .likesCount(post.getLikesCount() != null ? post.getLikesCount() : 0)
                         .build())
                 .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PostDto.PostMainResponse getPostWithEarliestEndDate() {
+        // 마감일이 가장 빠른 게시물 조회
+        Post post = postRepository.findTopByOrderByDeadlineAsc()
+                .orElseThrow(() -> new RestApiException(CommonErrorCode.POST_NOT_FOUND));
+
+        Team team = post.getTeam();
+        Category category = post.getCategory();
+
+        return PostDto.PostMainResponse.builder()
+                .id(post.getId())
+                .title(post.getTitle())
+                .currentAmount(post.getCurrentAmount())
+                .targetAmount(post.getTargetAmount())
+                .deadline(post.getDeadline())
+                .imageUrl(post.getThumnbnailImageUrl())
+                .approvalStatus(post.getApprovalStatus())
+                .teamId(team != null ? team.getId() : null)
+                .teamName(team != null ? team.getName() : null)
+                .categoryId(category != null ? category.getId() : null)
+                .categoryName(category != null ? category.getName() : null)
+                .createdAt(post.getCreatedAt())
+                .updatedAt(post.getUpdatedAt())
+                .participants(post.getParticipants())
+                .likesCount(post.getLikesCount() != null ? post.getLikesCount() : 0)
+                .build();
     }
 
     @Override
