@@ -81,8 +81,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/api/comment/**").authenticated() // todo  "/**"를 붙임으로써 comment관련 get 요청을 user만 할 수 있게 한다.
                         .requestMatchers(HttpMethod.GET,"/api/comment/**").permitAll() // todo  "/**"를 붙임으로써 comment관련 POST 요청허용
                         .requestMatchers(HttpMethod.POST, "/api/team").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/api/alarm/**").authenticated() //todo "/**"를 붙임으로써 alarm관련 get 요청을 user만 할 수 있게 한다.
+                        .requestMatchers( "/api/alarm/**").authenticated() //todo "/**"를 붙임으로써 alarm관련 모든 요청을 user만 할 수 있게 한다.
                         .requestMatchers(HttpMethod.GET, "/api/ranking/**").permitAll() //todo "/**"를 붙임으로써 ranking관련 get 요청을 허용한다.
+                        .requestMatchers(HttpMethod.GET, "/api/meta/**").permitAll() //todo "/**"를 붙임으로써 meta관련 get요청을 허용한다.
 
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
