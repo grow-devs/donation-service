@@ -110,7 +110,7 @@ public class PostDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class TopDonationPostResponse {
+    public static class PostMainResponse {
         private Long id;
         private String title;
         private Long currentAmount;

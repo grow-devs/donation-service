@@ -9,20 +9,15 @@ import com.example.donationservice.domain.post.dto.PostDto;
 import com.example.donationservice.domain.sponsor.Team;
 import com.example.donationservice.domain.sponsor.TeamRepository;
 import com.example.donationservice.domain.user.ApprovalStatus;
-import com.example.donationservice.domain.user.User;
-import com.example.donationservice.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.owasp.html.HtmlPolicyBuilder;
 import org.owasp.html.PolicyFactory;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -138,8 +133,34 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public List<PostDto.PostMainResponse> getTop3CurrentAmountPosts() {
+        // 현재 금액이 가장 높은 게시물 3개 조회
+        List<Post> topPosts = postRepository.findTop3ByOrderByCurrentAmountDesc();
+
+        return topPosts.stream()
+                .map(post -> PostDto.PostMainResponse.builder()
+                        .id(post.getId())
+                        .title(post.getTitle())
+                        .currentAmount(post.getCurrentAmount())
+                        .targetAmount(post.getTargetAmount())
+                        .deadline(post.getDeadline())
+                        .imageUrl(post.getThumnbnailImageUrl())
+                        .approvalStatus(post.getApprovalStatus())
+                        .teamId(post.getTeam() != null ? post.getTeam().getId() : null)
+                        .teamName(post.getTeam() != null ? post.getTeam().getName() : null)
+                        .categoryId(post.getCategory() != null ? post.getCategory().getId() : null)
+                        .categoryName(post.getCategory() != null ? post.getCategory().getName() : null)
+                        .createdAt(post.getCreatedAt())
+                        .updatedAt(post.getUpdatedAt())
+                        .participants(post.getParticipants())
+                        .likesCount(post.getLikesCount() != null ? post.getLikesCount() : 0)
+                        .build())
+                .toList();
+    }
+
+    @Override
     @Transactional(readOnly = true)
-    public PostDto.TopDonationPostResponse getTopDonationRatePost() {
+    public PostDto.PostMainResponse getTopDonationRatePost() {
         // 기부율이 가장 높은 게시물 조회
         Post topPost = postRepository.findTopPostByDonationRate();
 
@@ -147,7 +168,7 @@ public class PostServiceImpl implements PostService {
             throw new RestApiException(CommonErrorCode.POST_NOT_FOUND);
         }
 
-        return PostDto.TopDonationPostResponse.builder()
+        return PostDto.PostMainResponse.builder()
                 .id(topPost.getId())
                 .title(topPost.getTitle())
                 .currentAmount(topPost.getCurrentAmount())

@@ -7,17 +7,14 @@ import com.example.donationservice.common.exception.RestApiException;
 import com.example.donationservice.domain.post.dto.PostDto;
 import com.example.donationservice.domain.user.CustomUserDetail;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/post")
@@ -113,10 +110,23 @@ public class PostController {
                 .build());
     }
 
+    // 현재 기부금이 가장 높은 게시물 3개 조회
+    @GetMapping("/top3-current-amount")
+    public ResponseEntity<Result> getTop3CurrentAmountPosts() {
+        // 현재 기부금이 가장 높은 게시물 3개 조회
+        // PostDto.PostMainResponse는 게시물의 요약 정보만 포함
+        // 예: id, title, currentAmount 등
+        List<PostDto.PostMainResponse> topPosts = postService.getTop3CurrentAmountPosts();
+        return ResponseEntity.ok().body(Result.builder()
+                .message("현재 기부금이 가장 높은 게시물 3개 조회 성공")
+                .data(topPosts)
+                .build());
+    }
+
     // 기부율이 가장 높은 게시물 조회
     @GetMapping("/top-donation-rate")
     public ResponseEntity<Result> getTopDonationRatePost() {
-        PostDto.TopDonationPostResponse topPost = postService.getTopDonationRatePost();
+        PostDto.PostMainResponse topPost = postService.getTopDonationRatePost();
         return ResponseEntity.ok().body(Result.builder()
                 .message("기부율이 가장 높은 게시물 조회 성공")
                 .data(topPost)

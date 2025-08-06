@@ -48,6 +48,8 @@ public interface PostRepository extends JpaRepository<Post,Long>,PostRepositoryC
     """)
     Page<UserPostInfoProjection> findPostsByTeamUserId(@Param("userId") Long userId, Pageable pageable);
 
+    List<Post> findTop3ByOrderByCurrentAmountDesc();
+
     @Query(value = """
     SELECT *
     FROM post

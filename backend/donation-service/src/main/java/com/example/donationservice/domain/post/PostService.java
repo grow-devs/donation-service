@@ -1,9 +1,6 @@
 package com.example.donationservice.domain.post;
 
 import com.example.donationservice.domain.post.dto.PostDto;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,5 +23,7 @@ public interface PostService {
 
     PostDto.PostDetailResponse getPostDetilById(Long postId);
 
-    PostDto.TopDonationPostResponse getTopDonationRatePost();
+    List<PostDto.PostMainResponse> getTop3CurrentAmountPosts();
+
+    PostDto.PostMainResponse getTopDonationRatePost();
 }
