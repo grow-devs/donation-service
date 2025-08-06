@@ -1,4 +1,4 @@
-// CampaignCard.jsx
+// ClosingOnGoal.jsx
 import React, { useState, useEffect } from 'react';
 import {
   Card,
