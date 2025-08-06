@@ -1,56 +1,58 @@
 // CampaignTop3.jsx
-import React from 'react';
-import {
-  Card,
-  CardContent,
-  Typography,
-    Grid,
-  Box
-} from '@mui/material';
+import React, {useEffect, useState} from 'react';
+import { Typography, Box, Card, CardContent, Fade} from '@mui/material';
+import { AnimatePresence, motion } from 'framer-motion';
+import api from '../apis/api';
 import CampaignTop3Card from './CampaignTop3Card';
 
-const MOST_DONATED = [
-  {
-    id: 1,
-    title: '숨결로 그린 이야기, 결핵을 만나다',
-    organization: '한국결핵환우회(KPDS)',
-    amount: 2_444_900,
-    percent: 62
-  },
-  {
-    id: 2,
-    title: '눈앞에 다가온 기후위기, 지구와 환자를 함께 치유해요',
-    organization: '국경없는의사회 한국',
-    amount: 1_931_847,
-    percent: 20
-  },
-  {
-    id: 3,
-    title: '서로의 눈과 손이 되어',
-    organization: 'EBS나눔0700 위원회',
-    amount: 3_314_307,
-    percent: 14
-  },
-  {
-    id: 4,
-    title: '독거노인 도움회',
-    organization: 'EBS나눔0700 위원회',
-    amount: 3_314_307,
-    percent: 14
-  }
-];
-
 export default function CampaignTop3() {
+  const [topPosts, setTopPosts] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [direction, setDirection] = useState(1); // 슬라이드 방향
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTop3CurrentAmountPosts = async () => {
+      try {
+        const response = await api.get('/post/top3-current-amount');
+        setTopPosts(response.data.data);
+      } catch (error) {
+        console.error('❌ Top 3 기부 게시물 조회 실패:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTop3CurrentAmountPosts();
+  }, []);
+
+  // 슬라이드 전환 타이머
+  useEffect(() => {
+    if (topPosts.length === 0) return;
+
+    const interval = setInterval(() => {
+      setDirection(1); // 오른쪽에서 왼쪽으로
+      setCurrentIndex((prev) => (prev + 1) % topPosts.length);
+    }, 5500);
+
+    return () => clearInterval(interval);
+  }, [topPosts]);
+
+  if (loading) return <Typography>로딩 중...</Typography>;
+
+  const currentPost = topPosts[currentIndex];
+
   return (
-      <Card
+    <Card
       sx={{
         borderRadius: 3,
         boxShadow: 2,
-        maxWidth: 600, 
-        width: '100%',            // 부모 카드 폭 고정
+        maxWidth: 600,
+        width: '100%',
         display: 'flex',
         flexDirection: 'column',
-        height: 300,            // 부모 카드 높이 고정
+        height: 300,
+        overflow: 'hidden',
       }}
     >
       <Box sx={{ p: 2 }}>
@@ -62,31 +64,36 @@ export default function CampaignTop3() {
         </Typography>
       </Box>
 
-      {/* ─── 스크롤 영역 ─── */}
       <CardContent
         sx={{
-          display: 'flex',
-          flexDirection: 'row',
-          gap: 2,
-          overflowX: 'auto',
+          flexGrow: 1,
           px: 2,
           pb: 2,
+          position: 'relative',
         }}
       >
-       {MOST_DONATED.map(item => (
-          <Box
-            key={item.id}
-            sx={{
-              flex: '0 0 33.333%', // 3개가 부모 폭의 1/3씩 차지
-              minWidth: 0,         // 자식 내부 텍스트 래핑을 막기 위함
-            }}
+        <AnimatePresence custom={direction} mode="wait">
+          <motion.div
+            key={currentPost.id}
+            custom={direction}
+            initial={{ x: direction * 300, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: direction * -300, opacity: 0 }}
+            transition={{ duration: 0.6 }}
+            style={{ position: 'absolute', width: '100%' }}
           >
-            <CampaignTop3Card {...item} />
-          </Box>
-        ))}
-
+            <CampaignTop3Card
+              title={currentPost.title}
+              organization={currentPost.teamName}
+              amount={currentPost.currentAmount}
+              percent={Math.round(
+                (currentPost.currentAmount / currentPost.targetAmount) * 100
+              )}
+            />
+          </motion.div>
+        </AnimatePresence>
       </CardContent>
     </Card>
-
   );
+
 }
