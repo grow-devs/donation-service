@@ -43,4 +43,8 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
         WHERE d.user.id = :userId
         """)
     Page<UserDonationInfoProjection> findUserDonationInfoByUserId(@Param("userId") Long userId, Pageable pageable);
+
+    @Query("select sum(d.point) from Donation d ")
+    Long sumAllDonationAmounts();
+
 }
