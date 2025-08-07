@@ -1,6 +1,6 @@
 // CampaignTop3.jsx
 import React, {useEffect, useState} from 'react';
-import { Typography, Box, Card, CardContent, Fade} from '@mui/material';
+import { Typography, Box, Card, CardContent} from '@mui/material';
 import { AnimatePresence, motion } from 'framer-motion';
 import api from '../apis/api';
 import CampaignTop3Card from './CampaignTop3Card';
@@ -28,7 +28,7 @@ export default function CampaignTop3() {
 
   // 슬라이드 전환 타이머
   useEffect(() => {
-    if (topPosts.length === 0) return;
+    if (topPosts.length <= 1) return;
 
     const interval = setInterval(() => {
       setDirection(1); // 오른쪽에서 왼쪽으로
@@ -38,9 +38,15 @@ export default function CampaignTop3() {
     return () => clearInterval(interval);
   }, [topPosts]);
 
-  if (loading) return <Typography>로딩 중...</Typography>;
+  if (loading)
+    return <Typography>로딩 중...</Typography>;
+  if (topPosts.length === 0) 
+    return <Typography>게시물이 없습니다.</Typography>;
 
   const currentPost = topPosts[currentIndex];
+
+  // currentPost가 없는 경우 렌더링하지 않음
+  if (!currentPost) return null;
 
   return (
     <Card
@@ -72,7 +78,7 @@ export default function CampaignTop3() {
           position: 'relative',
         }}
       >
-        <AnimatePresence custom={direction} mode="wait">
+        <AnimatePresence custom={direction}>
           <motion.div
             key={currentPost.id}
             custom={direction}
@@ -84,8 +90,10 @@ export default function CampaignTop3() {
           >
             <CampaignTop3Card
               title={currentPost.title}
-              organization={currentPost.teamName}
+              imageUrl={currentPost.imageUrl}
               amount={currentPost.currentAmount}
+              targetAmount={currentPost.targetAmount}
+              deadline={currentPost.deadline}
               percent={Math.round(
                 (currentPost.currentAmount / currentPost.targetAmount) * 100
               )}

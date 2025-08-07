@@ -9,8 +9,6 @@ import CampaignTop3 from '../components/CampaignTop3';
 import ClosingOnGoal from '../components/ClosingOnGoal';
 import TodayStats from '../components/TodayStats';
 import RankingCard from '../components/RankingCard';
-import TestProtectedButton from './TestProtectedButton';
-// ... 생략 ...
 
 export default function MainPage() {
   const sampleEnd = new Date();
@@ -22,11 +20,11 @@ export default function MainPage() {
   ];
 
   return (
-    <Container maxWidth={300} sx={{ py: 5, md: 'auto' }}>
-      {/* <Grid><TestProtectedButton /></Grid> */}
-      <Grid container spacing={4} alignItems="flex-start" justifyContent="center" columnSpacing={{ xs: 4, sm: 5, md: 10 }}>
+    <Container maxWidth={2000} sx={{ py: 5 }}>
+      <Grid container spacing={4} alignItems="flex-start" justifyContent="center" columnSpacing={{ xs: 4, sm: 5, md: 4 }}>
         <Grid item xs={12} sm={6} md={8} container spacing={4} direction="column" justifyContent="center">
           <MainCategory />
+          <CampaignTop3 />
           <TimeImpendingCampaignCard
             title="시간이 얼마 남지 않았어요!"
             endTime={sampleEnd}
@@ -36,7 +34,6 @@ export default function MainPage() {
             onHeart={() => alert('하트 후원!')}
             onDonate={() => alert('기부하기 클릭')}
           />
-          <CampaignTop3 />
           <ClosingOnGoal
             title="마지막 기부자를 찾습니다!"
             endTime={sampleEnd}
