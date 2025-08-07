@@ -113,9 +113,6 @@ public class PostController {
     // 현재 기부금이 가장 높은 게시물 3개 조회
     @GetMapping("/top3-current-amount")
     public ResponseEntity<Result> getTop3CurrentAmountPosts() {
-        // 현재 기부금이 가장 높은 게시물 3개 조회
-        // PostDto.PostMainResponse는 게시물의 요약 정보만 포함
-        // 예: id, title, currentAmount 등
         List<PostDto.PostMainResponse> topPosts = postService.getTop3CurrentAmountPosts();
         return ResponseEntity.ok().body(Result.builder()
                 .message("현재 기부금이 가장 높은 게시물 3개 조회 성공")
