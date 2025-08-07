@@ -44,16 +44,43 @@ export default function CampaignTop3Card({
     >
       {/* 좌측 영역: 썸네일 이미지 */}
       <Box 
-        component="img"
-        src={imageUrl}
-        alt={title}
         sx={{
-          width: '40%', // 좌측 영역 40% 할당
+          position: 'relative',
+          width: '40%',
           height: '100%',
-          objectFit: 'cover', // 이미지가 박스에 맞게 채워지도록
-          borderRadius: '8px 0 0 8px', // 좌측 상하단에만 border-radius 적용
+          borderRadius: '8px 0 0 8px',
+          overflow: 'hidden',
         }}
-      />
+      >
+        <Box
+          component="img"
+          src={imageUrl}
+          alt={title}
+          sx={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            display: 'block'
+          }}
+        />
+        {/* '종료임박' 배지 */}
+        <Box 
+          sx={{ 
+            position: 'absolute',
+            bottom: 8,
+            left: 8,
+            bgcolor: 'error.main',
+            color: 'white',
+            borderRadius: '16px',
+            px: 1.5,
+            py: 0.5,
+            typography: 'caption',
+            fontWeight: 500,
+          }}
+        >
+          종료임박
+        </Box>
+      </Box>
       
       {/* 우측 영역 */}
       <CardContent sx={{ flexGrow: 1, width: '60%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
@@ -78,29 +105,25 @@ export default function CampaignTop3Card({
             />
           </Box>
 
-          {/* 금액 및 남은 날짜 */}
-          <Grid container alignItems="flex-end" sx={{ mb: 1 }}>
-            <Grid item xs={6}>
-              <Typography variant="body1" fontWeight={600} sx={{ textAlign: 'left' }}>
-                {formatAmount(currentAmount)}원
-              </Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'right' }}>
-                {formatAmount(targetAmount)}원
-              </Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <Typography variant="body2" fontWeight={400} sx={{ color: 'primary.main', textAlign: 'left' }}>
-                {percent}% 달성
-              </Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'right' }}>
-                {diffDays >= 0 ? `${diffDays}일 남음` : '마감'}
-              </Typography>
-            </Grid>
-          </Grid>
+          {/* 금액 정보 */}
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', mt: 1 }}>
+            <Typography variant="body1" fontWeight={600}>
+              {formatAmount(currentAmount)}원
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {formatAmount(targetAmount)}원 목표
+            </Typography>
+          </Box>
+          
+          {/* 달성률과 남은 일자 */}
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mt: 0.5 }}>
+            <Typography variant="body2" fontWeight={400} sx={{ color: 'primary.main' }}>
+              {percent}% 달성
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {diffDays >= 0 ? `${diffDays}일 남음` : '마감'}
+            </Typography>
+          </Box>
         </Box>
 
         {/* 하트응원 및 기부하기 버튼 */}

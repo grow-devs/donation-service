@@ -57,7 +57,7 @@ export default function CampaignTop3() {
         width: '100%',
         display: 'flex',
         flexDirection: 'column',
-        height: 300,
+        height: 340,
         overflow: 'hidden',
       }}
     >
