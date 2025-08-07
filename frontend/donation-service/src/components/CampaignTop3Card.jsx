@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import api from '../apis/api';
+import useAuthStore from '../store/authStore';
 
 export default function CampaignTop3Card({
   postId,
@@ -19,10 +20,13 @@ export default function CampaignTop3Card({
   targetAmount,
   deadline,
   percent,
-  initialIsLiked
+  initialIsLiked,
+  onLoginRequired
 }) {
+
   // 게시물 좋아요 상태를 관리하는 state
   const [isLiked, setIsLiked] = useState(initialIsLiked);
+  const isAuthenticated = useAuthStore(state => state.isAuthenticated); // 로그인 상태를 확인하는 코드
   // 참고로 여기선 좋아요 수는 표시하지 않는다.
 
   // 마감일(deadline)과 현재 날짜의 차이를 계산하여 남은 일수 구하기
@@ -38,15 +42,18 @@ export default function CampaignTop3Card({
 
   // '하트응원' 버튼 클릭 시 좋아요 API 호출
   const handleLikeClick = async () => {
-    // 좋아요는 한 번만 가능하므로, 이미 좋아요를 눌렀으면 아무 동작도 하지 않음.
+    // 1. 로그인 상태가 아니면 로그인 모달을 띄우고 함수 종료
+    if (!isAuthenticated) {
+      onLoginRequired();
+      return;
+    }
+  
+    // 2. 로그인된 상태이고, 이미 좋아요를 눌렀다면 아무 동작도 하지 않음.
     if (isLiked) {
       alert('이미 좋아요를 누르셨습니다.');
       return;
     }
-  
-    // TODO: 로그인된 유저가 있는지 확인하는 로직 추가
-    // 로그인된 유저가 없으면 좋아요 요청을 보내지 않거나 로그인 페이지로 리디렉션해야 합니다.
-
+    
     try {
       // 좋아요 API 호출 (FundraisingSummary.jsx와 동일한 로직)
       const response = await api.post(`/post-like/${postId}`);
