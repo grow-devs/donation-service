@@ -11,19 +11,37 @@ export default function CampaignTop3() {
   const [direction, setDirection] = useState(1); // 슬라이드 방향
   const [loading, setLoading] = useState(true);
 
+  // 컴포넌트 마운트 시 한 번만 API 호출
   useEffect(() => {
-    const fetchTop3CurrentAmountPosts = async () => {
+    const fetchTop3CurrentAmountPostsWithLikeStatus = async () => {
+      setLoading(true);
       try {
-        const response = await api.get('/post/top3-current-amount');
-        setTopPosts(response.data.data);
+        const postsResponse = await api.get('/post/top3-current-amount');
+        const posts = postsResponse.data.data;
+        
+        // 3개의 게시물에 대해 각각 좋아요 상태를 확인하는 API를 호출
+        const likedStatusPromises = posts.map(post =>
+          api.get(`/post-like/check/${post.id}`)
+        );
+
+        const likedStatusResponses = await Promise.all(likedStatusPromises);
+        
+        // 게시물 데이터와 좋아요 상태 데이터를 병합
+        const postsWithLikeStatus = posts.map((post, index) => ({
+          ...post,
+          isLiked: likedStatusResponses[index].data.data,
+        }));
+        
+        setTopPosts(postsWithLikeStatus);
+
       } catch (error) {
-        console.error('❌ Top 3 기부 게시물 조회 실패:', error);
+        console.error('❌ Top 3 기부 게시물 조회 및 좋아요 상태 확인 실패:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchTop3CurrentAmountPosts();
+    fetchTop3CurrentAmountPostsWithLikeStatus();
   }, []);
 
   // 슬라이드 전환 타이머
@@ -89,6 +107,7 @@ export default function CampaignTop3() {
             style={{ position: 'absolute', width: '100%' }}
           >
             <CampaignTop3Card
+              postId={currentPost.id}
               title={currentPost.title}
               imageUrl={currentPost.imageUrl}
               currentAmount={currentPost.currentAmount}
@@ -97,6 +116,7 @@ export default function CampaignTop3() {
               percent={Math.round(
                 (currentPost.currentAmount / currentPost.targetAmount) * 100
               )}
+              initialIsLiked={currentPost.isLiked} // isLiked 상태를 prop으로 전달
             />
           </motion.div>
         </AnimatePresence>

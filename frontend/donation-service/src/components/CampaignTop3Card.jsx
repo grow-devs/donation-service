@@ -1,5 +1,5 @@
 // CampaignTop3Card.jsx
-import React from 'react';
+import React, {useState } from 'react';
 import {
   Card,
   CardContent,
@@ -7,18 +7,23 @@ import {
   Box,
   LinearProgress,
   Button,
-  Grid
 } from '@mui/material';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import api from '../apis/api';
 
 export default function CampaignTop3Card({
+  postId,
   title,
   imageUrl,
   currentAmount,
   targetAmount,
   deadline,
-  percent
+  percent,
+  initialIsLiked
 }) {
+  // 게시물 좋아요 상태를 관리하는 state
+  const [isLiked, setIsLiked] = useState(initialIsLiked);
+  // 참고로 여기선 좋아요 수는 표시하지 않는다.
 
   // 마감일(deadline)과 현재 날짜의 차이를 계산하여 남은 일수 구하기
   const today = new Date();
@@ -29,6 +34,40 @@ export default function CampaignTop3Card({
   // 금액을 천 단위로 포맷하는 함수
   const formatAmount = (value) => {
     return value.toLocaleString('ko-KR');
+  };
+
+  // '하트응원' 버튼 클릭 시 좋아요 API 호출
+  const handleLikeClick = async () => {
+    // 좋아요는 한 번만 가능하므로, 이미 좋아요를 눌렀으면 아무 동작도 하지 않음.
+    if (isLiked) {
+      alert('이미 좋아요를 누르셨습니다.');
+      return;
+    }
+  
+    // TODO: 로그인된 유저가 있는지 확인하는 로직 추가
+    // 로그인된 유저가 없으면 좋아요 요청을 보내지 않거나 로그인 페이지로 리디렉션해야 합니다.
+
+    try {
+      // 좋아요 API 호출 (FundraisingSummary.jsx와 동일한 로직)
+      const response = await api.post(`/post-like/${postId}`);
+      if (response.status === 200) {
+        setIsLiked(true); // 좋아요 성공 시 isLiked 상태를 true로 변경
+        alert("게시글을 좋아요했습니다!");
+      }
+    } catch (error) {
+      if (error.response) {
+        const errorResult = error.response.data;
+        // 이미 좋아요를 누른 경우
+        if (errorResult.message === "POST_LIKE_ALREADY_EXISTS") {
+            alert("이미 이 게시글에 좋아요를 누르셨습니다.");
+            setIsLiked(true); // 혹시 모를 상황에 대비하여 isLiked를 true로 강제 설정
+        } else {
+            alert(`좋아요 처리 중 오류 발생: ${errorResult.message || '알 수 없는 오류'}`);
+        }
+      } else {
+        alert("네트워크 오류: 서버에 연결할 수 없습니다.");
+      }
+    }
   };
 
   return (
@@ -89,7 +128,6 @@ export default function CampaignTop3Card({
           <Typography
             variant="h6"
             fontWeight={600}
-            gutterBottom
             noWrap
             sx={{ mb: 1 }}
           >
@@ -132,6 +170,8 @@ export default function CampaignTop3Card({
             variant="outlined"
             startIcon={<FavoriteBorderIcon />}
             sx={{ flex: 1, borderColor: 'primary.main', color: 'primary.main' }}
+            onClick={handleLikeClick} // onClick 이벤트 핸들러 추가
+            disabled={isLiked} // isLiked 상태에 따라 버튼 활성화/비활성화
           >
             하트응원
           </Button>
