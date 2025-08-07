@@ -14,7 +14,7 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 export default function CampaignTop3Card({
   title,
   imageUrl,
-  amount,
+  currentAmount,
   targetAmount,
   deadline,
   percent
@@ -82,7 +82,7 @@ export default function CampaignTop3Card({
           <Grid container alignItems="flex-end" sx={{ mb: 1 }}>
             <Grid item xs={6}>
               <Typography variant="body1" fontWeight={600} sx={{ textAlign: 'left' }}>
-                {formatAmount(amount)}원
+                {formatAmount(currentAmount)}원
               </Typography>
             </Grid>
             <Grid item xs={6}>

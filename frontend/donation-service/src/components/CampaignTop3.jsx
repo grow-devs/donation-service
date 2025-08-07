@@ -91,7 +91,7 @@ export default function CampaignTop3() {
             <CampaignTop3Card
               title={currentPost.title}
               imageUrl={currentPost.imageUrl}
-              amount={currentPost.currentAmount}
+              currentAmount={currentPost.currentAmount}
               targetAmount={currentPost.targetAmount}
               deadline={currentPost.deadline}
               percent={Math.round(
