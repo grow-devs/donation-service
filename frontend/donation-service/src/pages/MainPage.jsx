@@ -26,15 +26,7 @@ export default function MainPage() {
           <MainCategory />
           <CampaignTop3 />
           <TimeImpendingCampaign />
-          <ClosingOnGoal
-            title="마지막 기부자를 찾습니다!"
-            endTime={sampleEnd}
-            imageUrl="src/assets/react.svg"
-            raised={923137}
-            goal={1155000}
-            onHeart={() => alert('하트 후원!')}
-            onDonate={() => alert('기부하기 클릭')}
-          />
+          <ClosingOnGoal />
         </Grid>
         <Grid item xs={12} sm={6} md={4} container spacing={4} direction="column" justifyContent="center" alignItems="center">
           <TotalAmount totalDonation={125000000} />
