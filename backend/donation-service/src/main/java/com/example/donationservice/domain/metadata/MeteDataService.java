@@ -4,5 +4,9 @@ import com.example.donationservice.domain.metadata.dto.MetaDataDto;
 
 public interface MeteDataService {
 
-    MetaDataDto.Response getTotalAmount();
+    MetaDataDto.TotalAmountResponse getTotalAmount();
+
+    MetaDataDto.TotalDonorsResponse getTotalDonors();
+
+    MetaDataDto.FirstDonationResponse getfirstDonation();
 }
