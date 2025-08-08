@@ -47,4 +47,7 @@ public interface PostRepository extends JpaRepository<Post,Long>,PostRepositoryC
     WHERE t.user.id = :userId
     """)
     Page<UserPostInfoProjection> findPostsByTeamUserId(@Param("userId") Long userId, Pageable pageable);
+
+    @Query("select sum(p.currentAmount) from Post p")
+    Long sumAllDonationAmounts();
 }
