@@ -23,4 +23,26 @@ public class MetaDataController {
                         .build()
         );
     }
+
+    @GetMapping("/totalDonors")
+    public ResponseEntity<Result> getTotalDonors(){
+
+        return ResponseEntity.ok().body(
+                Result.builder()
+                        .message("총 후원자 수 조회를 성공했습니다.")
+                        .data(meteDataService.getTotalDonors())
+                        .build()
+        );
+    }
+
+    @GetMapping("/firstDonation")
+    public ResponseEntity<Result> getfirstDonation(){
+
+        return ResponseEntity.ok().body(
+                Result.builder()
+                        .message("오늘 처음 기부의 정보 조회를 성공했습니다.")
+                        .data(meteDataService.getfirstDonation())
+                        .build()
+        );
+    }
 }
