@@ -13,7 +13,7 @@ export default function CampaignTop3() {
   const [direction, setDirection] = useState(1); // 슬라이드 방향
   const [loading, setLoading] = useState(true);
 
-  const isAuthenticated = useAuthStore(state => state.isAuthenticated);
+  const isAuthenticated = useAuthStore(state => state.isLoggedIn);
 
   // 로그인 모달 상태 관리
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -22,6 +22,7 @@ export default function CampaignTop3() {
 
   // 게시물 목록과 좋아요 상태를 한 번에 가져오는 함수
   const fetchPosts = async () => {
+    // console.log("🔄 ~~~~~ fetchPosts 호출됨");
     setLoading(true);
     try {
       const postsResponse = await api.get('/post/top3-current-amount');
@@ -60,7 +61,9 @@ export default function CampaignTop3() {
 
   // 컴포넌트 마운트 시 한 번만 API 호출
   useEffect(() => {
+    // console.log("📌 1 ~~~~~ isAuthenticated 변경됨, fetchPosts 실행:", isAuthenticated);
     fetchPosts();
+    // console.log("📌 2 ~~~~~ isAuthenticated 변경됨, fetchPosts 실행:", isAuthenticated);
   }, [isAuthenticated]);
 
   // 슬라이드 전환 타이머

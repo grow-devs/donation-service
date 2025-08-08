@@ -1,5 +1,5 @@
 // CampaignTop3Card.jsx
-import React, {useState } from 'react';
+import React, {useState, useEffect } from 'react';
 import {
   Card,
   CardContent,
@@ -26,8 +26,18 @@ export default function CampaignTop3Card({
 
   // 게시물 좋아요 상태를 관리하는 state
   const [isLiked, setIsLiked] = useState(initialIsLiked);
-  const isAuthenticated = useAuthStore(state => state.isAuthenticated); // 로그인 상태를 확인하는 코드
+
+  useEffect(() => {
+    // console.log(`🎯 1 ~~~~~ postId: ${postId}, initialIsLiked 값:`, initialIsLiked);
+    setIsLiked(initialIsLiked);
+    // console.log(`🎯 2 ~~~~~ postId: ${postId}, initialIsLiked 값:`, initialIsLiked);
+  }, [initialIsLiked]);
+
+  const isAuthenticated = useAuthStore(state => state.isLoggedIn); // 로그인 상태를 확인하는 코드
   // 참고로 여기선 좋아요 수는 표시하지 않는다.
+  // console.log("✅ ~~~~~ isAuthenticated 상태:", isAuthenticated);
+
+  
 
   // 마감일(deadline)과 현재 날짜의 차이를 계산하여 남은 일수 구하기
   const today = new Date();
