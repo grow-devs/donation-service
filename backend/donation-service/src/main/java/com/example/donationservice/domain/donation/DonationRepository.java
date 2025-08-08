@@ -1,5 +1,6 @@
 package com.example.donationservice.domain.donation;
 
+import com.example.donationservice.domain.metadata.dto.MetaDataDto;
 import com.example.donationservice.domain.user.User;
 import com.example.donationservice.domain.user.dto.UserDonationInfoProjection;
 import org.springframework.data.domain.Page;
@@ -26,6 +27,10 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
     @Query(value = "SELECT d.user.id, SUM(d.point) FROM Donation d GROUP BY d.user.id")
     List<Object[]> findDonors();
 
+    //총 후원자 수 조회(distinct)
+    @Query(value = "SELECT count(DISTINCT d.user.id) FROM Donation d")
+    Long CountDistinctDonors();
+
     Optional<Donation> findByUser(User user);
 
     // fetcj join으로
@@ -47,4 +52,12 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
     @Query("select sum(d.point) from Donation d ")
     Long sumAllDonationAmounts();
 
+    //오늘 처음 기부한 기부자의 정보
+    //해당 user의 기부가 가장 처음으로 기부되었기에 이 유저의 도네이션에서 가장 최근 도네이션을 찾는다.
+        @Query(value = "SELECT " +
+                " new com.example.donationservice.domain.metadata.dto.MetaDataDto$FirstDonationResponse(d.user.nickName,d.user.createdAt) " +
+                "FROM Donation d " +
+                "where d.user.id = :userId " +
+                "ORDER BY createdAt DESC")
+    List<MetaDataDto.FirstDonationResponse> findFirstDonation(Long userId,Pageable pageable);
 }
