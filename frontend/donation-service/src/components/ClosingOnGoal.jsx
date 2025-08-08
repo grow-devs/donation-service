@@ -56,83 +56,101 @@ export default function ClosingOnGoal() {
 
   if (loading) {
     return (
-      <Grid item xs={12} sm={6}>
-        <Card
-          sx={{
-            borderRadius: 3,
-            boxShadow: 2,
-            width: '100%',
-            height: 180,
-            display: 'flex',
-            flexDirection: 'column',
-            overflow: 'hidden',
-            p: 2,
-          }}
-        >
-          <Box sx={{ p: 2 }}>
-            <Typography variant="h6" fontWeight={700}>
-              기부율이 가장 높은 게시물 조회
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              당신의 따뜻한 마음을 나누어주세요!
-            </Typography>
-          </Box>
-          <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <CircularProgress />
-          </Box>
-        </Card>
-      </Grid>
+      <Card
+        sx={{
+          borderRadius: 3,
+          boxShadow: 2,
+          maxWidth: 600,
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          height: 340,
+          overflow: 'hidden',
+          p: 2,
+        }}
+      >
+        <Box sx={{ p: 2 }}>
+          <Typography variant="h6" fontWeight={700}>
+            목표 달성에 가까워졌어요!
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            당신의 마음을 더해주세요.
+          </Typography>
+        </Box>
+        <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <CircularProgress />
+        </Box>
+      </Card>
     );
   }
 
   if (error || !post) {
     return (
-      <Grid item xs={12} sm={6}>
-        <Card
-          sx={{
-            borderRadius: 3,
-            boxShadow: 2,
-            width: '100%',
-            height: 180,
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            p: 2,
-          }}
-        >
-          <Box sx={{ p: 2, width: '100%' }}>
-            <Typography variant="h6" fontWeight={700}>
-              기부율이 가장 높은 게시물 조회
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              당신의 따뜻한 마음을 나누어주세요!
-            </Typography>
-          </Box>
-          <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <Typography color="text.secondary">
-              기부율이 높은 게시물을 찾을 수 없습니다.
-            </Typography>
-          </Box>
-        </Card>
-      </Grid>
+      <Card
+        sx={{
+          borderRadius: 3,
+          boxShadow: 2,
+          maxWidth: 600,
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: 340,
+          p: 2,
+        }}
+      >
+        <Box sx={{ p: 2, width: '100%' }}>
+          <Typography variant="h6" fontWeight={700}>
+            목표 달성에 가까워졌어요!
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            당신의 마음을 더해주세요.
+          </Typography>
+        </Box>
+        <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <Typography color="text.secondary">
+            목표 달성에 가까워진 게시물을 찾을 수 없습니다.
+          </Typography>
+        </Box>
+      </Card>
     );
   }
 
   return (
     <>
-      <Grid item xs={12} sm={6}>
-        <ClosingOnGoalCard
-          postId={post.id}
-          title={post.title}
-          endTime={post.deadline}
-          imageUrl={post.imageUrl}
-          raised={post.currentAmount}
-          goal={post.targetAmount}
-          initialIsLiked={post.isLiked}
-          onLoginRequired={handleOpenLoginModal}
-        />
-      </Grid>
+      <Box sx={{ 
+        maxWidth: 600, 
+        width: '100%', 
+        borderRadius: 3, 
+        boxShadow: 2,
+        height: 340,
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+      }}>
+        <Box sx={{ p: 2 }}>
+          <Typography variant="h6" fontWeight={700}>
+            목표 달성에 가까워졌어요!
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            당신의 마음을 더해주세요.
+          </Typography>
+        </Box>
+        <Box sx={{ flexGrow: 1, px: 2, pb: 2, pt: 0 }}>
+          <ClosingOnGoalCard
+            postId={post.id}
+            title={post.title}
+            endTime={post.deadline}
+            imageUrl={post.imageUrl}
+            raised={post.currentAmount}
+            goal={post.targetAmount}
+            initialIsLiked={post.isLiked}
+            onLoginRequired={handleOpenLoginModal}
+          />
+        </Box>
+      </Box>
+
       {/* 로그인 모달 */}
       <Modal 
         open={isLoginModalOpen} 
