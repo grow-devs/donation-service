@@ -162,7 +162,7 @@ export default function MainAppBar() {
     try {
       // 모든 알림을 읽음 처리하는 API (가정)
       // 실제 백엔드 API에 따라 구현 방식이 달라질 수 있습니다.
-      // await api.patch("/alarm/read-all");
+      await api.patch("/alarm/read-all");
 
       setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
       setUnreadCount(0); // 모든 알림을 읽었으므로 뱃지 카운트 0으로 설정
@@ -241,7 +241,7 @@ export default function MainAppBar() {
   };
 
   return (
-    <Box sx={{ mb: 9 }}>
+    <Box sx={{ mb: 8 }}>
       <Paper
         elevation={1}
         sx={{
@@ -250,7 +250,7 @@ export default function MainAppBar() {
           left: 0,
           right: 0,
           borderRadius: 3,
-          mx: { xs: 2, sm: 3, md: 10 },
+          mx: { xs: 2, sm: 3, md: 20 },
           mb: 3,
           px: { xs: "4%", sm: "8%" },
           zIndex: (theme) => theme.zIndex.appBar + 1,
