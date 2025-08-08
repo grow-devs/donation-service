@@ -4,7 +4,7 @@ import { Container, Grid } from '@mui/material';
 // ↓ 아래 import들은 기존 App.jsx의 내용과 동일
 import MainCategory from '../components/MainCategory';
 import TotalAmount from '../components/TotalAmount';
-import TimeImpendingCampaignCard from '../components/TimeImpendingCampaignCard';
+import TimeImpendingCampaign from '../components/TimeImpendingCampaign';
 import CampaignTop3 from '../components/CampaignTop3';
 import ClosingOnGoal from '../components/ClosingOnGoal';
 import TodayStats from '../components/TodayStats';
@@ -25,15 +25,7 @@ export default function MainPage() {
         <Grid item xs={12} sm={6} md={8} container spacing={4} direction="column" justifyContent="center">
           <MainCategory />
           <CampaignTop3 />
-          <TimeImpendingCampaignCard
-            title="시간이 얼마 남지 않았어요!"
-            endTime={sampleEnd}
-            imageUrl="src/assets/react.svg"
-            raised={923137}
-            goal={1155000}
-            onHeart={() => alert('하트 후원!')}
-            onDonate={() => alert('기부하기 클릭')}
-          />
+          <TimeImpendingCampaign />
           <ClosingOnGoal
             title="마지막 기부자를 찾습니다!"
             endTime={sampleEnd}

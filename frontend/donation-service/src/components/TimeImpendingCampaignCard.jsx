@@ -2,25 +2,36 @@
 import React, { useState, useEffect } from 'react';
 import {
   Card,
-  CardMedia,
   CardContent,
   Box,
   Typography,
   Button,
   LinearProgress,
 } from '@mui/material';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import { useNavigate } from 'react-router-dom';
+import useAuthStore from '../store/authStore';
+import api from '../apis/api';
 
 export default function TimeImpendingCampaignCard({
+  postId,
   title,
   endTime,      // Date 객체 또는 타임스탬프
   imageUrl,
   raised,
   goal,
-  onHeart,
-  onDonate,
+  initialIsLiked,
+  onLoginRequired,
 }) {
+  const navigate = useNavigate();
+  const isAuthenticated = useAuthStore(state => state.isLoggedIn);
+  const [isLiked, setIsLiked] = useState(initialIsLiked);
+
+  useEffect(() => {
+    setIsLiked(initialIsLiked);
+  }, [initialIsLiked]);
+
+  // 남은 시간을 계산하는 함수 (시:분:초 형식)
   const calcTimeLeft = () => {
     const diff = Math.max(0, new Date(endTime) - new Date());
     const secs = Math.floor(diff / 1000) % 60;
@@ -36,101 +47,206 @@ export default function TimeImpendingCampaignCard({
     return () => clearInterval(timer);
   }, [endTime]);
 
+  // 달성률 계산
   const percent = Math.min(100, (raised / goal) * 100);
+
+  // 남은 일수를 계산하는 로직
+  const today = new Date();
+  const deadlineDate = new Date(endTime);
+  const diffTime = deadlineDate.getTime() - today.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+  // 금액 포맷 함수
+  const formatAmount = (value) => {
+    return value.toLocaleString('ko-KR');
+  };
+
+  // 카드 클릭 시 상세 페이지 이동
+  const handleCardClick = () => {
+    navigate(`/post-detail/${postId}`);
+  };
+
+  // 하트 응원 버튼 클릭 핸들러
+  const handleHeartClick = async (event) => {
+    event.stopPropagation();
+    if (!isAuthenticated) {
+      onLoginRequired();
+      return;
+    }
+    
+    if (isLiked) {
+      alert('이미 좋아요를 누르셨습니다.');
+      return;
+    }
+      
+    try {
+      const response = await api.post(`/post-like/${postId}`);
+      if (response.status === 200) {
+        setIsLiked(true);
+        alert("게시글을 좋아요했습니다!");
+      }
+    } catch (error) {
+      if (error.response) {
+        const errorResult = error.response.data;
+        if (errorResult.message === "POST_LIKE_ALREADY_EXISTS") {
+            alert("이미 이 게시글에 좋아요를 누르셨습니다.");
+            setIsLiked(true);
+        } else {
+            alert(`좋아요 처리 중 오류 발생: ${errorResult.message || '알 수 없는 오류'}`);
+        }
+      } else {
+        alert("네트워크 오류: 서버에 연결할 수 없습니다.");
+      }
+    }
+  };
+
+  // 기부하기 버튼 클릭 핸들러
+  const handleDonateClick = (event) => {
+    event.stopPropagation();
+    // 여기에 기부 페이지로 이동하는 로직 추가
+    navigate(`/post-detail/${postId}`);
+  };
 
   return (
     <Card
+      elevation={1}
+      onClick={handleCardClick}
       sx={{
-        width: '100%',   
-        borderRadius: 3,
-        boxShadow: 2,
-        overflow: 'hidden',
+        borderRadius: 2,
         display: 'flex',
-        flexDirection: 'column',
+        flexDirection: 'row',
+        height: '100%',
+        boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+        cursor: 'default',
+        '&:hover': {
+          cursor: 'pointer',
+        },
       }}
     >
-      {/* 1. 헤더: 제목 + 카운트다운 + 종료 임박 버튼 */}
-      <Box
+      {/* 좌측 영역: 썸네일 이미지와 오버레이 */}
+      <Box 
         sx={{
-          px: 2,
-          py: 1,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          backgroundColor: '#fff',
+          position: 'relative',
+          width: '40%',
+          height: '100%',
+          borderRadius: '8px 0 0 8px',
+          overflow: 'hidden',
         }}
       >
-        <Typography variant="subtitle1" fontWeight={600}>
-          {title}
-          <Typography variant="subtitle2" fontWeight={300}>
-          망설이면 끝! 조금만 더 힘을 보태주세요.
-        </Typography>
-        </Typography>
-        
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <AccessTimeIcon color="action" fontSize="small" />
+        <Box
+          component="img"
+          src={imageUrl}
+          alt={title}
+          sx={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            display: 'block'
+          }}
+        />
+        {/* '종료임박' 배지 */}
+        <Box 
+          sx={{ 
+            position: 'absolute',
+            bottom: 8,
+            left: 8,
+            bgcolor: 'error.main',
+            color: 'white',
+            borderRadius: '16px',
+            px: 1.5,
+            py: 0.5,
+            typography: 'caption',
+            fontWeight: 500,
+          }}
+        >
+          종료임박
+        </Box>
+        {/* 시간 카운트다운 오버레이 */}
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 16,
+            left: 16,
+            bgcolor: 'rgba(0, 0, 0, 0.7)',
+            color: 'white',
+            borderRadius: 1,
+            px: 1.5,
+            py: 0.5,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1,
+            typography: 'body1',
+            fontWeight: 700
+          }}
+        >
+          {timeLeft}
+        </Box>
+      </Box>
+      
+      {/* 우측 영역 */}
+      <CardContent sx={{ flexGrow: 1, width: '60%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        <Box>
+          {/* 게시물 제목 */}
           <Typography
-            variant="body2"
-            color={timeLeft === '00:00:00' ? 'error' : 'text.secondary'}
+            variant="h6"
+            fontWeight={400}
+            noWrap
+            sx={{ mb: 1 }}
           >
-            {timeLeft}
+            {title}
           </Typography>
+          
+          {/* 부제 */}
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+            망설이면 끝! 조금만 더 힘을 보태주세요.
+          </Typography>
+
+          {/* 진행률 바 */}
+          <Box sx={{ mt: 2, mb: 1 }}>
+            <LinearProgress
+              variant="determinate"
+              value={percent}
+              sx={{ height: 8, borderRadius: 3, backgroundColor: '#e0e0e0', '& .MuiLinearProgress-bar': { backgroundColor: 'primary.main' } }}
+            />
+          </Box>
+
+          {/* 금액 정보 */}
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', mt: 1 }}>
+            <Typography variant="body1" fontWeight={600}>
+              {formatAmount(raised)}원
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {formatAmount(goal)}원 목표
+            </Typography>
+          </Box>
+          
+          {/* 달성률과 남은 일자 */}
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mt: 0.5 }}>
+            <Typography variant="body2" fontWeight={400} sx={{ color: 'primary.main' }}>
+              {percent.toFixed(0)}% 달성
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {diffDays >= 0 ? `${diffDays}일 남음` : '마감'}
+            </Typography>
+          </Box>
+        </Box>
+
+        {/* 하트응원 및 기부하기 버튼 */}
+        <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
           <Button
-            size="small"
-            color="error"
-            variant="contained"
-            sx={{ textTransform: 'none', fontSize: '0.75rem' }}
+            variant="outlined"
+            startIcon={<FavoriteBorderIcon />}
+            sx={{ flex: 1, borderColor: 'primary.main', color: 'primary.main' }}
+            onClick={handleHeartClick}
+            disabled={isLiked}
           >
-            종료임박
+            하트응원
+          </Button>
+          <Button variant="contained" sx={{ flex: 1 }} onClick={handleDonateClick}>
+            기부하기
           </Button>
         </Box>
-      </Box>
-
-      {/* 2. 대표 이미지 */}
-      <CardMedia
-        component="img"
-        height="180"
-        image={imageUrl}
-        alt={title}
-        sx={{ objectFit: 'cover' }}
-      />
-
-      {/* 3. 진행률 표시 */}
-      <CardContent sx={{ pt: 2, px: 2 }}>
-        <Box sx={{ mb: 1 }}>
-          <LinearProgress
-            variant="determinate"
-            value={percent}
-            sx={{ height: 8, borderRadius: 4 }}
-          />
-        </Box>
-        <Typography variant="body2" color="text.secondary">
-          {`${percent.toFixed(0)}% 달성 (${raised.toLocaleString()}원 / ${goal.toLocaleString()}원)`}
-        </Typography>
       </CardContent>
-
-      {/* 4. 버튼 그룹 */}
-      <Box
-        sx={{
-          px: 2,
-          pb: 2,
-          pt: 1,
-          display: 'flex',
-          gap: 1,
-        }}
-      >
-        <Button
-          startIcon={<FavoriteBorderIcon />}
-          variant="outlined"
-          fullWidth
-          onClick={onHeart}
-        >
-          하트후원
-        </Button>
-        <Button variant="contained" fullWidth onClick={onDonate}>
-          기부하기
-        </Button>
-      </Box>
     </Card>
   );
 }
