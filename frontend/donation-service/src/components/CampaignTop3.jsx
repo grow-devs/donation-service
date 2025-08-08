@@ -46,7 +46,7 @@ export default function CampaignTop3() {
       sx={{
         borderRadius: 3,
         boxShadow: 2,
-        maxWidth: 600, 
+        // maxWidth: 600, 
         width: '100%',            // 부모 카드 폭 고정
         display: 'flex',
         flexDirection: 'column',
