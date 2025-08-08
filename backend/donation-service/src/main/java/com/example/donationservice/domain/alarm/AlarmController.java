@@ -56,6 +56,24 @@ public class AlarmController {
                         .build()
         );
     }
+    /**
+     * 클릭한 알림 상태 (읽음)으로 변경 api
+     * @param alarmId
+     * @return
+     */
+    @PatchMapping("/read-all")
+    public ResponseEntity<Result> readAllAlarms(
+            @AuthenticationPrincipal CustomUserDetail userDetail
+    ) {
+        alarmService.readAllAlarm(userDetail.getUserId());
+
+        return ResponseEntity.ok(
+                Result.builder()
+                        .message("알림 읽기 성공")
+                        .data(null)
+                        .build()
+        );
+    }
 
     /**
      * 읽지 않은 알림 count api

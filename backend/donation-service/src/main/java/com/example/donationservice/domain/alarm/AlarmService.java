@@ -15,4 +15,6 @@ public interface AlarmService {
     void readAlarm(Long alarmId);
 
     int countUnreadAlarms(Long userId);
+
+    void readAllAlarm(Long userId);
 }

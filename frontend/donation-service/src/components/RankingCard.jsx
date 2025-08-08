@@ -43,7 +43,7 @@ export default function RankingCard() {
         // cursor: "pointer",
         borderRadius: 3,
         boxShadow: 2,
-        width: 345,
+        width: '100%',
         display: "flex",
         flexDirection: "column",
       }}
@@ -106,7 +106,7 @@ export default function RankingCard() {
             sx={{
               textAlign: "center",
               padding: "5px",
-              maxWidth: "400px",
+              maxWidth: "100%",
               margin: "0 auto",
               borderRadius: "16px",
               boxShadow: "0 0px 0px rgba(0,0,0,0.1)",

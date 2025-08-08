@@ -1,6 +1,7 @@
-package com.example.donationservice.domain.ranking;
+package com.example.donationservice.scheduler;
 
 import com.example.donationservice.domain.donation.DonationRepository;
+import com.example.donationservice.domain.ranking.RankingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
