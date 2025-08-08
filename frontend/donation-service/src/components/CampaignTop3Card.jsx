@@ -11,6 +11,7 @@ import {
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import api from '../apis/api';
 import useAuthStore from '../store/authStore';
+import { useNavigate } from 'react-router-dom';
 
 export default function CampaignTop3Card({
   postId,
@@ -23,21 +24,17 @@ export default function CampaignTop3Card({
   initialIsLiked,
   onLoginRequired
 }) {
+  const navigate = useNavigate();  // 네비게이트 함수
 
   // 게시물 좋아요 상태를 관리하는 state
   const [isLiked, setIsLiked] = useState(initialIsLiked);
 
   useEffect(() => {
-    // console.log(`🎯 1 ~~~~~ postId: ${postId}, initialIsLiked 값:`, initialIsLiked);
     setIsLiked(initialIsLiked);
-    // console.log(`🎯 2 ~~~~~ postId: ${postId}, initialIsLiked 값:`, initialIsLiked);
   }, [initialIsLiked]);
 
   const isAuthenticated = useAuthStore(state => state.isLoggedIn); // 로그인 상태를 확인하는 코드
   // 참고로 여기선 좋아요 수는 표시하지 않는다.
-  // console.log("✅ ~~~~~ isAuthenticated 상태:", isAuthenticated);
-
-  
 
   // 마감일(deadline)과 현재 날짜의 차이를 계산하여 남은 일수 구하기
   const today = new Date();
@@ -50,8 +47,14 @@ export default function CampaignTop3Card({
     return value.toLocaleString('ko-KR');
   };
 
+  // 카드 클릭 시 상세 페이지 이동
+  const handleCardClick = () => {
+    navigate(`/post-detail/${postId}`);
+  };
+
   // '하트응원' 버튼 클릭 시 좋아요 API 호출
-  const handleLikeClick = async () => {
+  const handleLikeClick = async (event) => {
+    event.stopPropagation();  // 중요! 카드 클릭 이벤트로 이어지지 않게 막음
     // 1. 로그인 상태가 아니면 로그인 모달을 띄우고 함수 종료
     if (!isAuthenticated) {
       onLoginRequired();
@@ -90,12 +93,17 @@ export default function CampaignTop3Card({
   return (
     <Card
       elevation={1}
+      onClick={handleCardClick}
       sx={{
         borderRadius: 2,
         display: 'flex',
         flexDirection: 'row', // 좌우로 나누기 위해 row로 변경
         height: '100%',
-        boxShadow: '0 2px 6px rgba(0,0,0,0.1)'
+        boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+        cursor: 'default',  // 기본은 화살표
+        '&:hover': {
+          cursor: 'pointer',  // 호버 시 손가락
+        },
       }}
     >
       {/* 좌측 영역: 썸네일 이미지 */}
