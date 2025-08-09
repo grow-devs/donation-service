@@ -68,8 +68,8 @@ const DetailTitle = styled.h3`
 // 새로 추가할 컴포넌트: 실제 상세 정보 리스트를 감싸는 박스
 const DetailContentBox = styled.div`
   border: 1px solid #A0A3A0; /* 더 진한 회색 테두리 */
-  border-radius: 10px; /* 라운드 모서리 */
-  padding: 20px; /* 내부 여백 */
+  border-radius: 12px; /* 라운드 모서리 */
+  padding: 10px 15px 10px 15px; /* 내부 여백 순서는 상, 우, 하, 좌*/
   background-color: #fcfcfc; /* 배경색 */
 `;
 
@@ -77,7 +77,7 @@ const DetailContentBox = styled.div`
 const DetailItem = styled.div`
   display: flex;
   justify-content: space-between;
-  padding: 12px 0;
+  padding: 6px 0; /* 행 간격 */
   border-bottom: 1px solid var(--light-gray);
   &:last-child {
     border-bottom: none;
@@ -100,7 +100,7 @@ function StoryTabContent({ post }) {
 
   // 이 부분은 PostDetailResponse DTO의 필드명에 맞춰서 구성
   const postDetails = [
-    { label: '단체명', value: post.teamName || 'N/A' },
+    { label: '후원 단체', value: post.teamName || 'N/A' },
     { label: '모금 기간', value: `${post.createdAt?.split('T')[0] || 'N/A'} ~ ${post.deadline?.split('T')[0] || 'N/A'}` },
     { label: '목표 금액', value: `${post.targetAmount ? post.targetAmount.toLocaleString() : 'N/A'}원` },
     { label: '모인 금액', value: `${post.currentAmount ? post.currentAmount.toLocaleString() : 'N/A'}원` },
