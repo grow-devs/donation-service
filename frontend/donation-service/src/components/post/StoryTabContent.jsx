@@ -48,13 +48,13 @@ const ContentContainer = styled.div`
 `;
 
 const DetailSection = styled.div`
-  margin-top: 40px;
+  margin-top: 0px;
   /* 기존 border-top은 전체 박스 테두리로 대체되므로 제거하거나 조정 */
   /* border-top: 1px solid var(--border-color); */
   padding-top: 30px; /* 기존 패딩 유지 또는 조정 */
 
   /* 새롭게 추가할 스타일 */
-  padding: 25px; /* 내부 콘텐츠와 테두리 사이의 여백 */
+  padding: 5px 45px 0px 45px; /* 내부 콘텐츠와 테두리 사이의 여백 */
 `;
 
 const DetailTitle = styled.h3`
