@@ -104,6 +104,7 @@ export default function CampaignTop3Card({
         '&:hover': {
           cursor: 'pointer',  // 호버 시 손가락
         },
+        
       }}
     >
       {/* 좌측 영역: 썸네일 이미지 */}

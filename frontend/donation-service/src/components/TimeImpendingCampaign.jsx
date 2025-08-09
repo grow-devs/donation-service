@@ -58,11 +58,11 @@ export default function TimeImpendingCampaign() {
         sx={{
           borderRadius: 3,
           boxShadow: 2,
-          maxWidth: 600,
+          // maxWidth: 600,
           width: '100%',
           display: 'flex',
           flexDirection: 'column',
-          height: 340,
+          height: 320,
           overflow: 'hidden',
           p: 2,
         }}
@@ -88,13 +88,13 @@ export default function TimeImpendingCampaign() {
         sx={{
           borderRadius: 3,
           boxShadow: 2,
-          maxWidth: 600,
+          // maxWidth: 600,
           width: '100%',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
-          height: 340,
+          height: 320,
           p: 2,
         }}
       >
@@ -117,16 +117,18 @@ export default function TimeImpendingCampaign() {
 
   return (
     <>
-      <Box sx={{ 
-        maxWidth: 600, 
-        width: '100%', 
-        borderRadius: 3, 
-        boxShadow: 2,
-        height: 340,
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
-      }}>
+      <Card
+              sx={{
+                borderRadius: 3,
+                boxShadow: 2,
+                // maxWidth: 600,
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                height: '100%',
+                overflow: 'hidden',
+              }}
+            >
         <Box sx={{ p: 2 }}>
           <Typography variant="h6" fontWeight={700}>
             시간이 얼마 남지 않았어요!
@@ -147,7 +149,7 @@ export default function TimeImpendingCampaign() {
             onLoginRequired={handleOpenLoginModal}
           />
         </Box>
-      </Box>
+      </Card>
 
       {/* 로그인 모달 */}
       <Modal 

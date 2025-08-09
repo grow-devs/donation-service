@@ -49,5 +49,16 @@ public class MetaDataScheduler {
         redisTemplate.opsForValue().set(key,String.valueOf(totalDonors));
     }
 
+//    ########## 오늘의 첫 기부 데이터 key 삭제 스케줄러 ########
+    // 키를 삭제하지 않으면 어제 혹은 그 이전에 기부했던 정보가 그대로 있게된다.
+//    @Scheduled(cron = "0 59 23 * * ?")  // 매일 23시 59분 //todo 오늘에 관한 정보이다보니 언제 스케줄링을 돌릴지도 생각해야함
+//    @Scheduled(fixedRate = 5000)  // 테스트를 위한 5초 스케줄
+    @Transactional
+    public void DeleteFirstDonationKey(){
+        String key = "first_donation:";
+        redisTemplate.opsForHash().delete(key,"nickName");
+        redisTemplate.opsForHash().delete(key,"createdAt");
+        System.out.println("redis의 오늘의 첫 기부데이터 key = first_donation: 삭제를 완료했습니다.");
+    }
 
 }

@@ -128,7 +128,7 @@ export default function TimeImpendingCampaignCard({
         sx={{
           position: 'relative',
           width: '40%',
-          height: '100%',
+          // height: '100%',
           borderRadius: '8px 0 0 8px',
           overflow: 'hidden',
         }}

@@ -243,17 +243,18 @@ export default function MainAppBar() {
   return (
     <Box sx={{ mb: 8 }}>
       <Paper
-        elevation={1}
+        elevation={0.5}
         sx={{
           position: "fixed",
           top: 0,
           left: 0,
           right: 0,
           borderRadius: 3,
-          mx: { xs: 2, sm: 3, md: 20 },
+          mx: { xs: 2, sm: 3, md: 0 },
           mb: 3,
           px: { xs: "4%", sm: "8%" },
           zIndex: (theme) => theme.zIndex.appBar + 1,
+           boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.08)",
         }}
       >
         <AppBar
@@ -268,7 +269,7 @@ export default function MainAppBar() {
             disableGutters
             sx={{
               position: "relative",
-              px: { xs: 1, sm: 2 },
+              px: { xs: 1, sm: 20 },
               minHeight: 64,
             }}
           >
@@ -297,7 +298,7 @@ export default function MainAppBar() {
                 transform: "translate(-50%, -50%)",
                 pointerEvents: "none",
                 userSelect: "none",
-                display: { xs: "none", sm: "block" },
+                display: { xs: "none", sm: "block" }, // 화면 줄어들때 사라지게 
                 maxWidth: "60%",
                 textAlign: "center",
               }}
