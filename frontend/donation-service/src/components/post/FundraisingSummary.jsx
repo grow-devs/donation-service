@@ -250,7 +250,7 @@ function FundraisingSummary({ summary, post }) {
       <CurrentAmount>{formatAmount(currentAmount)}원</CurrentAmount>
 
       <ProgressContainer>
-        <ProgressBar $progress={post.progress} />
+        <ProgressBar $progress={progress} />
       </ProgressContainer>
       <ProgressText>{formattedProgress}% 달성</ProgressText>
 
