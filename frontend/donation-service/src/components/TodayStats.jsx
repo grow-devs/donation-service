@@ -38,10 +38,9 @@ export default function TodayStats() {
     fetchData();
   }, []);
 
-  const period = dayjs(firstDonation.createdAt).hour < 12 ? "오전" : "오후";
   const totalSupporters = "0";
   const biggestAmount = "0원";
-  const firstDonorName = firstDonation.nickName;
+  const firstDonorName = firstDonation?.nickName ?? "첫 번째 시작";
   const firstDonorTime = firstDonation?.createdAt
     ? (() => {
         const date = dayjs(firstDonation.createdAt);
@@ -57,8 +56,8 @@ export default function TodayStats() {
     <Card
       sx={{
         width: "100%",
-        borderRadius: 4, // 둥근 모서리를 더 부드럽게
-        boxShadow: "0 8px 24px rgba(0,0,0,0.08)", // 더 깊이 있는 그림자
+        borderRadius: 4,
+        boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
         overflow: "hidden",
         display: "flex",
         flexDirection: "column",
@@ -68,14 +67,14 @@ export default function TodayStats() {
       <Box
         sx={{
           p: 1.5,
-          background: "linear-gradient(15deg, #FF9A9E 100%, #FAD0C4 100%)", // 핑크색 그라데이션
+          background: "linear-gradient(15deg, #FF9A9E 100%, #FAD0C4 100%)",
           color: "white",
           textAlign: "center",
         }}
       >
         <Typography
           variant="body1"
-          fontWeight={600} // 더 굵은 폰트
+          fontWeight={600}
           sx={{
             display: "flex",
             alignItems: "center",
@@ -84,15 +83,13 @@ export default function TodayStats() {
             textShadow: "1px 1px 2px rgba(0,0,0,0.1)",
           }}
         >
-          {/* <VolunteerActivismSharpIcon /> */}
+          <VolunteerActivismSharpIcon />
           오늘의 기부 이야기
         </Typography>
       </Box>
 
       {/* 2. 스토리텔링 내용 */}
       <CardContent sx={{ p: 2, bgcolor: "#fdf7f7" }}>
-        {" "}
-        {/* 부드러운 배경색 */}
         <Typography
           variant="body1"
           sx={{ fontSize: "0.9rem", lineHeight: 1.5, color: "#555" }}
@@ -105,23 +102,65 @@ export default function TodayStats() {
           의 소중한 동행이 이어지고 있습니다.
         </Typography>
         <br />
-        <Typography
-          variant="body1"
-          sx={{ fontSize: "0.9rem", lineHeight: 1.5, color: "#555" }}
-        >
-          이 따뜻한 이야기는
-          <Box component="span" sx={{ color: "#FF6B6B", fontWeight: "bold" }}>
-            {" "}
-            {firstDonorTime}{" "}
-          </Box>
-          ,
-          <Box component="span" sx={{ color: "#4A6094", fontWeight: "bold" }}>
-            {" "}
-            {firstDonorName}님의 첫 기부
-          </Box>
-          로 시작되었습니다.
-        </Typography>
-        <br />
+
+        {firstDonation ? (
+          // 첫 기부자가 있을 때 보여주는 내용
+          <>
+            <Typography
+              variant="body1"
+              sx={{ fontSize: "0.9rem", lineHeight: 1.5, color: "#555" }}
+            >
+              이 따뜻한 이야기는
+              <Box
+                component="span"
+                sx={{ color: "#FF6B6B", fontWeight: "bold" }}
+              >
+                {" "}
+                {firstDonorTime}
+              </Box>
+              <br/>
+              
+              <Box
+                component="span"
+                sx={{ color: "#4A6094", fontWeight: "bold" }}
+              >
+                {" "}
+                {firstDonorName}님의 첫 기부
+              </Box>
+              로 시작되었습니다.
+            </Typography>
+            <br />
+          </>
+        ) : (
+          // 첫 기부자가 없을 때 보여주는 내용
+          <>
+            <Typography
+              variant="body1"
+              sx={{ fontSize: "0.9rem", lineHeight: 1.5, color: "#555" }}
+            >
+              아직{" "}
+              <Box
+                component="span"
+                sx={{ color: "#FF6B6B", fontWeight: "bold" }}
+              >
+                오늘의 첫 기부자
+              </Box>
+              는 나타나지 않았습니다.
+              <br />
+              당신의 따뜻한 마음이 오늘 하루의{" "}
+              <Box
+                component="span"
+                sx={{ color: "#4A6094", fontWeight: "bold" }}
+              >
+                {" "}
+                첫 번째 희망
+              </Box>
+              이 될 수 있습니다. ✨
+            </Typography>
+            <br />
+          </>
+        )}
+
         <Typography
           variant="body1"
           sx={{ fontSize: "0.9rem", lineHeight: 1.5, color: "#555" }}
