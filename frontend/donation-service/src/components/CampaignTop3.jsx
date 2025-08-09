@@ -104,7 +104,9 @@ export default function CampaignTop3() {
           flexGrow: 1,
           px: 2,
           pb: 2,
+          pt : 0,
           position: 'relative',
+          height: '100%', // CardContent의 높이를 100%로 설정
         }}
       >
         <AnimatePresence custom={direction}>
@@ -115,7 +117,11 @@ export default function CampaignTop3() {
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: direction * -300, opacity: 0 }}
             transition={{ duration: 0.6 }}
-            style={{ position: 'absolute', width: '100%' }}
+            style={{ 
+              position: 'absolute',
+              width: 'calc(100% - 32px)', // 좌우 패딩 16px * 2 = 32px
+              height: 'calc(100% - 16px)', // 아래 패딩 16px
+            }}
           >
             <CampaignTop3Card
               postId={currentPost.id}
