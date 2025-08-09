@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,12 +51,13 @@ public interface PostRepository extends JpaRepository<Post,Long>,PostRepositoryC
 
     List<Post> findTop3ByOrderByCurrentAmountDesc();
 
-    Optional<Post> findTopByOrderByDeadlineAsc();
+    Optional<Post> findFirstByDeadlineAfterOrderByDeadlineAsc(LocalDateTime now);
 
     @Query(value = """
     SELECT *
     FROM post
     WHERE target_amount > 0
+      AND goal_reached = false
     ORDER BY (current_amount::float / target_amount) DESC
     LIMIT 1
     """, nativeQuery = true)

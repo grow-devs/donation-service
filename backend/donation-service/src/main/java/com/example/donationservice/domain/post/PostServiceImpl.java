@@ -163,7 +163,7 @@ public class PostServiceImpl implements PostService {
     @Transactional(readOnly = true)
     public PostDto.PostMainResponse getPostWithEarliestEndDate() {
         // 마감일이 가장 빠른 게시물 조회
-        Post post = postRepository.findTopByOrderByDeadlineAsc()
+        Post post = postRepository.findFirstByDeadlineAfterOrderByDeadlineAsc(LocalDateTime.now())
                 .orElseThrow(() -> new RestApiException(CommonErrorCode.POST_NOT_FOUND));
 
         Team team = post.getTeam();
