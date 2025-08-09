@@ -136,16 +136,6 @@ export default function CampaignTop3() {
     );
   };
 
-  // if (loading)
-  //   return <Typography>로딩 중...</Typography>;
-  // if (topPosts.length === 0) 
-  //   return <Typography>게시물이 없습니다.</Typography>;
-
-  // const currentPost = topPosts[currentIndex];
-
-  // // currentPost가 없는 경우 렌더링하지 않음
-  // if (!currentPost) return null;
-
   return (
     <>
       <Card
