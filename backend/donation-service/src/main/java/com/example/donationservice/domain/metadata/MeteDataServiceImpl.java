@@ -33,8 +33,10 @@ public class MeteDataServiceImpl implements MeteDataService{
     @Override
     public MetaDataDto.FirstDonationResponse getfirstDonation() {
         String nickName =(String)redisTemplate.opsForHash().get("first_donation:","nickName");
-        LocalDateTime createdAt =LocalDateTime.parse((String)redisTemplate.opsForHash().get("first_donation:","createdAt"));
-        if(nickName==null||createdAt==null)return null;
+        String RcreateAt =(String)redisTemplate.opsForHash().get("first_donation:","createdAt");
+        if(nickName==null||RcreateAt==null)return null;
+        LocalDateTime createdAt = LocalDateTime.parse(RcreateAt);
+
         return MetaDataDto.FirstDonationResponse.builder()
                 .nickName(nickName)
                 .createdAt(createdAt)
