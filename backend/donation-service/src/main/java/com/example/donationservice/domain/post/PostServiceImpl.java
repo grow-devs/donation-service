@@ -9,20 +9,15 @@ import com.example.donationservice.domain.post.dto.PostDto;
 import com.example.donationservice.domain.sponsor.Team;
 import com.example.donationservice.domain.sponsor.TeamRepository;
 import com.example.donationservice.domain.user.ApprovalStatus;
-import com.example.donationservice.domain.user.User;
-import com.example.donationservice.domain.user.UserRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.owasp.html.HtmlPolicyBuilder;
 import org.owasp.html.PolicyFactory;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -134,6 +129,91 @@ public class PostServiceImpl implements PostService {
                 .categoryName(category != null ? category.getName() : null)
                 .likesCount(post.getLikesCount() != null ? post.getLikesCount() : 0)
                 .participants(post.getParticipants())
+                .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PostDto.PostMainResponse> getTop3CurrentAmountPosts() {
+        // 현재 금액이 가장 높은 게시물 3개 조회
+        List<Post> topPosts = postRepository.findTop3ByOrderByCurrentAmountDesc();
+
+        return topPosts.stream()
+                .map(post -> PostDto.PostMainResponse.builder()
+                        .id(post.getId())
+                        .title(post.getTitle())
+                        .currentAmount(post.getCurrentAmount())
+                        .targetAmount(post.getTargetAmount())
+                        .deadline(post.getDeadline())
+                        .imageUrl(post.getThumnbnailImageUrl())
+                        .approvalStatus(post.getApprovalStatus())
+                        .teamId(post.getTeam() != null ? post.getTeam().getId() : null)
+                        .teamName(post.getTeam() != null ? post.getTeam().getName() : null)
+                        .categoryId(post.getCategory() != null ? post.getCategory().getId() : null)
+                        .categoryName(post.getCategory() != null ? post.getCategory().getName() : null)
+                        .createdAt(post.getCreatedAt())
+                        .updatedAt(post.getUpdatedAt())
+                        .participants(post.getParticipants())
+                        .likesCount(post.getLikesCount() != null ? post.getLikesCount() : 0)
+                        .build())
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PostDto.PostMainResponse getPostWithEarliestEndDate() {
+        // 마감일이 가장 빠른 게시물 조회
+        Post post = postRepository.findTopByOrderByDeadlineAsc()
+                .orElseThrow(() -> new RestApiException(CommonErrorCode.POST_NOT_FOUND));
+
+        Team team = post.getTeam();
+        Category category = post.getCategory();
+
+        return PostDto.PostMainResponse.builder()
+                .id(post.getId())
+                .title(post.getTitle())
+                .currentAmount(post.getCurrentAmount())
+                .targetAmount(post.getTargetAmount())
+                .deadline(post.getDeadline())
+                .imageUrl(post.getThumnbnailImageUrl())
+                .approvalStatus(post.getApprovalStatus())
+                .teamId(team != null ? team.getId() : null)
+                .teamName(team != null ? team.getName() : null)
+                .categoryId(category != null ? category.getId() : null)
+                .categoryName(category != null ? category.getName() : null)
+                .createdAt(post.getCreatedAt())
+                .updatedAt(post.getUpdatedAt())
+                .participants(post.getParticipants())
+                .likesCount(post.getLikesCount() != null ? post.getLikesCount() : 0)
+                .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PostDto.PostMainResponse getTopDonationRatePost() {
+        // 기부율이 가장 높은 게시물 조회
+        Post topPost = postRepository.findTopPostByDonationRate();
+
+        if (topPost == null) {
+            throw new RestApiException(CommonErrorCode.POST_NOT_FOUND);
+        }
+
+        return PostDto.PostMainResponse.builder()
+                .id(topPost.getId())
+                .title(topPost.getTitle())
+                .currentAmount(topPost.getCurrentAmount())
+                .targetAmount(topPost.getTargetAmount())
+                .deadline(topPost.getDeadline())
+                .imageUrl(topPost.getThumnbnailImageUrl())
+                .approvalStatus(topPost.getApprovalStatus())
+                .teamId(topPost.getTeam() != null ? topPost.getTeam().getId() : null)
+                .teamName(topPost.getTeam() != null ? topPost.getTeam().getName() : null)
+                .categoryId(topPost.getCategory() != null ? topPost.getCategory().getId() : null)
+                .categoryName(topPost.getCategory() != null ? topPost.getCategory().getName() : null)
+                .createdAt(topPost.getCreatedAt())
+                .updatedAt(topPost.getUpdatedAt())
+                .participants(topPost.getParticipants())
+                .likesCount(topPost.getLikesCount() != null ? topPost.getLikesCount() : 0)
                 .build();
     }
 

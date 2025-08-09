@@ -77,7 +77,7 @@ public class PostDto {
         private Long currentAmount;
         private Long targetAmount;
         private LocalDateTime deadline;
-        private String displayImageUrl; // 대표 이미지
+        private String displayImageUrl; // 대표 이미지 // todo : 이름 맞는지 확인
         private ApprovalStatus approvalStatus;
         private Long teamId;
         private String teamName;
@@ -106,5 +106,26 @@ public class PostDto {
 
     }
 
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class PostMainResponse {
+        private Long id;
+        private String title;
+        private Long currentAmount;
+        private Long targetAmount;
+        private LocalDateTime deadline;
+        private String imageUrl; // 썸네일 용 imageurl
+        private ApprovalStatus approvalStatus;
+        private Long teamId;
+        private String teamName;
+        private Long categoryId;
+        private String categoryName;
+        private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
+        private Long participants; // 참여자 수
+        private Integer likesCount; // 게시물 좋아요 수
+    }
 
 }

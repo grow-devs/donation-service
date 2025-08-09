@@ -1,9 +1,6 @@
 package com.example.donationservice.domain.post;
 
 import com.example.donationservice.domain.post.dto.PostDto;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,4 +22,11 @@ public interface PostService {
             boolean isInitial);
 
     PostDto.PostDetailResponse getPostDetilById(Long postId);
+
+    List<PostDto.PostMainResponse> getTop3CurrentAmountPosts();
+
+    // 데드라인이 가장 남지 않은 게시물 하나 조회
+    PostDto.PostMainResponse getPostWithEarliestEndDate();
+
+    PostDto.PostMainResponse getTopDonationRatePost();
 }

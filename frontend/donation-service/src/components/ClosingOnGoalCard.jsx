@@ -1,7 +1,8 @@
-// TimeImpendingCampaignCard.jsx
+// ClosingOnGoalCard.jsx
 import React, { useState, useEffect } from 'react';
 import {
   Card,
+  CardMedia,
   CardContent,
   Box,
   Typography,
@@ -13,10 +14,10 @@ import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../store/authStore';
 import api from '../apis/api';
 
-export default function TimeImpendingCampaignCard({
+export default function ClosingOnGoalCard({
   postId,
   title,
-  endTime,      // Date 객체 또는 타임스탬프
+  endTime,
   imageUrl,
   raised,
   goal,
@@ -31,35 +32,9 @@ export default function TimeImpendingCampaignCard({
     setIsLiked(initialIsLiked);
   }, [initialIsLiked]);
 
-  // 남은 시간을 계산하는 함수 (시:분:초 형식)
-  const calcTimeLeft = () => {
-    const diff = Math.max(0, new Date(endTime) - new Date());
-    const secs = Math.floor(diff / 1000) % 60;
-    const mins = Math.floor(diff / 1000 / 60) % 60;
-    const hrs  = Math.floor(diff / 1000 / 60 / 60);
-    const pad = (n) => String(n).padStart(2, '0');
-    return `${pad(hrs)}:${pad(mins)}:${pad(secs)}`;
-  };
-
-  const [timeLeft, setTimeLeft] = useState(calcTimeLeft());
-  useEffect(() => {
-    const timer = setInterval(() => setTimeLeft(calcTimeLeft()), 1000);
-    return () => clearInterval(timer);
-  }, [endTime]);
-
   // 달성률 계산
   const percent = Math.min(100, (raised / goal) * 100);
-
-  // 남은 일수를 계산하는 로직
-  const today = new Date();
-  const deadlineDate = new Date(endTime);
-  const diffTime = deadlineDate.getTime() - today.getTime();
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-  // 금액 포맷 함수
-  const formatAmount = (value) => {
-    return value.toLocaleString('ko-KR');
-  };
+  const remaining = Math.max(0, goal - raised);
 
   // 카드 클릭 시 상세 페이지 이동
   const handleCardClick = () => {
@@ -103,7 +78,7 @@ export default function TimeImpendingCampaignCard({
   // 기부하기 버튼 클릭 핸들러
   const handleDonateClick = (event) => {
     event.stopPropagation();
-    // 여기에 기부 페이지로 이동하는 로직 추가
+    // 상세 페이지로 이동하도록 수정
     navigate(`/post-detail/${postId}`);
   };
 
@@ -133,9 +108,9 @@ export default function TimeImpendingCampaignCard({
           overflow: 'hidden',
         }}
       >
-        <Box
+        <CardMedia
           component="img"
-          src={imageUrl}
+          image={imageUrl}
           alt={title}
           sx={{
             width: '100%',
@@ -144,24 +119,8 @@ export default function TimeImpendingCampaignCard({
             display: 'block'
           }}
         />
-        {/* '종료임박' 배지 */}
-        <Box 
-          sx={{ 
-            position: 'absolute',
-            bottom: 8,
-            left: 8,
-            bgcolor: 'error.main',
-            color: 'white',
-            borderRadius: '16px',
-            px: 1.5,
-            py: 0.5,
-            typography: 'caption',
-            fontWeight: 500,
-          }}
-        >
-          종료임박
-        </Box>
-        {/* 시간 카운트다운 오버레이 */}
+        
+        {/* 남은 금액 오버레이 */}
         <Box
           sx={{
             position: 'absolute',
@@ -172,14 +131,18 @@ export default function TimeImpendingCampaignCard({
             borderRadius: 1,
             px: 1.5,
             py: 0.5,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 1,
             typography: 'body1',
-            fontWeight: 700
+            fontWeight: 700,
+            display: 'flex',
+            flexDirection: 'column',
           }}
         >
-          {timeLeft}
+          <Typography variant="caption" fontWeight={400} sx={{ lineHeight: 1 }}>
+            남은 금액
+          </Typography>
+          <Typography variant="body1" fontWeight={700}>
+            {remaining.toLocaleString()}원
+          </Typography>
         </Box>
       </Box>
       
@@ -198,7 +161,7 @@ export default function TimeImpendingCampaignCard({
           
           {/* 부제 */}
           <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-            망설이면 끝! 조금만 더 힘을 보태주세요.
+            목표까지 얼마 남지 않았습니다.
           </Typography>
 
           {/* 진행률 바 */}
@@ -213,20 +176,17 @@ export default function TimeImpendingCampaignCard({
           {/* 금액 정보 */}
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', mt: 1 }}>
             <Typography variant="body1" fontWeight={600}>
-              {formatAmount(raised)}원
+              {raised.toLocaleString()}원
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              {formatAmount(goal)}원 목표
+              {goal.toLocaleString()}원 목표
             </Typography>
           </Box>
           
-          {/* 달성률과 남은 일자 */}
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mt: 0.5 }}>
+          {/* 달성률 */}
+          <Box sx={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'flex-start', mt: 0.5 }}>
             <Typography variant="body2" fontWeight={400} sx={{ color: 'primary.main' }}>
               {percent.toFixed(0)}% 달성
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {diffDays >= 0 ? `${diffDays}일 남음` : '마감'}
             </Typography>
           </Box>
         </Box>
@@ -234,15 +194,15 @@ export default function TimeImpendingCampaignCard({
         {/* 하트응원 및 기부하기 버튼 */}
         <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
           <Button
-            variant="outlined"
             startIcon={<FavoriteBorderIcon />}
-            sx={{ flex: 1, borderColor: 'primary.main', color: 'primary.main' }}
+            variant="outlined"
+            fullWidth
             onClick={handleHeartClick}
             disabled={isLiked}
           >
             하트응원
           </Button>
-          <Button variant="contained" sx={{ flex: 1 }} onClick={handleDonateClick}>
+          <Button variant="contained" fullWidth onClick={handleDonateClick}>
             기부하기
           </Button>
         </Box>

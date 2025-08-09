@@ -48,6 +48,20 @@ public interface PostRepository extends JpaRepository<Post,Long>,PostRepositoryC
     """)
     Page<UserPostInfoProjection> findPostsByTeamUserId(@Param("userId") Long userId, Pageable pageable);
 
+    List<Post> findTop3ByOrderByCurrentAmountDesc();
+
+    Optional<Post> findTopByOrderByDeadlineAsc();
+
+    @Query(value = """
+    SELECT *
+    FROM post
+    WHERE target_amount > 0
+    ORDER BY (current_amount::float / target_amount) DESC
+    LIMIT 1
+    """, nativeQuery = true)
+    Post findTopPostByDonationRate();
+
     @Query("select sum(p.currentAmount) from Post p")
     Long sumAllDonationAmounts();
+
 }
