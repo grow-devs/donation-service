@@ -103,22 +103,22 @@ export default function ClosingOnGoalCard({
         sx={{
           position: 'relative',
           width: '40%',
-          height: '100%',
+          // height: '100%',
           borderRadius: '8px 0 0 8px',
           overflow: 'hidden',
         }}
       >
-        <CardMedia
-          component="img"
-          image={imageUrl}
-          alt={title}
-          sx={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            display: 'block'
-          }}
-        />
+    <Box
+            component="img"
+            src={imageUrl}
+            alt={title}
+            sx={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              display: 'block'
+            }}
+          />
         
         {/* 남은 금액 오버레이 */}
         <Box

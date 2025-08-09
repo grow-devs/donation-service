@@ -60,7 +60,7 @@ export default function ClosingOnGoal() {
         sx={{
           borderRadius: 3,
           boxShadow: 2,
-          maxWidth: 600,
+          // maxWidth: 600,
           width: '100%',
           display: 'flex',
           flexDirection: 'column',
@@ -90,7 +90,7 @@ export default function ClosingOnGoal() {
         sx={{
           borderRadius: 3,
           boxShadow: 2,
-          maxWidth: 600,
+          // maxWidth: 600,
           width: '100%',
           display: 'flex',
           flexDirection: 'column',
@@ -119,16 +119,18 @@ export default function ClosingOnGoal() {
 
   return (
     <>
-      <Box sx={{ 
-        maxWidth: 600, 
-        width: '100%', 
-        borderRadius: 3, 
-        boxShadow: 2,
-        height: 340,
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
-      }}>
+     <Card
+             sx={{
+               borderRadius: 3,
+               boxShadow: 2,
+               // maxWidth: 600,
+               width: '100%',
+               display: 'flex',
+               flexDirection: 'column',
+               height: '100%',
+               overflow: 'hidden',
+             }}
+           >
         <Box sx={{ p: 2 }}>
           <Typography variant="h6" fontWeight={700}>
             목표 달성에 가까워졌어요!
@@ -149,7 +151,7 @@ export default function ClosingOnGoal() {
             onLoginRequired={handleOpenLoginModal}
           />
         </Box>
-      </Box>
+      </Card>
 
       {/* 로그인 모달 */}
       <Modal 

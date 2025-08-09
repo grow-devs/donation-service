@@ -26,6 +26,7 @@ export default function CampaignTop3() {
     try {
       const postsResponse = await api.get('/post/top3-current-amount');
       const posts = postsResponse.data.data;
+      console.log(posts);
       
       const likedStatusPromises = posts.map(async post => {
           try {
@@ -148,11 +149,11 @@ export default function CampaignTop3() {
         sx={{
           borderRadius: 3,
           boxShadow: 2,
-          maxWidth: 600,
+          // maxWidth: 600,
           width: '100%',
           display: 'flex',
           flexDirection: 'column',
-          height: 340,
+          height: 320,
           overflow: 'hidden',
         }}
       >
