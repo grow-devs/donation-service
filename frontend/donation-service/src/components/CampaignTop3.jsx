@@ -1,6 +1,6 @@
 // CampaignTop3.jsx
 import React, {useEffect, useState} from 'react';
-import { Typography, Box, Card, CardContent, Modal, Backdrop} from '@mui/material';
+import { Typography, Box, Card, CardContent, Modal, Backdrop, CircularProgress} from '@mui/material';
 import { AnimatePresence, motion } from 'framer-motion';
 import api from '../apis/api';
 import CampaignTop3Card from './CampaignTop3Card';
@@ -75,15 +75,72 @@ export default function CampaignTop3() {
     return () => clearInterval(interval);
   }, [topPosts]);
 
-  if (loading)
-    return <Typography>로딩 중...</Typography>;
-  if (topPosts.length === 0) 
-    return <Typography>게시물이 없습니다.</Typography>;
+  // 로딩 상태와 게시물이 없는 경우의 UI를 통합해서 처리
+  const renderContent = () => {
+    if (loading) {
+      return (
+        <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <CircularProgress />
+        </Box>
+      );
+    }
+    
+    if (topPosts.length === 0) {
+      return (
+        <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <Typography color="text.secondary">
+            현재 가장 많이 기부된 모금함을 찾을 수 없습니다.
+          </Typography>
+        </Box>
+      );
+    }
+    
+    // 게시물이 있는 경우, 기존 슬라이드 UI 렌더링
+    const currentPost = topPosts[currentIndex];
 
-  const currentPost = topPosts[currentIndex];
-
-  // currentPost가 없는 경우 렌더링하지 않음
-  if (!currentPost) return null;
+    return (
+      <CardContent
+        sx={{
+          flexGrow: 1,
+          px: 2,
+          pb: 2,
+          pt : 0,
+          position: 'relative',
+          height: '100%', // CardContent의 높이를 100%로 설정
+        }}
+      >
+        <AnimatePresence custom={direction}>
+          <motion.div
+            key={currentPost.id}
+            custom={direction}
+            initial={{ x: direction * 300, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: direction * -300, opacity: 0 }}
+            transition={{ duration: 0.6 }}
+            style={{ 
+              position: 'absolute',
+              width: 'calc(100% - 32px)', // 좌우 패딩 16px * 2 = 32px
+              height: 'calc(100% - 16px)', // 아래 패딩 16px
+            }}
+          >
+            <CampaignTop3Card
+              postId={currentPost.id}
+              title={currentPost.title}
+              imageUrl={currentPost.imageUrl}
+              currentAmount={currentPost.currentAmount}
+              targetAmount={currentPost.targetAmount}
+              deadline={currentPost.deadline}
+              percent={Math.round(
+                (currentPost.currentAmount / currentPost.targetAmount) * 100
+              )}
+              initialIsLiked={currentPost.isLiked}
+              onLoginRequired={handleOpenLoginModal}
+            />
+          </motion.div>
+        </AnimatePresence>
+      </CardContent>
+    );
+  };
 
   return (
     <>
@@ -108,40 +165,7 @@ export default function CampaignTop3() {
           </Typography>
         </Box>
 
-        <CardContent
-          sx={{
-            flexGrow: 1,
-            px: 2,
-            pb: 2,
-            position: 'relative',
-          }}
-        >
-          <AnimatePresence custom={direction}>
-            <motion.div
-              key={currentPost.id}
-              custom={direction}
-              initial={{ x: direction * 300, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: direction * -300, opacity: 0 }}
-              transition={{ duration: 0.6 }}
-              style={{ position: 'absolute', width: '100%' }}
-            >
-              <CampaignTop3Card
-                postId={currentPost.id}
-                title={currentPost.title}
-                imageUrl={currentPost.imageUrl}
-                currentAmount={currentPost.currentAmount}
-                targetAmount={currentPost.targetAmount}
-                deadline={currentPost.deadline}
-                percent={Math.round(
-                  (currentPost.currentAmount / currentPost.targetAmount) * 100
-                )}
-                initialIsLiked={currentPost.isLiked}
-                onLoginRequired={handleOpenLoginModal} // 로그인 모달을 여는 함수 전달
-              />
-            </motion.div>
-          </AnimatePresence>
-        </CardContent>
+        {renderContent()}
       </Card>
       
       {/* 로그인 모달 */}
