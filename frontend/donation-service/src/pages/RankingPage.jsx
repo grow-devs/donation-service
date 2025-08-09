@@ -252,9 +252,8 @@ export default function RankingPage() {
 
       {/* 📊 랭킹 카드 리스트 */}
       <Stack spacing={1.5} alignItems="center" mt={2} mb={8}>
-        {/* ✅ 초기 로딩 중이며 데이터가 없을 때만 스켈레톤 표시 */}
-        {loading &&
-          currentPage === 0 &&
+        {/* ✅ 로딩 중일 때만 스켈레톤을 표시합니다. */}
+        {loading ? (
           Array.from({ length: 5 }).map((_, i) => (
             <Skeleton
               key={i}
@@ -263,10 +262,9 @@ export default function RankingPage() {
               height={56}
               sx={{ borderRadius: 1 }}
             />
-          ))}
-
-        {/* ✅ 데이터가 있을 때만 랭킹 리스트 표시 */}
-        {currentRankings && currentRankings.length > 0 ? (
+          ))
+        ) : /* ✅ 로딩이 완료된 후에 데이터가 있는지 확인합니다. */
+        currentRankings && currentRankings.length > 0 ? (
           currentRankings.map((user) => (
             <Card
               key={user.userId}
@@ -328,8 +326,9 @@ export default function RankingPage() {
             </Card>
           ))
         ) : (
+          /* ✅ 로딩이 완료되었지만 데이터가 없을 때 메시지를 표시합니다. */
           <Paper
-            elevation={0} // 그림자 효과 제거 (선택 사항)
+            elevation={0}
             sx={{
               width: 600,
               minHeight: 120,
@@ -337,10 +336,10 @@ export default function RankingPage() {
               flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
-              my: 4, // 위아래 여백
-              p: 2, // 내부 여백
-              border: "1px dashed #e0e0e0", // 점선 테두리
-              bgcolor: "grey.50", // 배경색
+              my: 4,
+              p: 2,
+              border: "1px dashed #e0e0e0",
+              bgcolor: "grey.50",
             }}
           >
             <VolunteerActivismIcon
@@ -412,7 +411,7 @@ export default function RankingPage() {
                 </Typography>
                 <Avatar
                   src={myRanking.avatar || myRanking.profileImage}
-                  alt={nickName}
+                  alt={myRanking.nickName}
                   sx={{ width: 40, height: 40, mx: 2 }}
                 />
                 <Typography

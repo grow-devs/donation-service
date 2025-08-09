@@ -49,7 +49,7 @@ public class AlarmServiceImpl implements AlarmService {
         // Slice<Alarm> -> Slice<AlarmDto.ResponseForList>로 맵핑
         return alarms.map(AlarmDto::from);
     }
-
+    //클릭한 알람 읽기 처리
     @Override
     //update를 위한 transactional
     @Transactional
@@ -57,6 +57,15 @@ public class AlarmServiceImpl implements AlarmService {
         // 직접 db update
         // alarm을 조회하고 set할 필요가 없다.
         alarmRepository.UpdateReadByAlarmId(alarmId);
+    }
+    //알람 모두 읽기 처리
+    @Override
+    //update를 위한 transactional
+    @Transactional
+    public void readAllAlarm(Long userId) {
+        // 직접 db update
+        // alarm을 조회하고 set할 필요가 없다.
+        alarmRepository.UpdateReadByUserId(userId);
     }
 
     @Override

@@ -60,4 +60,8 @@ public interface PostRepository extends JpaRepository<Post,Long>,PostRepositoryC
     LIMIT 1
     """, nativeQuery = true)
     Post findTopPostByDonationRate();
+
+    @Query("select sum(p.currentAmount) from Post p")
+    Long sumAllDonationAmounts();
+
 }

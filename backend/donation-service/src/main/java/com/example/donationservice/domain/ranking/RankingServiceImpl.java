@@ -3,17 +3,21 @@ package com.example.donationservice.domain.ranking;
 import com.example.donationservice.common.exception.CommonErrorCode;
 import com.example.donationservice.common.exception.RestApiException;
 import com.example.donationservice.domain.donation.DonationRepository;
+import com.example.donationservice.domain.metadata.dto.MetaDataDto;
 import com.example.donationservice.domain.ranking.dto.RankingDto;
 import com.example.donationservice.domain.user.User;
 import com.example.donationservice.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -83,6 +87,15 @@ public class RankingServiceImpl implements RankingService {
     private void updateRankingForType(RankingType type, Long userId,
                                       Long amount, LocalDate date) {
         String key = getRankingKey(type, date);
+        Boolean keyExists = redisTemplate.hasKey(key);
+        System.out.println("key"+key+" keyExistes " + keyExists);
+        // 새로운 기부 시에 "오늘 처음 기부한 기부자의 정보를 가져오기 위해 확인 후 저장
+        // 하루마다 생성되는 TODAY 키가 없을 경우 처음 기부하는 기부자로 판단한다.
+        if (type.equals(RankingType.TODAY) && Boolean.FALSE.equals(keyExists)) {
+            System.out.println("updateFirstDonor");
+            updateFirstDonor(userId);
+        }
+
         // Redis Zset에서 사용자의 점수를 증가 (기존 점수 + 새로운 기부금액)
         redisTemplate.opsForZSet().incrementScore(key, userId.toString(), amount.doubleValue());
 
@@ -98,6 +111,7 @@ public class RankingServiceImpl implements RankingService {
             // 명예의 전당의 경우, Top 100 유지
             redisTemplate.opsForZSet().removeRange(key, 0, -101);
         }
+
     }
 
     /**
@@ -123,7 +137,6 @@ public class RankingServiceImpl implements RankingService {
      * @param date     기준 날짜
      * @param pageable 페이지 번호 (0부터 시작), 페이지 크기 (한 페이지당 표시할 랭킹 수)
      * @return 해당 페이지의 랭킹 목록
-     *
      */
     @Override
     public RankingDto.Response getRanking(RankingType type, LocalDate date,
@@ -151,7 +164,7 @@ public class RankingServiceImpl implements RankingService {
 
         // 랭킹 데이터가 없으면 빈 리스트 반환
         if (rankingSet == null || rankingSet.isEmpty()) {
-            throw new RestApiException(CommonErrorCode.RANKING_NOT_FOUND);
+            return null;
         }
         // todo refator: [1] 과 [2]는 DB에 접근하는데, 이는 랭킹 조회시에 유저의 nickname을 알기 위해서이다.
         //  만일 nickname이 unique하다면 nickname을 redis의 sortedSet의 key로 두어, db접근을 최소화할 수도 있다.
@@ -248,7 +261,7 @@ public class RankingServiceImpl implements RankingService {
 
         // 백분위 계산 (상위 몇 %인지)
         String percentile = totalUsers > 0 ?
-                String.format("%.1f%%", (double)(myRank) / totalUsers * 100)
+                String.format("%.1f%%", (double) (myRank) / totalUsers * 100)
                 : "0%";
 
         return RankingDto.MyResponse.builder()
@@ -256,6 +269,24 @@ public class RankingServiceImpl implements RankingService {
                 .percentile(percentile)
                 .totalAmount(myScore.longValue())
                 .build();
+    }
+    // @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)를 통해
+    // donationServiceImpl에서 기부를 save하고 난 시점이다.(기부데이터를 가져올 수 있다.
+    // userId는 기부자의 id
+    private void updateFirstDonor(Long userId){
+        //limit 1 을 위한 페이져블
+        Pageable pageable = PageRequest.of(0, 1);
+        // Pageable 객체로 첫 번째 결과를 요청
+        List<MetaDataDto.FirstDonationResponse> firstDonations = donationRepository.findFirstDonation(userId,pageable);
+        Optional<MetaDataDto.FirstDonationResponse>  firstDonation= firstDonations.stream().findFirst();
+
+        if(firstDonation.isPresent()){
+            System.out.println("In updateFirstDonor 닉네임 : "+firstDonation.get().getNickName());
+            String nickName = firstDonation.get().getNickName();
+            LocalDateTime createdAt = firstDonation.get().getCreatedAt();
+            redisTemplate.opsForHash().put("first_donation:","nickName",nickName);
+            redisTemplate.opsForHash().put("first_donation:","createdAt",createdAt.toString());
+        }
     }
 
 }

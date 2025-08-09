@@ -1,20 +1,20 @@
 // ProfileInRankingCard.jsx
-import React from 'react';
-import { Card, Box, Typography } from '@mui/material';
+import React from "react";
+import { Card, Box, Typography, Avatar } from "@mui/material";
 
-export default function ProfileInRankingCard({ rank, nickname, amount }) {
+export default function ProfileInRankingCard({ rank, nickname, amount,profileImage }) {
   return (
     <Card
       elevation={1}
       sx={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
         px: 2,
         py: 1.5,
         borderRadius: 2,
-        width: '100%',
-        boxShadow: '0 2px 6px rgba(0,0,0,0.08)',
+        width: "100%",
+        boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
       }}
     >
       {/* 등수 */}
@@ -22,21 +22,26 @@ export default function ProfileInRankingCard({ rank, nickname, amount }) {
         variant="subtitle1"
         fontWeight={600}
         color="primary"
-        sx={{ minWidth: 32 }}
+        sx={{ minWidth: 0, fontSize: "0.95rem" }}
       >
         {rank}위
       </Typography>
-
+      <Avatar
+        src={ profileImage}
+        alt={nickname}
+        sx={{ width: 30, height: 30, mx: 2 }}
+      />
       {/* 닉네임 */}
       <Typography
         variant="body1"
         sx={{
           flexGrow: 1,
-          textAlign: 'center',
+          // textAlign: 'center',
           fontWeight: 500,
-          whiteSpace: 'nowrap',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          fontSize: "0.95rem",
         }}
       >
         {nickname}
@@ -47,7 +52,7 @@ export default function ProfileInRankingCard({ rank, nickname, amount }) {
         variant="subtitle1"
         fontWeight={600}
         color="text.secondary"
-        sx={{ minWidth: 80, textAlign: 'right' }}
+        sx={{ minWidth: 80, textAlign: "right", fontSize: "0.95rem" }}
       >
         {amount.toLocaleString()}원
       </Typography>

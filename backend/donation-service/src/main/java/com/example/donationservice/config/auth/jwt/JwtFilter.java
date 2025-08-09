@@ -5,6 +5,7 @@ import com.example.donationservice.common.exception.RestApiException;
 import com.example.donationservice.domain.user.CustomUserDetail;
 import com.example.donationservice.domain.user.CustomUserDetailService;
 import com.example.donationservice.domain.user.UserRole;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
@@ -51,38 +52,38 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         jwt = authorizationHeader.substring(7);
-        // jwt 파싱은 try catch로 잡아줘야 좋지만
-        // if 문으로 userId가 있는지 확인하고, try 문안에서 수행되는 isTokenValid에 의해 에러를 catch 할 수 있음.
-        userId = jwtService.getUserIdFromJwtToken(jwt);   // JWT에서 userId 추출
-        userEmail = jwtService.getUserEmailFromJwtToken(jwt); // JWT에서 userEmail 추출
-        userRole = jwtService.getRoleFromJwtToken(jwt); // 토큰에서 역할 추출
-        //jwt에서 추출한 정보로 userDetail 객체 생성
-        userDetails = new CustomUserDetail(userId, userEmail, null, null, UserRole.valueOf(userRole));
-        // 이미 인증된 요청에 대해 다시 인증 과정을 거치는 것을 막기
-        // JWT 파싱 중 예외가 발생하지 않았지만 유효한 정보가 추출되지 않은 경우를 대비
-        // 필터 체인 내의 역할 명확화
-        if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            try {
+        try {
+            // if 문으로 userId가 있는지 확인
+            userId = jwtService.getUserIdFromJwtToken(jwt);   // JWT에서 userId 추출
+            userEmail = jwtService.getUserEmailFromJwtToken(jwt); // JWT에서 userEmail 추출
+            userRole = jwtService.getRoleFromJwtToken(jwt); // 토큰에서 역할 추출
+            //jwt에서 추출한 정보로 userDetail 객체 생성
+            userDetails = new CustomUserDetail(userId, userEmail, null, null, UserRole.valueOf(userRole));
+            // 이미 인증된 요청에 대해 다시 인증 과정을 거치는 것을 막기
+            // JWT 파싱 중 예외가 발생하지 않았지만 유효한 정보가 추출되지 않은 경우를 대비
+            // 필터 체인 내의 역할 명확화
+            if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 //jwt가 유효하면 security contextholder에 사용자를 저장한다.
                 if (jwtService.isTokenValid(jwt)) {
                     setAuthentication(userDetails);
                 }
-            } catch (ExpiredJwtException e) {
-                // Access Token이 만료된 경우 → Refresh Token 검증 로직 실행
-                handleExpiredAccessToken(request, response); // ✅ handleExpiredAccessToken에서 userDetails 제거
-            } catch (JwtException e) {
-                // 위조된 토큰 또는 다른 JWT 관련 에러
-                System.err.println("JWT Exception: " + e.getMessage());
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT Token"); // 401 Unauthorized
-                return; // 에러 응답 후 필터 체인 중단
-            } catch (Exception e) {
-                // 그 외 예상치 못한 예외 처리
-                System.err.println("Unexpected error in JwtFilter: " + e.getMessage());
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "An internal error occurred"); // 500 Internal Server Error
-                return; // 에러 응답 후 필터 체인 중단
             }
-
+        } catch (ExpiredJwtException e) {
+            // Access Token이 만료된 경우 → Refresh Token 검증 로직 실행
+            handleExpiredAccessToken(request, response,e.getClaims()); // ✅ handleExpiredAccessToken에서 userDetails 제거
+        } catch (JwtException e) {
+            // 위조된 토큰 또는 다른 JWT 관련 에러
+            System.err.println("JWT Exception: " + e.getMessage());
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT Token"); // 401 Unauthorized
+            return; // 에러 응답 후 필터 체인 중단
+        } catch (Exception e) {
+            // 그 외 예상치 못한 예외 처리
+            System.err.println("Unexpected error in JwtFilter: " + e.getMessage());
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "An internal error occurred"); // 500 Internal Server Error
+            return; // 에러 응답 후 필터 체인 중단
         }
+
+
         //jwtfilter를 거친 후 다음 필터로 향하게 한다. (UsernamePasswordAuthenticationfilter)
         filterChain.doFilter(request, response);
     }
@@ -91,23 +92,23 @@ public class JwtFilter extends OncePerRequestFilter {
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
-
-    private void handleExpiredAccessToken(HttpServletRequest request, HttpServletResponse response) {
+    // ExpiredJwtException 에서 받아온 e.getClaims()를 파라미터로 받아서
+    // 만료된 토큰에서 사용자의 정보를 가져올 수 있게 한다.
+    private void handleExpiredAccessToken(HttpServletRequest request, HttpServletResponse response, Claims claims) {
         // 1. 만료된 Access Token 문자열 가져오기
         String expiredAccessToken = request.getHeader("Authorization").substring(7);
-
         // 2. 만료된 토큰에서 userId, userEmail, UserRole 등 필요한 정보를 '다시' 추출
         // JwtService의 getUserXFromJwtToken 메서드들은 ExpiredJwtException이 발생하더라도
         // 클레임 정보 자체는 파싱하여 반환할 수 있도록 설계
-        Long userId = jwtService.getUserIdFromJwtToken(expiredAccessToken);
-        String email = jwtService.getUserEmailFromJwtToken(expiredAccessToken);
-        String role = jwtService.getRoleFromJwtToken(expiredAccessToken);
+        Long userId = Long.valueOf(claims.getSubject());
+        String email = claims.get("email").toString();
+        String role = claims.get("role").toString();
 
         String refreshToken = (String) redisTemplate.opsForValue().get(email); // Redis에서 Refresh Token 가져오기
 
         System.out.println("refreshToken" + refreshToken);
 
-        CustomUserDetail userDetails = new CustomUserDetail(userId,email,null,null,UserRole.valueOf(role));
+        CustomUserDetail userDetails = new CustomUserDetail(userId, email, null, null, UserRole.valueOf(role));
 
         //등록된 refreshToken이 존재한다면 accesstoken을 재발급해야한다.
         if (refreshToken != null) {
