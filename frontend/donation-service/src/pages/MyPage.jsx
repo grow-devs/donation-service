@@ -27,40 +27,6 @@ import AddPointModal from "../modal/AddPointModal";
 
 // 게시물 목록 아이템을 렌더링하는 재사용 가능한 컴포넌트
 const PostCard = ({ post, navigate }) => {
-  const [imageSrc, setImageSrc] = useState(
-    "https://placehold.co/151x151/E0E0E0/555555?text=No+Image"
-  );
-  const [imageLoading, setImageLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchImage = async () => {
-      if (!post.thumnbnailImageUrl) {
-        setImageLoading(false);
-        return;
-      }
-
-      try {
-        const response = await api.get(post.thumnbnailImageUrl, {
-          responseType: "blob",
-        });
-        
-        const imageUrl = URL.createObjectURL(response.data);
-        setImageSrc(imageUrl);
-      } catch (err) {
-        console.error("이미지 불러오기 실패:", err);
-      } finally {
-        setImageLoading(false);
-      }
-    };
-
-    fetchImage();
-
-    return () => {
-      if (imageSrc && imageSrc.startsWith('blob:')) {
-        URL.revokeObjectURL(imageSrc);
-      }
-    };
-  }, [post.thumnbnailImageUrl]);
 
   // 클릭 이벤트 핸들러: postId를 사용하여 게시물 상세 페이지로 이동
   const handlePostClick = () => {
@@ -78,7 +44,7 @@ const PostCard = ({ post, navigate }) => {
         <CardMedia
           component="img"
           sx={{ width: 151, height: 151, flexShrink: 0 }}
-          image={imageSrc}
+          image={post.thumnbnailImageUrl}
           alt={post.postTitle}
         />
         <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, minWidth: 0 }}>
@@ -503,32 +469,6 @@ export default function MyPage() {
                 <>
                   <Grid container spacing={2} sx={{ mt: 2, p: 2 }}>
                     {favorites.map((favorite, index) => (
-                      // <Grid item xs={12} key={index}>
-                      //   <Card sx={{ display: 'flex' }}>
-                      //     <CardMedia
-                      //       component="img"
-                      //       sx={{ width: 151, height: 151, flexShrink: 0 }}
-                      //       image={favorite.thumbnailImageUrl || "https://placehold.co/151x151/E0E0E0/555555?text=No+Image"}
-                      //       alt={favorite.postTitle}
-                      //     />
-                      //     <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
-                      //       <CardContent sx={{ flex: '1 0 auto' }}>
-                      //         <Typography component="div" variant="h6">
-                      //           {favorite.postTitle}
-                      //         </Typography>
-                      //         <Typography variant="subtitle1" color="text.secondary" component="div">
-                      //           현재 금액: {favorite.currentAmount.toLocaleString()} P
-                      //         </Typography>
-                      //         <Typography variant="body2" color="text.secondary" component="div">
-                      //           목표 금액: {favorite.targetAmount.toLocaleString()} P
-                      //         </Typography>
-                      //         <Typography variant="body2" color="text.secondary" component="div">
-                      //           마감일: {format(new Date(favorite.deadline), 'yyyy.MM.dd')}
-                      //         </Typography>
-                      //       </CardContent>
-                      //     </Box>
-                      //   </Card>
-                      // </Grid>
                       <PostCard key={index} post={favorite} navigate={navigate} />
                     ))}
                   </Grid>
