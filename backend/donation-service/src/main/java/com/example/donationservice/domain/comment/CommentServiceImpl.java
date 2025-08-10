@@ -57,7 +57,7 @@ public class CommentServiceImpl implements CommentService {
     public CommentDto.PagedCommentResponse getCommentsByPostId(Long userId, Long postId, Pageable pageable) {
         // 페이지 번호는 0부터 시작하므로, 클라이언트에서 1부터 시작하는 페이지 번호를 보낸다면 조정 필요
         // 여기서는 클라이언트가 0부터 보낸다고 가정합니다.
-        Post post = postRepository.findById(postId)
+        postRepository.findById(postId)
                 .orElseThrow(() -> new RestApiException(POST_NOT_FOUND));
 
         Page<Comment> commentPage = commentRepository.findByPostId(postId, pageable);
