@@ -6,6 +6,7 @@ import styled from "styled-components";
 import DonationStatusCard from "./DonationStatusCard"; // DonationStatusCard 컴포넌트 임포트
 import DonationModal from '../../modal/DonationModal';
 import { FaHeart } from "react-icons/fa";
+import useAuthStore from "../../store/authStore";
 import api from "../../apis/api";
 
 const SummaryContainer = styled.div`
@@ -134,10 +135,11 @@ function FundraisingSummary({ summary, post }) {
   // };
   const [likesCount, setLikesCount] = useState(post?.likesCount || 0);
   const [isLiked, setIsLiked] = useState(false); // 사용자가 현재 게시글을 좋아요했는지 여부 (백엔드에서 가져오거나, 초기 로드 시 확인 필요)
+  const isLoggedIn = useAuthStore(state => state.isLoggedIn);
 
   // 컴포넌트 마운트 시 또는 post prop 변경 시 좋아요 상태를 확인
   useEffect(() => {
-    if (post && post.id) {
+    if (post && post.id & isLoggedIn) {
       setLikesCount(post.likesCount || 0); // 초기 좋아요 수는 post prop에서 가져옵니다.
 
       const checkUserLikeStatus = async () => {
@@ -156,7 +158,7 @@ function FundraisingSummary({ summary, post }) {
       };
       checkUserLikeStatus();
     }
-  }, [post]); // post 객체가 변경될 때마다 다시 실행
+  }, [post, isLoggedIn]); // post 객체가 변경될 때마다 다시 실행
 
 
   const formatAmount = (amount) => {
