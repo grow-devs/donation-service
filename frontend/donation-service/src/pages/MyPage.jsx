@@ -542,7 +542,7 @@ export default function MyPage() {
                 <Box sx={{ p: 2, textAlign: 'center' }}><Typography color="error">{favoritesError}</Typography></Box>
               ) : favorites.length > 0 ? (
                 <>
-                  <Grid container spacing={2} sx={{ mt: 2, p: 2 }}>
+                  <Grid container spacing={2} sx={{ mt: 2, p: 2, flexDirection: 'column' }}>
                     {favorites.map((favorite, index) => (
                       <PostCard key={index} post={favorite} navigate={navigate} />
                     ))}
@@ -570,7 +570,7 @@ export default function MyPage() {
                 <Box sx={{ p: 2, textAlign: 'center' }}><Typography color="error">{myPostsError}</Typography></Box>
               ) : myPosts.length > 0 ? (
                 <>
-                  <Grid container spacing={2} sx={{ mt: 2, p: 2 }}>
+                  <Grid container spacing={2} sx={{ mt: 2, p: 2, flexDirection: 'column' }}>
                     {myPosts.map((post, index) => (
                       <PostCard key={index} post={post} navigate={navigate} />
                     ))}
