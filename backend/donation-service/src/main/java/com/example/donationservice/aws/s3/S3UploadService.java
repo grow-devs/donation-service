@@ -209,6 +209,16 @@ public class S3UploadService {
         return uploadFileToS3(file.getInputStream(), key, file.getContentType(), file.getSize());
     }
 
+    public String uploadProfileImage(MultipartFile file) throws IOException {
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException("업로드할 파일이 없습니다.");
+        }
+        String fileExtension = getFileExtension(file.getOriginalFilename());
+        String key = "users/profile/" + UUID.randomUUID().toString() + "." + fileExtension;
+
+        return uploadFileToS3(file.getInputStream(), key, file.getContentType(), file.getSize());
+    }
+
     /**
      * 게시물 HTML 내용에서 임시 S3 이미지 URL을 찾아 영구 URL로 교체하고,
      * S3 내에서 이미지 버전 (원본, 디스플레이, 썸네일)을 생성 및 업로드합니다.

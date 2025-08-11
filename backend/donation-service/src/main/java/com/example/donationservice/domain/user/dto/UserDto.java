@@ -50,6 +50,7 @@ public class UserDto {
         private String email;
         private String userName;
         private String nickName;
+        private String profileImageUrl; // 프로필 이미지 URL
         private UserRole userRole;
         private Long points; // 사용자의 현재 포인트 잔액
         private String teamName;

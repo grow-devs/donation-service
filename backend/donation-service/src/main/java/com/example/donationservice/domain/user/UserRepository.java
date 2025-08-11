@@ -22,6 +22,7 @@ public interface UserRepository extends JpaRepository<User,Long> {
         u.email as email,
         u.username as username,
         u.nickName as nickName,
+        u.profileImageUrl as profileImageUrl,
         u.userRole as userRole,
         u.points as points,
         t.name as teamName,

@@ -24,6 +24,8 @@ public class User extends BaseTimeEntity {
 
     private String nickName;
 
+    private String profileImageUrl; // 프로필 이미지 URL
+
     private UserRole userRole;
 
     private Long points; // 사용자의 현재 포인트 잔액
@@ -43,6 +45,9 @@ public class User extends BaseTimeEntity {
     public void addPoints(Long amount) {
         this.points += amount;
     }
+
+    // 사용자 프로필 이미지 업데이트
+    public void updateProfileImage(String imageUrl) {
+        this.profileImageUrl = imageUrl;
+    }
 }
-
-

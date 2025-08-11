@@ -7,6 +7,7 @@ public interface UserInfoProjection {
     String getEmail();
     String getUsername();
     String getNickName();
+    String getProfileImageUrl(); // 프로필 이미지 URL
     UserRole getUserRole();
     Long getPoints();
     String getTeamName();

@@ -6,6 +6,9 @@ import com.example.donationservice.domain.user.dto.UserPostInfoProjection;
 import com.example.donationservice.domain.user.dto.UserPostLikeInfoProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 
 public interface UserService {
@@ -23,4 +26,6 @@ public interface UserService {
     Page<UserPostInfoProjection> getMyPosts(Long userId, Pageable pageable);
 
     Long addPoints(Long userId, UserDto.PointRequest pointRequest);
+
+    void uploadProfileImage(Long userId, MultipartFile imageFile) throws IOException;
 }

@@ -13,6 +13,9 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 
 @RestController
@@ -105,6 +108,20 @@ public class UserController {
                 Result.builder()
                         .message("포인트 추가 성공")
                         .data(response)
+                        .build()
+        );
+    }
+
+    // 유저 프로필 이미지 업로드
+    @PostMapping("/profile-image")
+    public ResponseEntity<Result> uploadProfileImage(
+            @AuthenticationPrincipal CustomUserDetail userDetails,
+            @RequestParam("image") MultipartFile image) throws IOException {
+        userService.uploadProfileImage(userDetails.getUserId(), image);
+        return ResponseEntity.ok(
+                Result.builder()
+                        .message("프로필 이미지 업로드 성공")
+                        .data("ok")
                         .build()
         );
     }

@@ -1,5 +1,6 @@
 package com.example.donationservice.domain.user;
 
+import com.example.donationservice.aws.s3.S3UploadService;
 import com.example.donationservice.common.exception.CommonErrorCode;
 import com.example.donationservice.common.exception.RestApiException;
 import com.example.donationservice.config.auth.jwt.JwtService;
@@ -18,7 +19,9 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.UUID;
 
 import static com.example.donationservice.common.exception.CommonErrorCode.LOGIN_FAILED;
@@ -32,6 +35,7 @@ public class UserServiceImpl implements UserService {
     private final DonationRepository donationRepository;
     private final PostLikeRepository postLikeRepository;
     private final PostRepository postRepository;
+    private final S3UploadService s3UploadService;
 
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
@@ -121,6 +125,7 @@ public class UserServiceImpl implements UserService {
                 .email(userInfo.getEmail())
                 .userName(userInfo.getUsername())
                 .nickName(userInfo.getNickName())
+                .profileImageUrl(userInfo.getProfileImageUrl())
                 .userRole(userInfo.getUserRole())
                 .points(userInfo.getPoints())
                 .teamName(userInfo.getTeamName())
@@ -158,5 +163,20 @@ public class UserServiceImpl implements UserService {
         user.addPoints(pointsRequest.getPoints());
 
         return user.getPoints();
+    }
+
+    @Override
+    @Transactional
+    public void uploadProfileImage(Long userId, MultipartFile imageFile) throws IOException {
+        if(imageFile == null || imageFile.isEmpty()) {
+            throw new RestApiException(CommonErrorCode.IMAGE_NOT_FOUND);
+        }
+        String userProfileImageUrl = s3UploadService.uploadProfileImage(imageFile);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RestApiException(CommonErrorCode.USER_NOT_FOUND));
+
+        user.updateProfileImage(userProfileImageUrl);
+        userRepository.save(user);
     }
 }

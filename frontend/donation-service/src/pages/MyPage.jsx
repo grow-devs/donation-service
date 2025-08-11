@@ -287,7 +287,7 @@ export default function MyPage() {
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <Avatar
                 sx={{ width: 70, height: 70, mr: 2 }}
-                src="/profile.jpg"
+                src={userInfo.profileImageUrl}
               />
               <Box>
                 <Typography variant="h6">{userInfo.nickName}</Typography> {/* ✨ 닉네임 또는 이름 표시 */}
