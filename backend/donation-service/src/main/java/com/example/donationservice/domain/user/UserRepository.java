@@ -34,4 +34,6 @@ public interface UserRepository extends JpaRepository<User,Long> {
     group by u.id, u.email, u.username, u.nickName, u.userRole, u.points, t.name
     """)
     Optional<UserInfoProjection> findUserInfoById(@Param("userId") Long userId);
+
+    Boolean existsByNickName(String nickName);
 }

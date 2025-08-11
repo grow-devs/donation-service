@@ -1,72 +1,109 @@
-// FloatingAuthModal.jsx
-import React, { useState } from 'react';
-import { Box, Card, CardContent, Fade, Backdrop } from '@mui/material';
+import React, { useState, useRef } from 'react';
+import {
+  Box, Card, CardContent, Fade, Backdrop, Snackbar, Alert,
+} from '@mui/material';
 import LoginForm from './LoginForm';
 import SignupForm from './SignupForm';
 
 export default function FloatingAuthModal({ open, onClose }) {
   const [isSignupMode, setIsSignupMode] = useState(false);
-  // 모달 영역을 참조할 ref
-  const modalRef = React.useRef(null);
-  // 클릭이 모달 내부에서 시작됐는지 추적하는 ref
-  const mouseDownInsideRef = React.useRef(false);
+  const modalRef = useRef(null);
+  const mouseDownInsideRef = useRef(false);
 
-  // 로그인/회원가입 모드 전환
-  const handleModeSwitch = () => setIsSignupMode((prev) => !prev);
+  // ✨ 스낵바 상태 관리
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success', // 'success', 'error', 'warning', 'info'
+  });
 
-  // 마우스를 누른 시점에 모달 내부인지 여부 기록
+  // ✨ 로그인/회원가입 모드 전환 핸들러
+  const handleModeSwitch = (mode) => {
+    setIsSignupMode(mode === 'signup');
+  };
+
+  // 마우스 클릭이 모달 내부에서 시작되었는지 추적
   const handleMouseDown = (e) => {
-    if (modalRef.current?.contains(e.target)) {
-      mouseDownInsideRef.current = true; // 모달 내부 클릭
-    } else {
-      mouseDownInsideRef.current = false; // 모달 외부 클릭
+    mouseDownInsideRef.current = modalRef.current?.contains(e.target);
+  };
+
+  // 모달 외부 클릭 시 모달 닫기
+  const handleBackdropClick = (e) => {
+    if (!mouseDownInsideRef.current) {
+      onClose();
     }
   };
 
-  // 마우스를 떼는 시점에 모달을 닫을지 여부 결정
-  const handleBackdropClick = (e) => {
-    // 모달 외부에서 mousedown 시작 + mouseup일 경우에만 닫기
-    if (!mouseDownInsideRef.current) {
-      // 클릭이 모달 내부에서 시작한 것이 아니면 닫기
-      onClose();
+  // ✨ 스낵바를 띄우는 함수 (자식 컴포넌트에 전달)
+  const showSnackbar = (message, severity) => {
+    setSnackbar({ open: true, message, severity });
+  };
+
+  // ✨ 스낵바 닫기 핸들러
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
     }
-    // 모달 내부 클릭 후 외부에서 마우스를 떼는 경우는 무시됨
+    setSnackbar(prev => ({ ...prev, open: false }));
   };
 
   return (
-    <Backdrop
-      open={open}
-      onMouseDown={handleMouseDown}
-      onClick={handleBackdropClick}
-      sx={{
-        zIndex: (theme) => theme.zIndex.modal + 1,
-        backdropFilter: 'blur(4px)',
-        backgroundColor: 'rgba(0,0,0,0.3)',
-      }}
-    >
-      <Fade in={open}>
-        <Box
-          ref={modalRef}
-          onClick={(e) => e.stopPropagation()} // 안전하게 중복 방지
-          sx={{
-            width: 360,
-            maxWidth: '90%',
-            bgcolor: 'background.paper',
-            borderRadius: 3,
-            boxShadow: 6,
-          }}
+    <>
+      <Backdrop
+        open={open}
+        onMouseDown={handleMouseDown}
+        onClick={handleBackdropClick}
+        sx={{
+          zIndex: (theme) => theme.zIndex.modal + 1,
+          backdropFilter: 'blur(4px)',
+          backgroundColor: 'rgba(0,0,0,0.3)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Fade in={open}>
+          <Box
+            ref={modalRef}
+            onClick={(e) => e.stopPropagation()}
+            sx={{
+              width: 400,
+              maxWidth: '90%',
+              bgcolor: 'background.paper',
+              borderRadius: 3,
+              boxShadow: 6,
+            }}
+          >
+            <Card>
+              <CardContent sx={{ p: 4 }}>
+                {isSignupMode ? (
+                  // ✨ SignupForm에 onShowSnackbar prop 전달
+                  <SignupForm onSwitchMode={handleModeSwitch} onShowSnackbar={showSnackbar} />
+                ) : (
+                  // ✨ LoginForm에 onShowSnackbar prop 전달
+                  <LoginForm onSwitchMode={handleModeSwitch} onClose={onClose} onShowSnackbar={showSnackbar} />
+                )}
+              </CardContent>
+            </Card>
+          </Box>
+        </Fade>
+      </Backdrop>
+
+      {/* ✨ Snackbar 컴포넌트 */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbar.severity}
+          sx={{ width: "100%" }}
         >
-          <Card>
-            <CardContent sx={{ p: 4 }}>
-              {isSignupMode ? (
-                <SignupForm onSwitchMode={handleModeSwitch} />
-              ) : (
-                <LoginForm onSwitchMode={handleModeSwitch} onClose={onClose} />
-              )}
-            </CardContent>
-          </Card>
-        </Box>
-      </Fade>
-    </Backdrop>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+    </>
   );
 }

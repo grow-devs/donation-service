@@ -159,4 +159,10 @@ public class UserServiceImpl implements UserService {
 
         return user.getPoints();
     }
+    //닉네임 중복 확인 메서드
+    @Override
+    public boolean checkNickName(String nickName) {
+        return userRepository.existsByNickName(nickName);
+    }
+
 }

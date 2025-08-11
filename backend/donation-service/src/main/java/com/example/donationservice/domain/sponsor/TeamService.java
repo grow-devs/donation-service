@@ -7,4 +7,6 @@ public interface TeamService {
     TeamDto.response createTeam(TeamDto.CreateTeamRequest createTeamRequest, Long userId);
     // 팀 이름 중복 체크
     boolean isTeamNameAvailable(String teamName);
+
+    boolean isExistTeam(Long userId);
 }
