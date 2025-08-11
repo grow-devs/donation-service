@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   Box,
   Avatar,
@@ -24,6 +24,7 @@ import useAuthStore from '../store/authStore';
 import { format } from "date-fns";
 import api from "../apis/api";
 import AddPointModal from "../modal/AddPointModal";
+import ProfileImageModal from "../modal/ProfileImageModal";
 
 // 게시물 목록 아이템을 렌더링하는 재사용 가능한 컴포넌트
 const PostCard = ({ post, navigate }) => {
@@ -100,6 +101,12 @@ export default function MyPage() {
 
   // 포인트 추가 모달 상태
   const [isAddPointModalOpen, setIsAddPointModalOpen] = useState(false);
+
+  // 프로필 이미지 변경 관련 상태 및 ref
+  const fileInputRef = useRef(null);
+  const [isProfileImageModalOpen, setIsProfileImageModalOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewImageUrl, setPreviewImageUrl] = useState('');
 
   // 백엔드와 동일한 정렬 조건과 페이지 사이즈
   const pageSize = 3;
@@ -253,6 +260,60 @@ export default function MyPage() {
     fetchUserInfo(); // 사용자 정보 새로고침
   };
 
+  // 프로필 이미지 클릭 핸들러
+  const handleAvatarClick = () => {
+    fileInputRef.current.click();
+  };
+
+  // 파일 선택 시 실행될 핸들러
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewImageUrl(reader.result);
+        setIsProfileImageModalOpen(true); // 미리보기 모달 열기
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // 프로필 이미지 저장 핸들러
+  const handleSaveProfileImage = async () => {
+    if (!selectedFile) return;
+
+    const formData = new FormData();
+    formData.append('image', selectedFile);
+
+    try {
+      await api.post('/user/profile-image', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      alert('프로필 이미지가 성공적으로 변경되었습니다.');
+      setIsProfileImageModalOpen(false);
+      setSelectedFile(null);
+      setPreviewImageUrl('');
+      fetchUserInfo(); // 변경된 이미지 정보로 유저 정보 새로고침
+    } catch (err) {
+      console.error('프로필 이미지 업로드 실패:', err);
+      alert('프로필 이미지 업로드에 실패했습니다.');
+    }
+  };
+
+  // 프로필 이미지 모달 닫기 핸들러
+  const handleCloseProfileImageModal = () => {
+    setIsProfileImageModalOpen(false);
+    setSelectedFile(null);
+    setPreviewImageUrl('');
+    // 파일 입력 필드 초기화 (같은 파일을 다시 선택할 경우 onChange 이벤트가 발생하지 않는 문제 방지)
+    if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+    }
+  };
+
   // ✨ 로딩 중 또는 에러 발생 시 처리
   if (userInfoLoading) {
     return (
@@ -286,8 +347,9 @@ export default function MyPage() {
           >
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <Avatar
-                sx={{ width: 70, height: 70, mr: 2 }}
+                sx={{ width: 70, height: 70, mr: 2, cursor: 'pointer', border: '1px solid #d1cdcd' }}
                 src={userInfo.profileImageUrl}
+                onClick={handleAvatarClick} // 클릭 이벤트 추가
               />
               <Box>
                 <Typography variant="h6">{userInfo.nickName}</Typography> {/* ✨ 닉네임 또는 이름 표시 */}
@@ -359,6 +421,15 @@ export default function MyPage() {
         </CardContent>
 
       </Card>
+
+      {/* 숨겨진 파일 입력 필드 */}
+      <input 
+        type="file" 
+        ref={fileInputRef} 
+        onChange={handleImageChange} 
+        style={{ display: 'none' }} 
+        accept="image/*"
+      />
 
       {/* 기부내역 요약 */}
       <Card sx={{ mb: 3, boxShadow: "0 4px 12px rgba(0,0,0,0.12)" }}>
@@ -523,6 +594,14 @@ export default function MyPage() {
         onClose={handleCloseAddPointModal}
         onPointAdded={handlePointAdded}
       />
+
+    {/* 프로필 이미지 미리보기 모달 */}
+    <ProfileImageModal
+        isOpen={isProfileImageModalOpen}
+        onClose={handleCloseProfileImageModal}
+        onSave={handleSaveProfileImage}
+        previewImage={previewImageUrl}
+    />
 
     </Box>
   );

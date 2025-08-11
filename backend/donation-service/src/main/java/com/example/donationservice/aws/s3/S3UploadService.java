@@ -164,6 +164,7 @@ public class S3UploadService {
     private static final String POST_ORIGINALS_DIR = "posts/originals/"; // 게시물 원본 이미지 저장 폴더 (게시물 ID 포함)
     private static final String POST_DISPLAY_DIR = "posts/display/";     // 게시물 본문 및 상세 조회 대표 이미지용
     private static final String POST_THUMBS_DIR = "posts/thumbs/";       // 게시물 목록 썸네일용
+    private static final String USER_PROFILE_DIR = "users/profile/"; // 사용자 프로필 이미지 저장 폴더
 
     // 이미지 리사이징 크기 설정 (픽셀)
     private static final int DISPLAY_IMAGE_MAX_WIDTH = 1000; // 게시물 본문 및 대표 이미지의 최대 너비
@@ -214,7 +215,7 @@ public class S3UploadService {
             throw new IllegalArgumentException("업로드할 파일이 없습니다.");
         }
         String fileExtension = getFileExtension(file.getOriginalFilename());
-        String key = "users/profile/" + UUID.randomUUID().toString() + "." + fileExtension;
+        String key = USER_PROFILE_DIR + UUID.randomUUID().toString() + "." + fileExtension;
 
         return uploadFileToS3(file.getInputStream(), key, file.getContentType(), file.getSize());
     }
