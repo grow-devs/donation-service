@@ -58,4 +58,9 @@ public class TeamServiceImpl implements TeamService{
         // 팀 이름이 이미 존재하는지 확인
         return !teamRepository.existsByName(teamName);
     }
+    // 팀이 존재하는지 체크
+    @Override
+    public boolean isExistTeam(Long userId) {
+        return teamRepository.existsByUserId(userId);
+    }
 }
