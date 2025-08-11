@@ -23,4 +23,6 @@ public interface UserService {
     Page<UserPostInfoProjection> getMyPosts(Long userId, Pageable pageable);
 
     Long addPoints(Long userId, UserDto.PointRequest pointRequest);
+
+    boolean checkNickName(String nickName);
 }
