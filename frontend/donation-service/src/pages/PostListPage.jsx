@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useParams, useNavigate} from "react-router-dom";
+import useAuthStore from "../store/authStore";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   Container,
   Grid,
@@ -9,32 +10,50 @@ import {
   Box,
   Typography,
   Button,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import CategoryTabs from "../components/CategoryTabs";
 import PostCard from "../components/PostCard";
 import PostCardSkeleton from "../components/PostCardSkeleton";
 import postapi from "../apis/postapi";
 import EditNoteIcon from "@mui/icons-material/EditNote";
+import api from "../apis/api";
+
+import iconAll from "../assets/iconAll.png";
+import iconAnimal from "../assets/iconAnimal.png";
+import iconChild from "../assets/iconChild.png";
+import iconDisable from "../assets/iconDisable.png";
+import iconEarth from "../assets/iconEarth.png";
+import iconGrandma from "../assets/iconGrandma.png";
+import iconSocial from "../assets/iconSocial.png";
+import iconTree from "../assets/iconTree.png";
+
 const categories = [
-  { id: 0, name: "전체" },
-  { id: 1, name: "아동·청소년" },
-  { id: 2, name: "환경" },
-  { id: 3, name: "동물" },
-  { id: 4, name: "어르신" },
-  { id: 5, name: "사회" },
-  { id: 6, name: "지구촌" },
-  { id: 7, name: "장애인" },
+  { id: 0, name: "전체", icon: iconAll },
+  { id: 1, name: "아동", icon: iconChild },
+  { id: 2, name: "환경", icon: iconTree },
+  { id: 3, name: "동물", icon: iconAnimal },
+  { id: 4, name: "어르신", icon: iconGrandma },
+  { id: 5, name: "사회", icon: iconSocial },
+  { id: 6, name: "지구", icon: iconEarth },
+  { id: 7, name: "장애인", icon: iconDisable },
 ];
 
 export default function PostListPage() {
   const navigate = useNavigate();
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+  // ✨ Snackbar 상태 관리
+  const [showSnackbar, setShowSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("info");
+
   const daysLeft = null;
   const { categoryId } = useParams();
   const [selectedCategory, setSelectedCategory] = useState(
     Number(categoryId) || 0
   );
   const [sortOrder, setSortOrder] = useState("추천순"); // '추천순' (participantsDesc) 또는 '최신순' (latest)
-
   const [posts, setPosts] = useState([]);
 
   // lastId 외의 다른 커서 필드들을 추가로 관리합니다.
@@ -97,6 +116,18 @@ export default function PostListPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCategory, sortOrder]); // sortOrder도 의존성 배열에 포함
 
+  const FetchhasTeam = async () => {
+    try {
+      const res = await api.get("/team/check-team");
+      console.log(res.data.data);
+      // ✨ 상태를 업데이트하는 대신, API 결과를 바로 반환합니다.
+      return res.data.data;
+    } catch (e) {
+      console.log("팀이 있는지 확인하는 api 조회 에러", e);
+      // ✨ 에러 발생 시 false를 반환하여 팀이 없다고 처리합니다.
+      return false;
+    }
+  };
   // API 요청 함수 (isInitial: 초기 요청 여부)
   const fetchPosts = (isInitial = false) => {
     if (loading) return;
@@ -207,9 +238,37 @@ export default function PostListPage() {
     navigate(`/post-detail/${postId}`);
   };
 
+  const handleCreatePostClick = async () => {
+    if (!isLoggedIn) {
+      setSnackbarMessage("로그인이 필요한 기능입니다.");
+      setSnackbarSeverity("warning");
+      setShowSnackbar(true);
+      return;
+    } else {
+      // 로그인이 되어있다면
+      // 그때 후원 팀이 있는지 확인하는 api 호출
+      const hasTeam = await FetchhasTeam();
+
+      if (!hasTeam) {
+        setSnackbarMessage("모금 제안을 하려면 후원 팀에 소속되어야 합니다.");
+        setSnackbarSeverity("warning");
+        setShowSnackbar(true);
+        return;
+      }
+    }
+
+    navigate("/createPost");
+  };
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setShowSnackbar(false);
+  };
+
   return (
-    <Container sx={{ mt: 3 }}>
-      <Box sx={{ display: "flex", justifyContent: "center" }}>
+    <Container sx={{ mt: 10}}>
+      <Box sx={{ display: "flex", justifyContent: "center"}}>
         <CategoryTabs
           categories={categories}
           selected={selectedCategory}
@@ -228,7 +287,7 @@ export default function PostListPage() {
       >
         <Typography variant="h5" sx={{ color: "black", fontWeight: "bold" }}>
           진행중 모금함 {totalPostsCount} {/* 진행중 모금함 수 */}
-          <Button color="" onClick={() => navigate("/createPost")}>
+          <Button color="" onClick={handleCreatePostClick}>
             <EditNoteIcon sx={{ color: "rgba(97, 97, 97, 1)" }} />
             <Typography variant="body2">모금 제안</Typography>
           </Button>
@@ -278,8 +337,11 @@ export default function PostListPage() {
             if (index === posts.length - 1) {
               return (
                 //posts.map 내부의 마지막 PostCard를 감시하기 위해 ref={lastPostElementRef}로 연결
-                <Box key={post.id} sx={{ width: 270, cursor: 'pointer' }} ref={lastPostElementRef}
-                    onClick={() => handlePostClick(post.id)}
+                <Box
+                  key={post.id}
+                  sx={{ width: 270, cursor: "pointer" }}
+                  ref={lastPostElementRef}
+                  onClick={() => handlePostClick(post.id)}
                 >
                   <PostCard
                     post={post}
@@ -290,8 +352,10 @@ export default function PostListPage() {
               );
             }
             return (
-              <Box key={post.id} sx={{ width: 270, cursor: 'pointer' }}
-              onClick={() => handlePostClick(post.id)}
+              <Box
+                key={post.id}
+                sx={{ width: 270, cursor: "pointer" }}
+                onClick={() => handlePostClick(post.id)}
               >
                 <PostCard
                   post={post}
@@ -318,6 +382,20 @@ export default function PostListPage() {
           )}
         </Box>
       </Grid>
+      <Snackbar
+        open={showSnackbar}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }
