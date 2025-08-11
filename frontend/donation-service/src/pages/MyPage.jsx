@@ -332,9 +332,9 @@ export default function MyPage() {
   }
 
   return (
-    <Box sx={{ maxWidth: 700, mx: "auto", mt: 4, px: 1 }}>
+    <Box sx={{ maxWidth: 700, mx: "auto", mt: 4, px: 1, mt: 11, mb: 5 }}>
       {/* 프로필 영역 */}
-      <Card sx={{ mb: 3, boxShadow: "0 4px 12px rgba(0,0,0,0.12)" }}>
+      <Card sx={{ mb: 3, boxShadow: "0 4px 12px rgba(0,0,0,0.12)", borderRadius: 2 }}>
         <CardContent>
           {/* 상단: 프로필 + 버튼 */}
           <Box
@@ -432,7 +432,7 @@ export default function MyPage() {
       />
 
       {/* 기부내역 요약 */}
-      <Card sx={{ mb: 3, boxShadow: "0 4px 12px rgba(0,0,0,0.12)" }}>
+      <Card sx={{ mb: 3, boxShadow: "0 4px 12px rgba(0,0,0,0.12)", borderRadius: 2 }}>
         <CardContent sx={{ py: 2 }}>
           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
             <Typography variant="h5" sx={{ fontWeight: "bold" }}>
@@ -471,7 +471,11 @@ export default function MyPage() {
       {/* 활동 요약 */}
 
       {/* 탭 */}
-      <Box>
+      <Box sx={{
+        border: '1px solid #e0e0e0', // 탭 컨테이너에 테두리를 추가
+        borderRadius: 2, // 둥근 모서리 적용
+        overflow: 'hidden' // 이 부분이 중요! 자식 요소가 부모의 둥근 모서리를 넘지 않도록 함
+      }}>
         <Tabs value={tab} onChange={handleChange} centered size="small">
           <Tab label="기부 내역" />
           <Tab label="즐겨 찾기" />
