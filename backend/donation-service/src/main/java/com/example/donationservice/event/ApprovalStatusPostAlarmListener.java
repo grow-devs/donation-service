@@ -21,6 +21,7 @@ public class ApprovalStatusPostAlarmListener {
         try {
             alarmService.savePostApprovalStatusChangedAlarm(
                     event.getStatus(),
+                    event.getMessage(),
                     event.getPostId(),
                     event.getPostTitle(),
                     event.getUser()

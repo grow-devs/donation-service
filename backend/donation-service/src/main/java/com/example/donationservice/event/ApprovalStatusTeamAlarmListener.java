@@ -21,6 +21,7 @@ public class ApprovalStatusTeamAlarmListener {
         try {
             alarmService.saveApprovalStatusChangedAlarm(
                     event.getStatus(),
+                    event.getMessage(),
                     event.getTeamName(),
                     event.getUser()
             );

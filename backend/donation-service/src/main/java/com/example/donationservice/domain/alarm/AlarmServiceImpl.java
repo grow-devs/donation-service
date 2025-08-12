@@ -43,11 +43,11 @@ public class AlarmServiceImpl implements AlarmService {
 
     @Override
     @Transactional
-    public void saveApprovalStatusChangedAlarm(ApprovalStatus approvalStatus, String teamName, User user) {
+    public void saveApprovalStatusChangedAlarm(ApprovalStatus approvalStatus, String message, String teamName, User user) {
         try {
             Alarm alarm = Alarm.builder()
                     .type(AlarmType.TEAM_APPROVAL_STATUS)
-                    .message("팀 [" + teamName + "]의 승인 상태가 " + approvalStatus + "로 변경되었습니다.")
+                    .message("팀 [" + teamName + "]의 승인 상태가 " + approvalStatus + "로 변경되었습니다.\n" + message)
                     .isRead(false)
                     .postId(null)
                     .isRead(false)
@@ -64,11 +64,11 @@ public class AlarmServiceImpl implements AlarmService {
 
     @Override
     @Transactional
-    public void savePostApprovalStatusChangedAlarm(ApprovalStatus approvalStatus, Long postId, String postTitle, User user) {
+    public void savePostApprovalStatusChangedAlarm(ApprovalStatus approvalStatus, String message, Long postId, String postTitle, User user) {
         try {
             Alarm alarm = Alarm.builder()
                     .type(AlarmType.POST_APPROVAL_STATUS)
-                    .message("게시물 [" + postTitle + "]의 승인 상태가 " + approvalStatus + "로 변경되었습니다.")
+                    .message("게시물 [" + postTitle + "]의 승인 상태가 " + approvalStatus + "로 변경되었습니다.\n" + message)
                     .isRead(false)
                     .postId(postId)
                     .user(user)
