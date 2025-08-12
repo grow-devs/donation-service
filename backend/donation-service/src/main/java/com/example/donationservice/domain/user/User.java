@@ -1,6 +1,8 @@
 package com.example.donationservice.domain.user;
 
 import com.example.donationservice.common.entity.BaseTimeEntity;
+import com.example.donationservice.common.exception.CommonErrorCode;
+import com.example.donationservice.common.exception.RestApiException;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -31,10 +33,10 @@ public class User extends BaseTimeEntity {
     // 사용자 points를 감소
     public void decreasePoints(Long amount) {
         if (amount < 0) {
-            throw new IllegalArgumentException("감소할 포인트는 0보다 커야 합니다.");
+            throw new RestApiException(CommonErrorCode.ZERO_POINTS);
         }
         if (this.points < amount) {
-            throw new IllegalArgumentException("포인트가 부족합니다.");
+            throw new RestApiException(CommonErrorCode.INSUFFICIENT_POINTS);
         }
         this.points -= amount;
     }
