@@ -21,6 +21,7 @@ import {
   MenuItem, // 드롭다운 아이템 추가
 } from '@mui/material';
 import api from '../apis/api'; // API 호출을 위한 api 인스턴스 임포트
+import ApprovalStatusModal from '../modal/ApprovalStatusModal';
 
 export default function AdminForm() {
   // 현재 활성화된 탭의 인덱스 (0: 단체, 1: 게시물)
@@ -44,6 +45,11 @@ export default function AdminForm() {
   const [agencyFilterStatus, setAgencyFilterStatus] = useState('ALL');
   // 게시물 리스트의 필터 상태 (기본값 'ALL')
   const [postFilterStatus, setPostFilterStatus] = useState('ALL');
+
+  // 모달 상태 관리
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalType, setModalType] = useState(''); // 'ACCEPTED' 또는 'REJECTED'
+  const [selectedItemId, setSelectedItemId] = useState(null); // 현재 모달을 띄운 항목의 ID
 
   // 한 페이지당 보여줄 항목 수 (백엔드와 일치해야 함)
   const pageSize = 10;
@@ -134,38 +140,57 @@ export default function AdminForm() {
     setPostCurrentPage(newPage); // 현재 페이지 상태 업데이트
     fetchPostList(newPage, postFilterStatus); // 새 페이지로 데이터 불러오기
   };
+
+  // 승인/거절 버튼 클릭 시 모달을 여는 핸들러
+  const openApprovalModal = (id, type) => {
+    setSelectedItemId(id);
+    setModalType(type);
+    setIsModalOpen(true);
+  };
+
+  // 모달 닫기 핸들러
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setSelectedItemId(null);
+    setModalType('');
+  };
   
   /**
    * 단체 승인 상태 업데이트 핸들러
    * @param {number} teamId - 업데이트할 팀 ID
-   * @param {string} status - 변경할 승인 상태 ('ACCEPTED' 또는 'REJECTED')
+   * @param {string} approvalStatus - 변경할 승인 상태 ('ACCEPTED' 또는 'REJECTED')
+   * @param {string} message - 승인/거절 사유 메시지
    */
-  const handleTeamApproval = async (teamId, status) => {
+  const handleTeamApproval = async (teamId, approvalStatus, message) => {
     try {
-      await api.patch(`/admin/team-approval/${teamId}`, status, {
-        headers: { 'Content-Type': 'application/json' }, // JSON 형태로 Content-Type 명시
-      });
-      // 승인/거절 후 현재 페이지의 리스트를 다시 불러와 UI 업데이트
+      const requestBody = { approvalStatus, message }; // status와 message를 포함한 객체로 변경
+      await api.patch(`/admin/team-approval/${teamId}`, requestBody); // 객체로 요청 본문 전송
+      handleModalClose(); // API 호출 성공 후 모달 닫기
       fetchAgencyList(agencyCurrentPage, agencyFilterStatus);
     } catch (err) {
       console.error('팀 승인 상태 변경 실패:', err);
+      // 실패 시에도 모달을 닫고 사용자에게 에러를 알리는 로직 추가 가능
+      handleModalClose();
     }
   };
 
   /**
    * 게시물 승인 상태 업데이트 핸들러
    * @param {number} postId - 업데이트할 게시물 ID
-   * @param {string} status - 변경할 승인 상태 ('ACCEPTED' 또는 'REJECTED')
+   * @param {string} approvalStatus - 변경할 승인 상태 ('ACCEPTED' 또는 'REJECTED')
+   * @param {string} message - 승인/거절 사유 메시지
    */
-  const handlePostApproval = async (postId, status) => {
+  const handlePostApproval = async (postId, approvalStatus, message) => {
     try {
-      await api.patch(`/admin/post-approval/${postId}`, status, {
-        headers: { 'Content-Type': 'application/json' }, // JSON 형태로 Content-Type 명시
-      });
+      const requestBody = { approvalStatus, message }; // status와 message를 포함한 객체로 변경
+      await api.patch(`/admin/post-approval/${postId}`, requestBody); // 객체로 요청 본문 전송
+      handleModalClose(); // API 호출 성공 후 모달 닫기
       // 승인/거절 후 현재 페이지의 리스트를 다시 불러와 UI 업데이트
       fetchPostList(postCurrentPage, postFilterStatus);
     } catch (err) {
       console.error('게시물 승인 상태 변경 실패:', err);
+      // 실패 시에도 모달을 닫고 사용자에게 에러를 알리는 로직 추가 가능
+      handleModalClose();
     }
   };
   
@@ -300,7 +325,8 @@ export default function AdminForm() {
                               px: 1, py: 1.5, fontSize: '0.9rem',
                               minWidth: 'auto', height: '24px', lineHeight: 1, mx: 0.3
                             }}
-                            onClick={() => handleTeamApproval(req.teamId, 'ACCEPTED')}
+                            // onClick={() => handleTeamApproval(req.teamId, 'ACCEPTED')}
+                            onClick={() => openApprovalModal(req.teamId, 'ACCEPTED')} // 수정
                           >
                             수락
                           </Button>
@@ -309,7 +335,8 @@ export default function AdminForm() {
                               px: 1, py: 1.5, fontSize: '0.9rem',
                               minWidth: 'auto', height: '24px', lineHeight: 1, mx: 0.3
                             }}
-                            onClick={() => handleTeamApproval(req.teamId, 'REJECTED')}
+                            // onClick={() => handleTeamApproval(req.teamId, 'REJECTED')}
+                            onClick={() => openApprovalModal(req.teamId, 'REJECTED')} // 수정
                           >
                             거절
                           </Button>
@@ -426,7 +453,8 @@ export default function AdminForm() {
                               px: 1, py: 1.5, fontSize: '0.9rem',
                               minWidth: 'auto', height: '24px', lineHeight: 1, mx: 0.3
                             }}
-                            onClick={() => handlePostApproval(post.id, 'ACCEPTED')}
+                            // onClick={() => handlePostApproval(post.id, 'ACCEPTED')}
+                            onClick={() => openApprovalModal(post.id, 'ACCEPTED')} // 수정
                           >
                             수락
                           </Button>
@@ -435,7 +463,8 @@ export default function AdminForm() {
                               px: 1, py: 1.5, fontSize: '0.9rem',
                               minWidth: 'auto', height: '24px', lineHeight: 1, mx: 0.3
                             }}
-                            onClick={() => handlePostApproval(post.id, 'REJECTED')}
+                            // onClick={() => handlePostApproval(post.id, 'REJECTED')}
+                            onClick={() => openApprovalModal(post.id, 'REJECTED')} // 수정
                           >
                             거절
                           </Button>
@@ -495,6 +524,24 @@ export default function AdminForm() {
           )}
         </Paper>
       )}
+
+      {/* 새로 추가된 모달 컴포넌트 */}
+      <ApprovalStatusModal
+        isOpen={isModalOpen}
+        onClose={handleModalClose}
+        modalType={modalType}
+        // 모달에서 '확인' 버튼 클릭 시 호출될 함수
+        onConfirm={(message) => {
+          if (modalType === 'ACCEPTED' || modalType === 'REJECTED') {
+            // 현재 탭에 따라 다른 승인 함수 호출
+            if (tabIndex === 0) { // 단체 탭
+              handleTeamApproval(selectedItemId, modalType, message);
+            } else { // 게시물 탭
+              handlePostApproval(selectedItemId, modalType, message);
+            }
+          }
+        }}
+      />
     </Box>
   );
 }

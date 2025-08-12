@@ -403,9 +403,9 @@ export default function MyPage() {
                 후원 단체
               </Typography>
 
-              {/* 팀이 없으면 기존 등록 버튼 */}
-              {!userInfo.teamName && ( // teamName이 null 또는 빈 문자열일 때 true
-                <Tooltip title="후원 단체를 등록할 수 있습니다" arrow> {/* Tooltip 추가 */}
+              {/* 조건: 팀 정보가 없거나(teamName이 null이거나 빈 문자열일 때) 승인 상태가 REJECTED일 경우 '등록' 버튼 노출 */}
+              {(!userInfo.teamName || userInfo.approvalStatus === "REJECTED") && (
+                <Tooltip title="후원 단체를 등록할 수 있습니다" arrow>
                   <Button
                     variant="outlined"
                     size="small"
@@ -430,17 +430,7 @@ export default function MyPage() {
                 </Tooltip>
               )}
 
-              {userInfo.teamName && userInfo.approvalStatus === "REJECTED" && (
-                  <Button
-                    variant="contained"
-                    size="small"
-                    sx={{ height: 30, bgcolor: '#f54c4c', color: 'white' }}
-                  >
-                    REJECTED
-                  </Button>
-                )}
-
-                {/* ACCEPTED 인 경우에는 버튼 자체를 아예 안 보여줌 (아무 것도 렌더링 안 함) */}
+              {/* ACCEPTED 인 경우에는 버튼 자체를 아예 안 보여줌 (아무 것도 렌더링 안 함) */}
             </Box>
 
             {/* 둘째 줄: 실제 단체 이름 or 없음 */}
