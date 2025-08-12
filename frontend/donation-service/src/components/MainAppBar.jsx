@@ -152,8 +152,8 @@ export default function MainAppBar() {
     await alarmReadApi(notificationId); // 읽음 처리 API 호출 및 UI 업데이트
     if (postId) {
       // 실제 알림이 온 것이 아니기 때문에 post로 가는 navigate는 주석처리
-      // navigate(`/post/${postId}`);
-      navigate("/");
+      navigate(`/post-detail/${postId}`);
+      // navigate("/");
       handleNotificationClose();
     }
   };
