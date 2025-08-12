@@ -39,4 +39,15 @@ public class TeamController {
                         .build()
         );
     }
+
+    @GetMapping("/approval-status")
+    public ResponseEntity<Result> getApprovalStatus(@AuthenticationPrincipal CustomUserDetail customUserDetail) {
+        TeamDto.ApprovalStatusResponse approvalStatusResponse = teamService.getApprovalStatus(customUserDetail.getUserId());
+        return ResponseEntity.ok(
+                Result.builder()
+                        .message("팀 승인 상태 조회 성공")
+                        .data(approvalStatusResponse)
+                        .build()
+        );
+    }
 }

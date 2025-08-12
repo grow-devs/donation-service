@@ -31,4 +31,12 @@ public class TeamDto {
         private LocalDateTime createdAt;
         private String approvalStatus;
     }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ApprovalStatusResponse {
+        private String approvalStatus; // 승인 상태 (예: "APPROVED", "REJECTED", "PENDING")
+    }
 }

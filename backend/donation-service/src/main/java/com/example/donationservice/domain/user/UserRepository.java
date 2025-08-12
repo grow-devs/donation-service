@@ -26,13 +26,14 @@ public interface UserRepository extends JpaRepository<User,Long> {
         u.userRole as userRole,
         u.points as points,
         t.name as teamName,
+        t.approvalStatus as approvalStatus,
         coalesce(sum(d.point), 0) as totalDonationAmount,
         count(d) as donationCount
     from User u
     left join Team t on t.user.id = u.id
     left join Donation d on d.user.id = u.id
     where u.id = :userId
-    group by u.id, u.email, u.username, u.nickName, u.userRole, u.points, t.name
+    group by u.id, u.email, u.username, u.nickName, u.userRole, u.points, t.name, t.approvalStatus
     """)
     Optional<UserInfoProjection> findUserInfoById(@Param("userId") Long userId);
 }

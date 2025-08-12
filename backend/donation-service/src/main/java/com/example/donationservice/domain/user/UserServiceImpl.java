@@ -129,6 +129,7 @@ public class UserServiceImpl implements UserService {
                 .userRole(userInfo.getUserRole())
                 .points(userInfo.getPoints())
                 .teamName(userInfo.getTeamName())
+                .approvalStatus(userInfo.getApprovalStatus())
                 .totalDonationAmount(userInfo.getTotalDonationAmount())
                 .totalDonationCount(userInfo.getDonationCount())
                 .build();
