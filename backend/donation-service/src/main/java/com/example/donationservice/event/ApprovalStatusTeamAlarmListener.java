@@ -11,13 +11,13 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class TeamApprovalStatusAlarmListener {
+public class ApprovalStatusTeamAlarmListener {
 
     private final AlarmService alarmService;
 
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void handle(TeamApprovalStatusAlarmEvent event) {
+    public void handle(ApprovalStatusTeamAlarmEvent event) {
         try {
             alarmService.saveApprovalStatusChangedAlarm(
                     event.getStatus(),

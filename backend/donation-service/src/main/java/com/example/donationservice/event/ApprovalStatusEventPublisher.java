@@ -8,11 +8,16 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class TeamApprovalStatusEventPublisher {
+public class ApprovalStatusEventPublisher {
     private final ApplicationEventPublisher eventPublisher;
 
     public void publishTeamStatusAlarmEvent(ApprovalStatus status, String teamName, User user) {
-        TeamApprovalStatusAlarmEvent event = new TeamApprovalStatusAlarmEvent(status, teamName, user);
+        ApprovalStatusTeamAlarmEvent event = new ApprovalStatusTeamAlarmEvent(status, teamName, user);
+        eventPublisher.publishEvent(event);
+    }
+
+    public void publishPostStatusAlarmEvent(ApprovalStatus status, Long postId, String postTitle, User user) {
+        ApprovalStatusPostAlarmEvent event = new ApprovalStatusPostAlarmEvent(status, postId, postTitle, user);
         eventPublisher.publishEvent(event);
     }
 }
