@@ -19,6 +19,8 @@ import {
   MenuItem,
   Snackbar,
   Alert,
+  Backdrop,
+  CircularProgress,
 } from "@mui/material";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -48,6 +50,7 @@ export default function CreatePostPage() {
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState("");
   const [teamId, setTeamId] = useState("");
+  const [backdropOpen, setBackdropOpen] = useState(false);
 
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -121,6 +124,7 @@ export default function CreatePostPage() {
       console.log(file);
       if (file) {
         try {
+          setBackdropOpen(true);
           // 실제 이미지 업로드 API 호출 로직
           const formData = new FormData();
           formData.append("image", file);
@@ -140,6 +144,8 @@ export default function CreatePostPage() {
         } catch (error) {
           console.error("이미지 업로드 실패:", error);
           showSnackbar("이미지 업로드에 실패했습니다.", "error");
+        } finally {
+          setBackdropOpen(false);
         }
       } else {
         showSnackbar("이미지 선택이 취소되었습니다.", "info");
@@ -239,6 +245,7 @@ export default function CreatePostPage() {
     console.log("선택된 이미지 파일:", imageFile);
 
     try {
+      setBackdropOpen(true);
       console.log("API 호출 시도 중...");
       const res = await postapi.post(
         "/post",
@@ -262,7 +269,10 @@ export default function CreatePostPage() {
         setCategoryId("");
         setImageFile(null);
         setImagePreview("");
+        setBackdropOpen(true);
       } else {
+        setBackdropOpen(false);
+
         // 서버에서 200/201이 아닌 다른 성공 코드를 보낼 경우 대비
         showSnackbar(
           "게시물 등록에 실패했습니다: " +
@@ -277,6 +287,8 @@ export default function CreatePostPage() {
           (err.response?.data?.message || err.message),
         "error"
       );
+    } finally {
+      setBackdropOpen(false);
     }
   };
   // 디버깅용: content 상태 변화를 감시
@@ -299,11 +311,12 @@ export default function CreatePostPage() {
           borderRadius={10}
           elevation={3}
           sx={{
-            border: "1px solid #f9c76bff", // 2px 두께의 연한 회색 테두리
+            border: "1px solid #cececeff", // 2px 두께의 연한 회색 테두리
             borderRadius: "12px", // 모서리를 둥글게 (선택 사항)
             backgroundColor: "#ffffff", // 배경색 (선택 사항)
             padding: "24px", // 내부여백
             p: 4,
+            mt: 10,
           }}
         >
           <Typography
@@ -486,7 +499,16 @@ export default function CreatePostPage() {
           </form>
         </Paper>
       </Container>
-
+      <Backdrop
+        sx={{
+          backgroundColor: "rgba(0, 0, 0, 0)", // 배경을 완전 투명하게 설정
+          color: (theme) => theme.palette.primary.main, // 스피너 색상 설정 (예: 테마의 기본 색상)
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+        }}
+        open={backdropOpen}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
       {/* Snackbar 컴포넌트 */}
       <Snackbar
         open={snackbar.open}

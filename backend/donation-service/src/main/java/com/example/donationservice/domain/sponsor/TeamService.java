@@ -9,4 +9,6 @@ public interface TeamService {
     boolean isTeamNameAvailable(String teamName);
     // 팀 승인 상태 조회
     TeamDto.ApprovalStatusResponse getApprovalStatus(Long userId);
+
+    boolean isExistTeam(Long userId);
 }

@@ -77,4 +77,10 @@ public class TeamServiceImpl implements TeamService{
                 .approvalStatus(status.name())
                 .build();
     }
+
+    // 팀이 존재하는지 체크
+    @Override
+    public boolean isExistTeam(Long userId) {
+        return teamRepository.existsByUserId(userId);
+    }
 }

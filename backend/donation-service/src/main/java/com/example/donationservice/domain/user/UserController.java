@@ -1,6 +1,7 @@
 package com.example.donationservice.domain.user;
 
 import com.example.donationservice.common.dto.Result;
+import com.example.donationservice.common.mail.MailService;
 import com.example.donationservice.domain.user.dto.UserDonationInfoProjection;
 import com.example.donationservice.domain.user.dto.UserDto;
 import com.example.donationservice.domain.user.dto.UserPostInfoProjection;
@@ -23,6 +24,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final MailService mailService;
 
     @PostMapping("/login")
     public ResponseEntity<Result> login(@RequestBody UserDto.loginRequest loginRequest){
@@ -124,6 +126,31 @@ public class UserController {
                         .data("ok")
                         .build()
         );
+    }
+
+    //이메일 인증 코드 발송 api
+    @PostMapping("/send-code")
+    public String sendCode(@RequestBody UserDto.sendCodeRequest request) {
+        try {
+            mailService.sendVerificationEmail(request.getEmail());
+            return "인증번호가 발송되었습니다.";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "이메일 발송 실패: " + e.getMessage();
+        }
+    }
+  
+    //이메일 인증 코드 확인 api
+    @PostMapping("/verify-code")
+    public boolean verifyCode(@RequestBody UserDto.verifyCodeRequest request) {
+        return mailService.verifyCode(request.getEmail(), request.getCode());
+    }
+  
+    //닉네임 중복 체크 api
+    @GetMapping("/check-nickname")
+    public boolean checkNickName(@RequestParam String nickName) {
+        System.out.println("nickName : "+nickName);
+        return userService.checkNickName(nickName);
     }
 
 }

@@ -75,5 +75,21 @@ public class UserDto {
         private String description;
     }
 
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class sendCodeRequest{
+        private String email;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class verifyCodeRequest{
+        private String email;
+        private String code;
+    }
 
 }

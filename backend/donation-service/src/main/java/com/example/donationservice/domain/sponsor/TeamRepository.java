@@ -24,4 +24,6 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
 
     @Query("SELECT t.approvalStatus FROM Team t WHERE t.user.id = :userId")
     Optional<ApprovalStatus> findApprovalStatusByUserId(@Param("userId") Long userId);
+
+    boolean existsByUserId(Long userId);
 }

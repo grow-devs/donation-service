@@ -72,6 +72,9 @@ public class SecurityConfig {
                         //requsetMatchers를 사용할때는 url를 정확하게 작성해야한다.
                         .requestMatchers("/api/user/login").permitAll()
                         .requestMatchers("/api/user/signup").permitAll()
+                        .requestMatchers("/api/user/send-code").permitAll()
+                        .requestMatchers("/api/user/verify-code").permitAll()
+                        .requestMatchers("/api/user/check-nickname").permitAll()
                         .requestMatchers("/api/team/check-name").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/donation/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/team").permitAll()

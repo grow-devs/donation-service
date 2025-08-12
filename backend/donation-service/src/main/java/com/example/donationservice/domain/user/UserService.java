@@ -28,4 +28,6 @@ public interface UserService {
     Long addPoints(Long userId, UserDto.PointRequest pointRequest);
 
     void uploadProfileImage(Long userId, MultipartFile imageFile) throws IOException;
+
+    boolean checkNickName(String nickName);
 }

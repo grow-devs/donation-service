@@ -180,4 +180,11 @@ public class UserServiceImpl implements UserService {
         user.updateProfileImage(userProfileImageUrl);
         userRepository.save(user);
     }
+
+    //닉네임 중복 확인 메서드
+    @Override
+    public boolean checkNickName(String nickName) {
+        return userRepository.existsByNickName(nickName);
+    }
+
 }

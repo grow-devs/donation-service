@@ -17,7 +17,7 @@ import {
   Button,
   CircularProgress,
 } from "@mui/material";
-import { formatNotificationTime } from '../utils/formatNotificationTime';
+import { formatNotificationTime } from "../utils/formatNotificationTime";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
@@ -138,7 +138,7 @@ export default function MainAppBar() {
       setPage(0);
       setHasMore(true);
     }, 300); // 300ms 후에 초기화 (팝오버 애니메이션 완료 후)
-    
+
     if (isLoggedIn) unreadCountApi(); // 팝오버 닫을 때 읽지 않은 알림 갯수 최신화
   };
 
@@ -153,7 +153,7 @@ export default function MainAppBar() {
     if (postId) {
       // 실제 알림이 온 것이 아니기 때문에 post로 가는 navigate는 주석처리
       // navigate(`/post/${postId}`);
-      navigate('/')
+      navigate("/");
       handleNotificationClose();
     }
   };
@@ -190,7 +190,7 @@ export default function MainAppBar() {
           sx={{
             px: 2,
             py: 1,
-            fontSize:"0.8rem",
+            fontSize: "0.8rem",
             fontWeight: "bold",
             color: "rgba(26, 26, 255, 0.57)",
             backgroundColor: "grey.50",
@@ -254,7 +254,7 @@ export default function MainAppBar() {
           mb: 3,
           px: { xs: "4%", sm: "8%" },
           zIndex: (theme) => theme.zIndex.appBar + 1,
-           boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.08)",
+          boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.08)",
         }}
       >
         <AppBar
@@ -298,7 +298,7 @@ export default function MainAppBar() {
                 transform: "translate(-50%, -50%)",
                 pointerEvents: "none",
                 userSelect: "none",
-                display: { xs: "none", sm: "block" }, // 화면 줄어들때 사라지게 
+                display: { xs: "none", sm: "block" }, // 화면 줄어들때 사라지게
                 maxWidth: "60%",
                 textAlign: "center",
               }}
@@ -388,7 +388,9 @@ export default function MainAppBar() {
               )}
             </Box>
 
-            <FloatingAuthModal open={open} onClose={() => setOpen(false)} />
+            {open && (
+              <FloatingAuthModal open={open} onClose={() => setOpen(false)} />
+            )}
 
             {/* 알림 팝오버 */}
             <Popover
@@ -442,7 +444,13 @@ export default function MainAppBar() {
                       "이전 알림"
                     )}
                     {isLoading && ( // 더 불러오는 중일 때 로딩 스피너 표시
-                      <Box sx={{ display: 'flex', justifyContent: 'center', py: 1 }}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "center",
+                          py: 1,
+                        }}
+                      >
                         <CircularProgress size={20} />
                       </Box>
                     )}
@@ -460,7 +468,11 @@ export default function MainAppBar() {
                       justifyContent: "center",
                     }}
                   >
-                    {isLoading ? <CircularProgress size={20} /> : "새로운 알림이 없습니다."}
+                    {isLoading ? (
+                      <CircularProgress size={20} />
+                    ) : (
+                      "새로운 알림이 없습니다."
+                    )}
                   </Typography>
                 )}
 
@@ -474,23 +486,24 @@ export default function MainAppBar() {
                     flexShrink: 0,
                   }}
                 >
-                  {hasMore && notifications.length > 0 && ( // 알림이 있을 때만 더보기 버튼 표시
-                    <Button
-                      variant="text"
-                      size="small"
-                      onClick={handleLoadMore}
-                      disabled={isLoading}
-                      sx={{
-                        color: "text.secondary",
-                        "&:hover": {
-                          backgroundColor: "action.hover",
-                        },
-                        minWidth: "80px",
-                      }}
-                    >
-                      {isLoading ? <CircularProgress size={16} /> : "더보기"}
-                    </Button>
-                  )}
+                  {hasMore &&
+                    notifications.length > 0 && ( // 알림이 있을 때만 더보기 버튼 표시
+                      <Button
+                        variant="text"
+                        size="small"
+                        onClick={handleLoadMore}
+                        disabled={isLoading}
+                        sx={{
+                          color: "text.secondary",
+                          "&:hover": {
+                            backgroundColor: "action.hover",
+                          },
+                          minWidth: "80px",
+                        }}
+                      >
+                        {isLoading ? <CircularProgress size={16} /> : "더보기"}
+                      </Button>
+                    )}
                   <Button
                     variant="text"
                     size="small"
