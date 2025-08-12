@@ -338,16 +338,16 @@ const ThankYouMessageContainer = styled.div`
   align-items: center;
   height: 100%; /* ModalBody의 남은 공간을 채우도록 */
   text-align: center;
-  padding: 40px 20px;
+  padding: 0px 0px;
 `;
 
 // 새로운 스타일: 기부 완료 메시지 텍스트
 const ThankYouText = styled.p`
-  font-size: 1.8em;
+  font-size: 1.6em;
   font-weight: 700;
   color: #ff69b4; /* 핑크색 강조 */
   margin-bottom: 10px;
-  line-height: 1.3;
+  line-height: 0.1;
 `;
 
 // 새로운 스타일: 기부 완료 서브 메시지 텍스트
@@ -358,6 +358,7 @@ const ThankYouSubText = styled.p`
 `;
 
 function DonationModal({ isOpen, onClose, post }) {
+  const [errorMessage, setErrorMessage] = useState("");
   const [selectedAmount, setSelectedAmount] = useState(null);
   const [customAmount, setCustomAmount] = useState("");
   const [message, setMessage] = useState("");
@@ -372,11 +373,6 @@ function DonationModal({ isOpen, onClose, post }) {
   const scrollYRef = useRef(0);
 
   const presetAmounts = [10000, 30000, 50000, 100000, 300000, 500000];
-
-  // Snackbar 관련 상태 및 함수 제거
-  // const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success", });
-  // const showSnackbar = (message, severity) => { setSnackbar({ open: true, message, severity }); };
-  // const handleCloseSnackbar = (event, reason) => { if (reason === "clickaway") { return; } setSnackbar({ ...snackbar, open: false }); };
 
   const formatAmount = (amount) => {
     return new Intl.NumberFormat("ko-KR").format(amount);
@@ -451,6 +447,7 @@ function DonationModal({ isOpen, onClose, post }) {
 
       if (res.status === 201 || res.status === 200) {
         setShowThankYouMessage(true); // 성공 메시지 표시
+        setErrorMessage(null);
       } else {
         // API 호출 실패 시 (서버 응답이 200/201이 아닐 경우)
         // 에러 메시지 표시 (필요하다면 모달 내부에 표시 로직 추가)
@@ -466,8 +463,18 @@ function DonationModal({ isOpen, onClose, post }) {
     } catch (err) {
       // 네트워크 오류 등 예외 발생 시
       // 에러 메시지 표시 (필요하다면 모달 내부에 표시 로직 추가)
-      console.error("기부하기 중 오류 발생:", err);
-      alert("기부하기에 실패했습니다:");
+      const msg =
+        err.response?.data?.message || "기부 요청 중 오류가 발생했습니다.";
+      if (msg.includes("포인트가 부족")) {
+        setErrorMessage(
+          "💡 보유 포인트가 부족합니다. 충전 후 다시 시도해주세요."
+        );
+      } else {
+        setErrorMessage(msg);
+      }
+
+      //백엔드에서 받은 응답 본문에서 에러 메시지 띄우기
+      // alert(err.response.data.message);
     }
     // alert("기부가 완료되었습니다! 감사합니다."); // alert 제거
   };
@@ -538,6 +545,7 @@ function DonationModal({ isOpen, onClose, post }) {
       onMouseDown={handleOverlayMouseDown}
       onMouseUp={handleOverlayMouseUp}
     >
+      {" "}
       {/* 모달 컨테이너 내부 클릭은 이벤트 전파를 막아 모달이 닫히지 않도록 합니다. */}
       <ModalContainer onClick={(e) => e.stopPropagation()}>
         <ModalHeader>
@@ -657,6 +665,24 @@ function DonationModal({ isOpen, onClose, post }) {
             </>
           )}
         </ModalBody>
+        {errorMessage && (
+          <div
+            style={{
+              backgroundColor: "#fff4f4", // 좀 더 은은한 붉은 배경
+              color: "#b71c1c", // 진한 레드 계열 텍스트
+              padding: "6px 0px",
+              borderRadius: "8px",
+              marginTop: "0px",
+              fontSize: "0.80rem", // 글씨 크기 축소
+              fontWeight: 400, // 보통 두께
+              textAlign: "center",
+              border: "1px solid #f5c2c7", // 부드러운 테두리
+              lineHeight: 1.2,
+            }}
+          >
+            {errorMessage}
+          </div>
+        )}
 
         {/* "기부하기" 버튼을 ModalFooter로 감싸서 고정 배치 */}
         {/* 기부 완료 메시지 표시 중에는 버튼을 숨깁니다. */}
@@ -677,18 +703,6 @@ function DonationModal({ isOpen, onClose, post }) {
         )}
       </ModalContainer>
       {/* Snackbar 컴포넌트 제거 (더 이상 사용하지 않음) */}
-      {/*
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={3000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
-      */}
     </ModalOverlay>
   );
 }
