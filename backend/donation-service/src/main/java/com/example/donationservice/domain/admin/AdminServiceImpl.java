@@ -71,6 +71,14 @@ public class AdminServiceImpl implements AdminService{
         // 요청한 게시글 상태를 수락 및 반려
         post.updateApprovalStatus(approvalStatus);
         postRepository.save(post);
+
+        // 게시글 승인 상태 변경 시 알람
+        approvalStatusEventPublisher.publishPostStatusAlarmEvent(
+                approvalStatus,
+                post.getId(),
+                post.getTitle(),
+                post.getTeam().getUser() // TODO : n+1 확인
+        );
     }
 
     @Override

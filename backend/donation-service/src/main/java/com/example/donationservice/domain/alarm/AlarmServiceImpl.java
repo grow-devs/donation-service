@@ -42,6 +42,7 @@ public class AlarmServiceImpl implements AlarmService {
     }
 
     @Override
+    @Transactional
     public void saveApprovalStatusChangedAlarm(ApprovalStatus approvalStatus, String teamName, User user) {
         try {
             Alarm alarm = Alarm.builder()
@@ -58,6 +59,26 @@ public class AlarmServiceImpl implements AlarmService {
             log.info("✅ 팀 승인 상태 변경 알람 저장 완료: userId={}, teamName={}, status={}", user.getId(), teamName, approvalStatus);
         } catch (Exception e) {
             log.error("❌ 팀 승인 상태 변경 알람 저장 실패: userId={}, teamName={}, error={}", user.getId(), teamName, e.getMessage(), e);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void savePostApprovalStatusChangedAlarm(ApprovalStatus approvalStatus, Long postId, String postTitle, User user) {
+        try {
+            Alarm alarm = Alarm.builder()
+                    .type(AlarmType.POST_APPROVAL_STATUS)
+                    .message("게시물 [" + postTitle + "]의 승인 상태가 " + approvalStatus + "로 변경되었습니다.")
+                    .isRead(false)
+                    .postId(postId)
+                    .user(user)
+                    .build();
+
+            alarmRepository.save(alarm);
+
+            log.info("✅ 게시물 승인 상태 변경 알람 저장 완료: userId={}, postId={}, status={}", user.getId(), postId, approvalStatus);
+        } catch (Exception e) {
+            log.error("❌ 게시물 승인 상태 변경 알람 저장 실패: userId={}, postId={}, error={}", user.getId(), postId, e.getMessage(), e);
         }
     }
 
