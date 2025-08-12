@@ -25,6 +25,7 @@ import { format } from "date-fns";
 import api from "../apis/api";
 import AddPointModal from "../modal/AddPointModal";
 import ProfileImageModal from "../modal/ProfileImageModal";
+import Tooltip from "@mui/material/Tooltip";
 
 // 게시물 목록 아이템을 렌더링하는 재사용 가능한 컴포넌트
 const PostCard = ({ post, navigate }) => {
@@ -404,25 +405,29 @@ export default function MyPage() {
 
               {/* 팀이 없으면 기존 등록 버튼 */}
               {!userInfo.teamName && ( // teamName이 null 또는 빈 문자열일 때 true
-                <Button
-                  variant="outlined"
-                  size="small"
-                  onClick={() => navigate("/apply-agency")}
-                  sx={{ height: 30 }}
-                >
-                  등록
-                </Button>
+                <Tooltip title="후원 단체를 등록할 수 있습니다" arrow> {/* Tooltip 추가 */}
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={() => navigate("/apply-agency")}
+                    sx={{ height: 30 }}
+                  >
+                    등록
+                  </Button>
+                </Tooltip>
               )}
 
               {/* 팀은 있는데 승인 상태에 따라 버튼 노출 */}
               {userInfo.teamName && userInfo.approvalStatus === "PENDING" && (
-                <Button
-                  variant="contained"
-                  size="small"
-                  sx={{ height: 30, bgcolor: '#1cb017', color: 'white' }}
-                >
-                  PENDING
-                </Button>
+                <Tooltip title="등록한 후원 단체가 심사 대기 중입니다" arrow> {/* Tooltip 추가 */}
+                  <Button
+                    variant="contained"
+                    size="small"
+                    sx={{ height: 30, bgcolor: '#1cb017', color: 'white' }}
+                  >
+                    PENDING
+                  </Button>
+                </Tooltip>
               )}
 
               {userInfo.teamName && userInfo.approvalStatus === "REJECTED" && (
