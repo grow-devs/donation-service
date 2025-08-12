@@ -7,6 +7,7 @@ import com.example.donationservice.domain.sponsor.Team;
 import com.example.donationservice.domain.sponsor.TeamRepository;
 import com.example.donationservice.domain.sponsor.dto.TeamDto;
 import com.example.donationservice.domain.user.ApprovalStatus;
+import com.example.donationservice.event.TeamApprovalStatusEventPublisher;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,6 +22,8 @@ public class AdminServiceImpl implements AdminService{
 
     private final TeamRepository teamRepository;
     private final PostRepository postRepository;
+
+    private final TeamApprovalStatusEventPublisher teamApprovalStatusEventPublisher;
 
     @Override
     @Transactional
@@ -52,6 +55,13 @@ public class AdminServiceImpl implements AdminService{
         // 요청한 팀 상태를 수락 및 반려
         team.updateTeamApprovalStatus(approvalStatus);
         teamRepository.save(team);
+
+        // 팀 승인 상태 변경 시 알람
+        teamApprovalStatusEventPublisher.publishAlarmEvent(
+                approvalStatus,
+                team.getName(),
+                team.getUser()
+        );
     }
 
     @Override

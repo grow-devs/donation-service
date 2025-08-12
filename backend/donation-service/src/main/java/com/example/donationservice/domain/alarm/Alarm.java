@@ -23,6 +23,7 @@ public class Alarm extends BaseTimeEntity {
 
     private String message;
 
+    // todo : 게시글 관련 알람은 필요하지만 게시글과 관련 없는 알람은 필요없다.
     private Long postId; // 게시글로 이동하기 위해서
 
     @JsonProperty("isRead")

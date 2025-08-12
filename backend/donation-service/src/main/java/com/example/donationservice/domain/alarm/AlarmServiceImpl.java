@@ -1,6 +1,7 @@
 package com.example.donationservice.domain.alarm;
 
 import com.example.donationservice.domain.alarm.dto.AlarmDto;
+import com.example.donationservice.domain.user.ApprovalStatus;
 import com.example.donationservice.domain.user.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +39,26 @@ public class AlarmServiceImpl implements AlarmService {
         } catch (Exception e) {
             log.error("❌ 목표 금액 도달 알람 저장 실패: postId={}, error={}", postId, e.getMessage(), e);
         }
+    }
 
+    @Override
+    public void saveApprovalStatusChangedAlarm(ApprovalStatus approvalStatus, String teamName, User user) {
+        try {
+            Alarm alarm = Alarm.builder()
+                    .type(AlarmType.TEAM_APPROVAL_STATUS)
+                    .message("팀 [" + teamName + "]의 승인 상태가 " + approvalStatus + "로 변경되었습니다.")
+                    .isRead(false)
+                    .postId(null)
+                    .isRead(false)
+                    .user(user)
+                    .build();
+
+            alarmRepository.save(alarm);
+
+            log.info("✅ 팀 승인 상태 변경 알람 저장 완료: userId={}, teamName={}, status={}", user.getId(), teamName, approvalStatus);
+        } catch (Exception e) {
+            log.error("❌ 팀 승인 상태 변경 알람 저장 실패: userId={}, teamName={}, error={}", user.getId(), teamName, e.getMessage(), e);
+        }
     }
 
     @Override
