@@ -14,8 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class AdminServiceImpl implements AdminService{
@@ -57,7 +55,7 @@ public class AdminServiceImpl implements AdminService{
         teamRepository.save(team);
 
         // 팀 승인 상태 변경 시 알람
-        teamApprovalStatusEventPublisher.publishAlarmEvent(
+        teamApprovalStatusEventPublisher.publishTeamStatusAlarmEvent(
                 approvalStatus,
                 team.getName(),
                 team.getUser()

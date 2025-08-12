@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 public class TeamApprovalStatusEventPublisher {
     private final ApplicationEventPublisher eventPublisher;
 
-    public void publishAlarmEvent(ApprovalStatus status, String teamName, User user) {
+    public void publishTeamStatusAlarmEvent(ApprovalStatus status, String teamName, User user) {
         TeamApprovalStatusAlarmEvent event = new TeamApprovalStatusAlarmEvent(status, teamName, user);
         eventPublisher.publishEvent(event);
     }
