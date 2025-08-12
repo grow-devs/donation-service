@@ -332,7 +332,7 @@ export default function MyPage() {
   }
 
   return (
-    <Box sx={{ maxWidth: 700, mx: "auto", mt: 4, px: 1, mt: 11, mb: 5 }}>
+    <Box sx={{ maxWidth: 700, mx: "auto", px: 1, mt: 11, mb: 5 }}>
       {/* 프로필 영역 */}
       <Card sx={{ mb: 3, boxShadow: "0 4px 12px rgba(0,0,0,0.12)", borderRadius: 2 }}>
         <CardContent>
@@ -401,6 +401,8 @@ export default function MyPage() {
               <Typography variant="subtitle2" color="text.secondary">
                 후원 단체
               </Typography>
+
+              {/* 팀이 없으면 기존 등록 버튼 */}
               {!userInfo.teamName && ( // teamName이 null 또는 빈 문자열일 때 true
                 <Button
                   variant="outlined"
@@ -411,6 +413,29 @@ export default function MyPage() {
                   등록
                 </Button>
               )}
+
+              {/* 팀은 있는데 승인 상태에 따라 버튼 노출 */}
+              {userInfo.teamName && userInfo.approvalStatus === "PENDING" && (
+                <Button
+                  variant="contained"
+                  size="small"
+                  sx={{ height: 30, bgcolor: '#1cb017', color: 'white' }}
+                >
+                  PENDING
+                </Button>
+              )}
+
+              {userInfo.teamName && userInfo.approvalStatus === "REJECTED" && (
+                  <Button
+                    variant="contained"
+                    size="small"
+                    sx={{ height: 30, bgcolor: '#f54c4c', color: 'white' }}
+                  >
+                    REJECTED
+                  </Button>
+                )}
+
+                {/* ACCEPTED 인 경우에는 버튼 자체를 아예 안 보여줌 (아무 것도 렌더링 안 함) */}
             </Box>
 
             {/* 둘째 줄: 실제 단체 이름 or 없음 */}
