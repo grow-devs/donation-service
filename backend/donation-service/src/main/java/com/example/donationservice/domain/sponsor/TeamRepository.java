@@ -5,6 +5,9 @@ import com.example.donationservice.domain.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
 import java.util.Optional;
 
 public interface TeamRepository extends JpaRepository<Team, Long> {
@@ -18,6 +21,9 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
     boolean existsByUser(User user);
 
     Optional<Team> findByUserId(Long userId);
+
+    @Query("SELECT t.approvalStatus FROM Team t WHERE t.user.id = :userId")
+    Optional<ApprovalStatus> findApprovalStatusByUserId(@Param("userId") Long userId);
 
     boolean existsByUserId(Long userId);
 }

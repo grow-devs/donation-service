@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   Box,
   Avatar,
@@ -24,43 +24,11 @@ import useAuthStore from '../store/authStore';
 import { format } from "date-fns";
 import api from "../apis/api";
 import AddPointModal from "../modal/AddPointModal";
+import ProfileImageModal from "../modal/ProfileImageModal";
+import Tooltip from "@mui/material/Tooltip";
 
 // 게시물 목록 아이템을 렌더링하는 재사용 가능한 컴포넌트
 const PostCard = ({ post, navigate }) => {
-  const [imageSrc, setImageSrc] = useState(
-    "https://placehold.co/151x151/E0E0E0/555555?text=No+Image"
-  );
-  const [imageLoading, setImageLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchImage = async () => {
-      if (!post.thumnbnailImageUrl) {
-        setImageLoading(false);
-        return;
-      }
-
-      try {
-        const response = await api.get(post.thumnbnailImageUrl, {
-          responseType: "blob",
-        });
-        
-        const imageUrl = URL.createObjectURL(response.data);
-        setImageSrc(imageUrl);
-      } catch (err) {
-        console.error("이미지 불러오기 실패:", err);
-      } finally {
-        setImageLoading(false);
-      }
-    };
-
-    fetchImage();
-
-    return () => {
-      if (imageSrc && imageSrc.startsWith('blob:')) {
-        URL.revokeObjectURL(imageSrc);
-      }
-    };
-  }, [post.thumnbnailImageUrl]);
 
   // 클릭 이벤트 핸들러: postId를 사용하여 게시물 상세 페이지로 이동
   const handlePostClick = () => {
@@ -78,7 +46,7 @@ const PostCard = ({ post, navigate }) => {
         <CardMedia
           component="img"
           sx={{ width: 151, height: 151, flexShrink: 0 }}
-          image={imageSrc}
+          image={post.thumnbnailImageUrl}
           alt={post.postTitle}
         />
         <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, minWidth: 0 }}>
@@ -134,6 +102,12 @@ export default function MyPage() {
 
   // 포인트 추가 모달 상태
   const [isAddPointModalOpen, setIsAddPointModalOpen] = useState(false);
+
+  // 프로필 이미지 변경 관련 상태 및 ref
+  const fileInputRef = useRef(null);
+  const [isProfileImageModalOpen, setIsProfileImageModalOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewImageUrl, setPreviewImageUrl] = useState('');
 
   // 백엔드와 동일한 정렬 조건과 페이지 사이즈
   const pageSize = 3;
@@ -287,6 +261,60 @@ export default function MyPage() {
     fetchUserInfo(); // 사용자 정보 새로고침
   };
 
+  // 프로필 이미지 클릭 핸들러
+  const handleAvatarClick = () => {
+    fileInputRef.current.click();
+  };
+
+  // 파일 선택 시 실행될 핸들러
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewImageUrl(reader.result);
+        setIsProfileImageModalOpen(true); // 미리보기 모달 열기
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // 프로필 이미지 저장 핸들러
+  const handleSaveProfileImage = async () => {
+    if (!selectedFile) return;
+
+    const formData = new FormData();
+    formData.append('image', selectedFile);
+
+    try {
+      await api.post('/user/profile-image', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      alert('프로필 이미지가 성공적으로 변경되었습니다.');
+      setIsProfileImageModalOpen(false);
+      setSelectedFile(null);
+      setPreviewImageUrl('');
+      fetchUserInfo(); // 변경된 이미지 정보로 유저 정보 새로고침
+    } catch (err) {
+      console.error('프로필 이미지 업로드 실패:', err);
+      alert('프로필 이미지 업로드에 실패했습니다.');
+    }
+  };
+
+  // 프로필 이미지 모달 닫기 핸들러
+  const handleCloseProfileImageModal = () => {
+    setIsProfileImageModalOpen(false);
+    setSelectedFile(null);
+    setPreviewImageUrl('');
+    // 파일 입력 필드 초기화 (같은 파일을 다시 선택할 경우 onChange 이벤트가 발생하지 않는 문제 방지)
+    if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+    }
+  };
+
   // ✨ 로딩 중 또는 에러 발생 시 처리
   if (userInfoLoading) {
     return (
@@ -305,9 +333,9 @@ export default function MyPage() {
   }
 
   return (
-    <Box sx={{ maxWidth: 700, mx: "auto", mt: 4, px: 1 }}>
+    <Box sx={{ maxWidth: 700, mx: "auto", px: 1, mt: 11, mb: 5 }}>
       {/* 프로필 영역 */}
-      <Card sx={{ mb: 3, boxShadow: "0 4px 12px rgba(0,0,0,0.12)" }}>
+      <Card sx={{ mb: 3, boxShadow: "0 4px 12px rgba(0,0,0,0.12)", borderRadius: 2 }}>
         <CardContent>
           {/* 상단: 프로필 + 버튼 */}
           <Box
@@ -320,8 +348,9 @@ export default function MyPage() {
           >
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <Avatar
-                sx={{ width: 70, height: 70, mr: 2 }}
-                src="/profile.jpg"
+                sx={{ width: 70, height: 70, mr: 2, cursor: 'pointer', border: '1px solid #d1cdcd' }}
+                src={userInfo.profileImageUrl}
+                onClick={handleAvatarClick} // 클릭 이벤트 추가
               />
               <Box>
                 <Typography variant="h6">{userInfo.nickName}</Typography> {/* ✨ 닉네임 또는 이름 표시 */}
@@ -373,16 +402,35 @@ export default function MyPage() {
               <Typography variant="subtitle2" color="text.secondary">
                 후원 단체
               </Typography>
-              {!userInfo.teamName && ( // teamName이 null 또는 빈 문자열일 때 true
-                <Button
-                  variant="outlined"
-                  size="small"
-                  onClick={() => navigate("/apply-agency")}
-                  sx={{ height: 30 }}
-                >
-                  등록
-                </Button>
+
+              {/* 조건: 팀 정보가 없거나(teamName이 null이거나 빈 문자열일 때) 승인 상태가 REJECTED일 경우 '등록' 버튼 노출 */}
+              {(!userInfo.teamName || userInfo.approvalStatus === "REJECTED") && (
+                <Tooltip title="후원 단체를 등록할 수 있습니다" arrow>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={() => navigate("/apply-agency")}
+                    sx={{ height: 30 }}
+                  >
+                    등록
+                  </Button>
+                </Tooltip>
               )}
+
+              {/* 팀은 있는데 승인 상태에 따라 버튼 노출 */}
+              {userInfo.teamName && userInfo.approvalStatus === "PENDING" && (
+                <Tooltip title="등록한 후원 단체가 심사 대기 중입니다" arrow> {/* Tooltip 추가 */}
+                  <Button
+                    variant="contained"
+                    size="small"
+                    sx={{ height: 30, bgcolor: '#1cb017', color: 'white' }}
+                  >
+                    PENDING
+                  </Button>
+                </Tooltip>
+              )}
+
+              {/* ACCEPTED 인 경우에는 버튼 자체를 아예 안 보여줌 (아무 것도 렌더링 안 함) */}
             </Box>
 
             {/* 둘째 줄: 실제 단체 이름 or 없음 */}
@@ -394,8 +442,17 @@ export default function MyPage() {
 
       </Card>
 
+      {/* 숨겨진 파일 입력 필드 */}
+      <input 
+        type="file" 
+        ref={fileInputRef} 
+        onChange={handleImageChange} 
+        style={{ display: 'none' }} 
+        accept="image/*"
+      />
+
       {/* 기부내역 요약 */}
-      <Card sx={{ mb: 3, boxShadow: "0 4px 12px rgba(0,0,0,0.12)" }}>
+      <Card sx={{ mb: 3, boxShadow: "0 4px 12px rgba(0,0,0,0.12)", borderRadius: 2 }}>
         <CardContent sx={{ py: 2 }}>
           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
             <Typography variant="h5" sx={{ fontWeight: "bold" }}>
@@ -434,7 +491,11 @@ export default function MyPage() {
       {/* 활동 요약 */}
 
       {/* 탭 */}
-      <Box>
+      <Box sx={{
+        border: '1px solid #e0e0e0', // 탭 컨테이너에 테두리를 추가
+        borderRadius: 2, // 둥근 모서리 적용
+        overflow: 'hidden' // 이 부분이 중요! 자식 요소가 부모의 둥근 모서리를 넘지 않도록 함
+      }}>
         <Tabs value={tab} onChange={handleChange} centered size="small">
           <Tab label="기부 내역" />
           <Tab label="즐겨 찾기" />
@@ -501,34 +562,8 @@ export default function MyPage() {
                 <Box sx={{ p: 2, textAlign: 'center' }}><Typography color="error">{favoritesError}</Typography></Box>
               ) : favorites.length > 0 ? (
                 <>
-                  <Grid container spacing={2} sx={{ mt: 2, p: 2 }}>
+                  <Grid container spacing={2} sx={{ mt: 2, p: 2, flexDirection: 'column' }}>
                     {favorites.map((favorite, index) => (
-                      // <Grid item xs={12} key={index}>
-                      //   <Card sx={{ display: 'flex' }}>
-                      //     <CardMedia
-                      //       component="img"
-                      //       sx={{ width: 151, height: 151, flexShrink: 0 }}
-                      //       image={favorite.thumbnailImageUrl || "https://placehold.co/151x151/E0E0E0/555555?text=No+Image"}
-                      //       alt={favorite.postTitle}
-                      //     />
-                      //     <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
-                      //       <CardContent sx={{ flex: '1 0 auto' }}>
-                      //         <Typography component="div" variant="h6">
-                      //           {favorite.postTitle}
-                      //         </Typography>
-                      //         <Typography variant="subtitle1" color="text.secondary" component="div">
-                      //           현재 금액: {favorite.currentAmount.toLocaleString()} P
-                      //         </Typography>
-                      //         <Typography variant="body2" color="text.secondary" component="div">
-                      //           목표 금액: {favorite.targetAmount.toLocaleString()} P
-                      //         </Typography>
-                      //         <Typography variant="body2" color="text.secondary" component="div">
-                      //           마감일: {format(new Date(favorite.deadline), 'yyyy.MM.dd')}
-                      //         </Typography>
-                      //       </CardContent>
-                      //     </Box>
-                      //   </Card>
-                      // </Grid>
                       <PostCard key={index} post={favorite} navigate={navigate} />
                     ))}
                   </Grid>
@@ -555,7 +590,7 @@ export default function MyPage() {
                 <Box sx={{ p: 2, textAlign: 'center' }}><Typography color="error">{myPostsError}</Typography></Box>
               ) : myPosts.length > 0 ? (
                 <>
-                  <Grid container spacing={2} sx={{ mt: 2, p: 2 }}>
+                  <Grid container spacing={2} sx={{ mt: 2, p: 2, flexDirection: 'column' }}>
                     {myPosts.map((post, index) => (
                       <PostCard key={index} post={post} navigate={navigate} />
                     ))}
@@ -583,6 +618,14 @@ export default function MyPage() {
         onClose={handleCloseAddPointModal}
         onPointAdded={handlePointAdded}
       />
+
+    {/* 프로필 이미지 미리보기 모달 */}
+    <ProfileImageModal
+        isOpen={isProfileImageModalOpen}
+        onClose={handleCloseProfileImageModal}
+        onSave={handleSaveProfileImage}
+        previewImage={previewImageUrl}
+    />
 
     </Box>
   );

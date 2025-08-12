@@ -14,6 +14,9 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 
 @RestController
@@ -110,6 +113,21 @@ public class UserController {
                         .build()
         );
     }
+
+    // 유저 프로필 이미지 업로드
+    @PostMapping("/profile-image")
+    public ResponseEntity<Result> uploadProfileImage(
+            @AuthenticationPrincipal CustomUserDetail userDetails,
+            @RequestParam("image") MultipartFile image) throws IOException {
+        userService.uploadProfileImage(userDetails.getUserId(), image);
+        return ResponseEntity.ok(
+                Result.builder()
+                        .message("프로필 이미지 업로드 성공")
+                        .data("ok")
+                        .build()
+        );
+    }
+
     //이메일 인증 코드 발송 api
     @PostMapping("/send-code")
     public String sendCode(@RequestBody UserDto.sendCodeRequest request) {
@@ -121,15 +139,18 @@ public class UserController {
             return "이메일 발송 실패: " + e.getMessage();
         }
     }
+  
     //이메일 인증 코드 확인 api
     @PostMapping("/verify-code")
     public boolean verifyCode(@RequestBody UserDto.verifyCodeRequest request) {
         return mailService.verifyCode(request.getEmail(), request.getCode());
     }
+  
     //닉네임 중복 체크 api
     @GetMapping("/check-nickname")
     public boolean checkNickName(@RequestParam String nickName) {
         System.out.println("nickName : "+nickName);
         return userService.checkNickName(nickName);
     }
+
 }

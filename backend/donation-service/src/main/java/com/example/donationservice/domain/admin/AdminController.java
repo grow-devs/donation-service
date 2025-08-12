@@ -1,6 +1,7 @@
 package com.example.donationservice.domain.admin;
 
 import com.example.donationservice.common.dto.Result;
+import com.example.donationservice.domain.admin.dto.AdminDto;
 import com.example.donationservice.domain.user.ApprovalStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -36,14 +37,14 @@ public class AdminController {
     /**
      * 팀 승인 요청 상태 업데이트
      * @param teamId
-     * @param approvalStatus
+     * @param teamStatusReq
      * @return
      */
     @PatchMapping("/team-approval/{teamId}")
     public ResponseEntity<Result> updateTeamApprovalStatus(
             @PathVariable Long teamId,
-            @RequestBody ApprovalStatus approvalStatus) {
-        adminService.updateTeamApprovalStatus(teamId, approvalStatus);
+            @RequestBody AdminDto.ApprovalStatusReq teamStatusReq) {
+        adminService.updateTeamApprovalStatus(teamId, teamStatusReq);
         return ResponseEntity.ok(
                 Result.builder()
                         .message("팀 승인 상태 업데이트 성공")
@@ -73,14 +74,14 @@ public class AdminController {
     /**
      * 게시물 승인 요청 상태 업데이트
      * @param postId
-     * @param approvalStatus
+     * @param postStatusReq
      * @return
      */
     @PatchMapping("/post-approval/{postId}")
     public ResponseEntity<Result> updatePostApprovalStatus(
             @PathVariable Long postId,
-            @RequestBody ApprovalStatus approvalStatus) {
-        adminService.updatePostApprovalStatus(postId, approvalStatus);
+            @RequestBody AdminDto.ApprovalStatusReq postStatusReq) {
+        adminService.updatePostApprovalStatus(postId, postStatusReq);
         return ResponseEntity.ok(
                 Result.builder()
                         .message("게시물 승인 상태 업데이트 성공")
