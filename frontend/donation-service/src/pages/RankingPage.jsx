@@ -83,6 +83,8 @@ const getMonthlyDateRange = () => {
 };
 
 export default function RankingPage() {
+  const [tabLoading, setTabLoading] = useState({});
+
   const { isLoggedIn, nickName } = useAuthStore();
   const [tabIndex, setTabIndex] = useState(0);
   const [rankingData, setRankingData] = useState({}); // 객체로 변경
@@ -96,27 +98,37 @@ export default function RankingPage() {
   };
 
   // 더보기 버튼 클릭 시 호출
-  const handleLoadMore = () => {
-    setRankingData((prev) => ({
-      ...prev,
-      [tabIndex]: {
-        ...prev[tabIndex],
-        page: prev[tabIndex].page + 1,
-      },
-    }));
+  const handleLoadMore = async () => {
+    if (!rankingData[tabIndex]?.hasMore) return;
+    setLoadingMore(true);
+
+    const nextPage = (rankingData[tabIndex]?.page || 0) + 1;
+    try {
+      const { rankings, hasMore } = await fetchRankingData(tabIndex, nextPage);
+      setRankingData((prev) => ({
+        ...prev,
+        [tabIndex]: {
+          page: nextPage,
+          data: [...prev[tabIndex].data, ...rankings],
+          hasMore,
+        },
+      }));
+    } finally {
+      setLoadingMore(false);
+    }
   };
 
   // ✅ 랭킹 데이터 로딩
   useEffect(() => {
     const loadRankingData = async () => {
-      // 이미 데이터가 존재하면 API 호출을 건너뛰고 로딩 상태만 해제
-      if (rankingData[tabIndex] && rankingData[tabIndex].data.length > 0) {
-        setLoading(false);
+      if (rankingData[tabIndex] && rankingData[tabIndex].data?.length > 0)
         return;
-      }
 
-      setLoading(true);
       const currentPage = rankingData[tabIndex]?.page || 0;
+
+      // 탭별 로딩 시작
+      setTabLoading((prev) => ({ ...prev, [tabIndex]: true }));
+
       try {
         const { rankings, hasMore } = await fetchRankingData(
           tabIndex,
@@ -126,17 +138,15 @@ export default function RankingPage() {
           ...prev,
           [tabIndex]: {
             page: currentPage,
-            data:
-              currentPage === 0
-                ? rankings
-                : [...(prev[tabIndex]?.data || []), ...rankings],
+            data: [...(prev[tabIndex]?.data || []), ...rankings],
             hasMore,
           },
         }));
       } catch (error) {
         console.error("Error loading ranking data:", error);
       } finally {
-        setLoading(false);
+        // 탭별 로딩 종료
+        setTabLoading((prev) => ({ ...prev, [tabIndex]: false }));
       }
     };
     loadRankingData();
@@ -146,33 +156,39 @@ export default function RankingPage() {
   useEffect(() => {
     const loadMoreData = async () => {
       const currentTabState = rankingData[tabIndex];
-      // 첫 페이지가 아니고, hasMore가 true일 때만 추가 데이터 로드
       if (
-        currentTabState &&
-        currentTabState.page > 0 &&
-        currentTabState.hasMore
-      ) {
-        setLoading(true);
-        try {
-          const { rankings, hasMore } = await fetchRankingData(
-            tabIndex,
-            currentTabState.page
-          );
-          setRankingData((prev) => ({
-            ...prev,
-            [tabIndex]: {
-              ...prev[tabIndex],
-              data: [...prev[tabIndex].data, ...rankings],
-              hasMore,
-            },
-          }));
-        } catch (error) {
-          console.error("Error loading more ranking data:", error);
-        } finally {
-          setLoading(false);
-        }
+        !currentTabState ||
+        currentTabState.page === 0 ||
+        !currentTabState.hasMore
+      )
+        return;
+
+      const nextPage = currentTabState.page + 1;
+
+      // 탭별 로딩 시작
+      setTabLoading((prev) => ({ ...prev, [tabIndex]: true }));
+
+      try {
+        const { rankings, hasMore } = await fetchRankingData(
+          tabIndex,
+          nextPage
+        );
+        setRankingData((prev) => ({
+          ...prev,
+          [tabIndex]: {
+            page: nextPage,
+            data: [...prev[tabIndex].data, ...rankings],
+            hasMore,
+          },
+        }));
+      } catch (error) {
+        console.error("Error loading more ranking data:", error);
+      } finally {
+        // 탭별 로딩 종료
+        setTabLoading((prev) => ({ ...prev, [tabIndex]: false }));
       }
     };
+
     loadMoreData();
   }, [rankingData[tabIndex]?.page]);
 
@@ -253,18 +269,21 @@ export default function RankingPage() {
       {/* 📊 랭킹 카드 리스트 */}
       <Stack spacing={1.5} alignItems="center" mt={2} mb={8}>
         {/* ✅ 로딩 중일 때만 스켈레톤을 표시합니다. */}
-        {loading ? (
-          Array.from({ length: 5 }).map((_, i) => (
-            <Skeleton
-              key={i}
-              variant="rectangular"
-              width={600}
-              height={56}
-              sx={{ borderRadius: 1 }}
-            />
-          ))
-        ) : /* ✅ 로딩이 완료된 후에 데이터가 있는지 확인합니다. */
-        currentRankings && currentRankings.length > 0 ? (
+        {tabLoading[tabIndex] ? (
+          // 로딩 중일 때 스피너 표시
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: 200, // 가운데 정렬
+              width: "100%",
+            }}
+          >
+            <CircularProgress />
+          </Box>
+        ) : currentRankings.length > 0 ? (
+          // 데이터 있을 때 랭킹 리스트 표시
           currentRankings.map((user) => (
             <Card
               key={user.userId}
@@ -299,7 +318,7 @@ export default function RankingPage() {
                     {user.rank}
                   </Typography>
                   <Avatar
-                    src={user.avatar || user.profileImage}
+                    src={user.avatar || user.profileImageUrl}
                     alt={user.nickName}
                     sx={{ width: 40, height: 40, mx: 2 }}
                   />
@@ -326,7 +345,7 @@ export default function RankingPage() {
             </Card>
           ))
         ) : (
-          /* ✅ 로딩이 완료되었지만 데이터가 없을 때 메시지를 표시합니다. */
+          // 로딩 완료 후 데이터가 없을 때 메시지 표시
           <Paper
             elevation={0}
             sx={{
@@ -410,7 +429,7 @@ export default function RankingPage() {
                   {myRanking.rank}
                 </Typography>
                 <Avatar
-                  src={myRanking.avatar || myRanking.profileImage}
+                  src={myRanking.avatar || myRanking.profileImageUrl}
                   alt={myRanking.nickName}
                   sx={{ width: 40, height: 40, mx: 2 }}
                 />
