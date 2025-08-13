@@ -57,12 +57,13 @@ export default function TotalAmount() {
       </Card>
     );
   }
-
+  // "rgb(252, 226, 76)",
+  // rgba(245, 235, 182, 1) 베이지색
   // 3. 로딩이 완료되고 데이터가 있으면 정상적인 UI를 렌더링합니다.
   return (
     <Card
       sx={{
-        bgcolor: "rgb(252, 226, 76)",
+        bgcolor: "rgba(252, 255, 211, 1)",
         width: "100%",
         display: "flex",
         flexDirection: "column",
@@ -88,6 +89,8 @@ export default function TotalAmount() {
         >
           <Typography
             variant="subtitle1"
+            fontWeight={700}
+            color='rgb(0,0,0)'
             sx={{
               overflow: "hidden",
               textOverflow: "ellipsis",
@@ -102,11 +105,11 @@ export default function TotalAmount() {
         </Box>
         <Box
           component="img"
-          src="src\assets\react.svg"
+          src="src\assets\iconHeartEarth.png"
           alt="Donation"
           sx={{
             width: 80,
-            height: 90,
+            height: 80,
           }}
         />
       </Box>
@@ -114,7 +117,7 @@ export default function TotalAmount() {
       <Box
         sx={{
           flex: 1,
-          bgcolor: "rgba(255,255,255,0.2)",
+          bgcolor: "rgba(255, 255, 255, 0.55)",
           borderRadius: 2,
           p: 2,
           textAlign: "center",
