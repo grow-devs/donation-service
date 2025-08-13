@@ -5,6 +5,9 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import CommentItem from './CommentItem'; // CommentItem 컴포넌트 임포트
 import api from '../../apis/api';
+import useAuthStore from "../../store/authStore"; // 로그인 상태를 확인하기 위한 스토어
+import LoginForm from "../../modal/LoginForm"; // 로그인 모달 컴포넌트
+import { Modal, Box } from "@mui/material"; // 모달을 띄우기 위한 MUI 컴포넌트
 
 const SectionContainer = styled.div`
   background-color: white;
@@ -72,6 +75,7 @@ const SubmitButton = styled.button`
   font-size: 1em;
   margin: 10px; /* 입력창 내에서 간격 */
   align-self: flex-end; /* 아래쪽에 정렬 */
+  cursor: pointer; /* 활성화 상태일 때 커서를 손가락 모양으로 지정 */
   
   &:hover {
     background-color: #c0d6f0; /* 호버 시 약간 어두워지게 */
@@ -79,7 +83,6 @@ const SubmitButton = styled.button`
   &:disabled {
     background-color: var(--light-gray);
     color: #aaa;
-    cursor: not-allowed;
   }
 `;
 
@@ -152,11 +155,16 @@ function CommentSection({ postId, onCommentCountUpdate }) {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   // const [sortOrder, setSortOrder] = useState('latest'); // 'latest' 또는 'cheer'
-  const [currentPage, setCurrentPage] = useState(0);// ✨ 추가: 현재 페이지 번호 (0부터 시작)
-  const [hasMore, setHasMore] = useState(true); // ✨ 추가: 더 불러올 댓글이 있는지 여부
-  const [loading, setLoading] = useState(false); // ✨ 추가: API 호출 로딩 중 여부
+  const [currentPage, setCurrentPage] = useState(0);// 현재 페이지 번호 (0부터 시작)
+  const [hasMore, setHasMore] = useState(true); // 더 불러올 댓글이 있는지 여부
+  const [loading, setLoading] = useState(false); // API 호출 로딩 중 여부
 
   const [currentSort, setCurrentSort] = useState('createdAt,desc');
+
+  // 로그인 모달 상태 관리
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  // 로그인 상태를 가져옵니다.
+  const isLoggedIn = useAuthStore(state => state.isLoggedIn);
 
   // 실제 앱에서는 로그인한 사용자의 아바타를 가져와야 합니다.
   const currentUserAvatar = ''; // 현재 사용자의 아바타 (더미)
@@ -204,7 +212,7 @@ function CommentSection({ postId, onCommentCountUpdate }) {
 
   // useEffect를 이용한 초기 댓글 로드 및 정렬 변경 감지
   // 컴포넌트가 처음 마운트되거나 postId, currentSort 상태가 변경될 때 댓글을 다시 불러옵니다.
-  // ✨ 추가: 컴포넌트 마운트 시 또는 postId, 정렬 기준 변경 시 초기 댓글 로드
+  // 컴포넌트 마운트 시 또는 postId, 정렬 기준 변경 시 초기 댓글 로드
   useEffect(() => {
     if (postId) { // postId가 유효할 때만 실행
       // 새로운 게시물 또는 정렬 기준 변경 시 댓글 목록 상태를 초기화하고 첫 페이지를 로드합니다.
@@ -216,15 +224,24 @@ function CommentSection({ postId, onCommentCountUpdate }) {
   }, [postId, currentSort]); // ✨ 수정: 의존성 배열에 postId와 currentSort 추가
 
   // 더보기' 버튼 클릭 시 다음 페이지의 댓글을 로드하는 함수
-  // ✨ 추가: '더보기' 버튼 클릭 핸들러
+  // '더보기' 버튼 클릭 핸들러
   const handleLoadMore = () => {
     if (!loading && hasMore) { // 로딩 중이 아니고 더 불러올 댓글이 있을 때만 동작
       fetchComments(currentPage, currentSort); // 다음 페이지를 현재 정렬 기준으로 로드
     }
   };
 
+  const handleLoginModalClose = () => {
+    setIsLoginModalOpen(false);
+  };
+
   // 댓글 제출 성공 시, 댓글 목록을 새로고침하여 방금 작성한 댓글이 즉시 보이도록 한다.
   const handleCommentSubmit = async () => {
+    if (!isLoggedIn) {
+      setIsLoginModalOpen(true);
+      return; // 로그인하지 않았으면 함수 실행을 중단합니다.
+    }
+
     if (newComment.trim()) {
       setLoading(true); // 등록 중 로딩 상태 표시
       try {
@@ -260,7 +277,7 @@ function CommentSection({ postId, onCommentCountUpdate }) {
     }
   };
 
-  // ✨ 추가: CommentItem에서 좋아요 상태가 변경되었을 때 호출될 콜백 함수
+  // CommentItem에서 좋아요 상태가 변경되었을 때 호출될 콜백 함수
   const handleCommentItemLikeToggle = (commentId, updatedLikesCount, newIsLikedStatus) => {
     setComments((prevComments) =>
       prevComments.map((comment) =>
@@ -315,7 +332,6 @@ function CommentSection({ postId, onCommentCountUpdate }) {
       </CommentListHeader>
 
       {/* 댓글 목록 */}
-      {/* 댓글 목록 */}
       <CommentList>
         {comments.length > 0 ? ( // ✨ 수정: sortedComments 대신 comments 상태 사용
           comments.map((comment) => (
@@ -330,20 +346,46 @@ function CommentSection({ postId, onCommentCountUpdate }) {
         )}
       </CommentList>
 
-      {/* ✨ 추가: 로딩 인디케이터 */}
+      {/* 로딩 인디케이터 */}
       {loading && <p style={{ textAlign: 'center', color: '#888', padding: '20px 0' }}>댓글 불러오는 중...</p>}
 
-      {/* ✨ 추가: '더보기' 버튼 */}
+      {/* '더보기' 버튼 */}
       {hasMore && ( // 더 불러올 댓글이 있을 때만 버튼 표시
         <LoadMoreButton onClick={handleLoadMore} disabled={loading}>
           {loading ? '불러오는 중...' : '더보기  ⌄'} {/* ⌄ */}
         </LoadMoreButton>
       )}
 
-      {/* ✨ 추가: 더 이상 댓글이 없을 때 메시지 (선택 사항) */}
+      {/* 더 이상 댓글이 없을 때 메시지 (선택 사항) */}
       {!hasMore && !loading && comments.length > 0 && (
         <p style={{ textAlign: 'center', marginTop: '20px', color: 'var(--text-color)' }}>더 이상 댓글이 없습니다.</p>
       )}
+
+      {/* ✨ 추가: 로그인 폼을 Modal 컴포넌트로 감쌌습니다. */}
+      <Modal
+        open={isLoginModalOpen}
+        onClose={handleLoginModalClose}
+      >
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '90%',
+            maxWidth: 400,
+            bgcolor: 'background.paper',
+            borderRadius: '8px',
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
+          <LoginForm
+            onClose={handleLoginModalClose}
+            // onSwitchMode 등의 prop이 필요하다면 추가할 수 있습니다.
+          />
+        </Box>
+      </Modal>
 
     </SectionContainer>
   );
