@@ -88,7 +88,6 @@ export default function CampaignTop3Card({
         setIsLiked(true); // 좋아요 성공 시 isLiked 상태를 true로 변경
         setSnackbarMessage("게시글을 좋아요했습니다!");
         setSnackbarOpen(true);
-        alert("게시글을 좋아요했습니다!");
       }
     } catch (error) {
       if (error.response) {
