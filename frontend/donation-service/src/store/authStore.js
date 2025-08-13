@@ -18,6 +18,7 @@ const useAuthStore = create(
         },
         setUserRole: (role) => set({ userRole: role }),
         setNickName: (nickname) => set({ nickName: nickname }),
+        setProfileImage: (profileImage) => set({ profileImage: profileImage }),
       }),
       {
         name: 'auth-storage', // localStorage에 저장될 키 이름
@@ -25,6 +26,7 @@ const useAuthStore = create(
           isLoggedIn: state.isLoggedIn,
           userRole: state.userRole,
           nickName: state.nickName,
+          profileImage: state.profileImage,
         }),
       }
     )
