@@ -65,7 +65,7 @@ export default function MainCategory() {
     display: "flex",
     flexWrap: "wrap", // 줄바꿈 허용
     justifyContent: "center", // 중앙 정렬
-    gap: { xs: 1, sm: 2 }, // 간격 줄이기
+    gap: { xs: 1, sm: 1.6 }, // 간격 줄이기
     px: 1,
     "&::-webkit-scrollbar": { display: "none" },
   }}
