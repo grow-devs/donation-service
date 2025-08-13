@@ -163,6 +163,7 @@ public class RankingServiceImpl implements RankingService {
                 redisTemplate.opsForZSet().reverseRangeWithScores(key, start, end);
 
         // 랭킹 데이터가 없으면 빈 리스트 반환
+        // NPE 관리
         if (rankingSet == null || rankingSet.isEmpty()) {
             return null;
         }
@@ -210,11 +211,12 @@ public class RankingServiceImpl implements RankingService {
             previousScore = currentScore;
         }
         //todo NPE 방지 추가 ( NPE 방지가 중요하므로 todo에 넣어 확인하기 위함)
-        boolean hasNext = Optional.ofNullable(
+        // redisTemplate.opsForZSet().reverseRange(key, end + 1, end + 1)는 비어있을시에 emptySet을 반환한다.
+        boolean hasNext = !Optional.ofNullable(
                         redisTemplate.opsForZSet().reverseRange(key, end + 1, end + 1)
                 )                               // null이면 Optional.empty()
                 .orElse(Collections.emptySet()) // null이면 빈 Set 반환
-                .isEmpty();                      // 비어있으면 true, 아니면 false
+                .isEmpty();                      // 앞에 !이 있으므로 set이 비어있다면 false, 아니면 true 반환
 
 
         return RankingDto.Response.builder()
