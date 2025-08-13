@@ -43,6 +43,7 @@ public class CommentServiceImpl implements CommentService {
         // 댓글 생성
         Comment comment = Comment.builder()
                 .message(request.getMessage())
+                .likesCount(0) // 초기 좋아요 수는 0
                 .userId(userId)
                 .post(post)
                 .build();
