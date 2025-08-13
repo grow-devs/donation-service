@@ -82,7 +82,7 @@ export default function CampaignTop3Card({
     }
     
     try {
-      // 좋아요 API 호출 (FundraisingSummary.jsx와 동일한 로직)
+      // 좋아요 API 호출
       const response = await api.post(`/post-like/${postId}`);
       if (response.status === 200) {
         setIsLiked(true); // 좋아요 성공 시 isLiked 상태를 true로 변경
