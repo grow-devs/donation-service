@@ -118,17 +118,17 @@ export default function TimeImpendingCampaign() {
   return (
     <>
       <Card
-              sx={{
-                borderRadius: 3,
-                boxShadow: 2,
-                // maxWidth: 600,
-                width: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                height: '100%',
-                overflow: 'hidden',
-              }}
-            >
+        sx={{
+          borderRadius: 3,
+          boxShadow: 2,
+          // maxWidth: 600,
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100%',
+          overflow: 'hidden',
+        }}
+      >
         <Box sx={{ p: 2 }}>
           <Typography variant="h6" fontWeight={700}>
             시간이 얼마 남지 않았어요!
