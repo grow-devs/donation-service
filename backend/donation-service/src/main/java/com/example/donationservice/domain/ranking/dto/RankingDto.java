@@ -36,5 +36,6 @@ public class RankingDto {
         private Long rank;                  // 내 순위
         private Long totalAmount;     // 내 총 기부 금액
         private String percentile;          // 상위 몇 퍼센트인지 (예: "상위 15.3%")
+        private String profileImageUrl;     // 프로필 이미지 URL
     }
 }

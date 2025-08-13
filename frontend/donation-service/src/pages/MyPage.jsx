@@ -73,6 +73,7 @@ const PostCard = ({ post, navigate }) => {
 export default function MyPage() {
   const [tab, setTab] = useState(0);
   const logout = useAuthStore(state => state.logout);
+  const setProfileImage = useAuthStore((state) => state.setProfileImage);
 
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState(null); // ✨ 사용자 정보를 저장할 state
@@ -131,6 +132,8 @@ export default function MyPage() {
       // 백엔드 /api/user/info 엔드포인트 호출
       const response = await api.get('/user/info');
       setUserInfo(response.data.data); // ✨ 불러온 사용자 정보 저장
+      setProfileImage(response.data.data.profileImageUrl)
+
     } catch (err) {
       console.error("사용자 정보 불러오기 실패:", err);
       setUserInfoError("사용자 정보를 불러오는 데 실패했습니다.");

@@ -99,6 +99,7 @@ public class DonationServiceImpl implements DonationService{
                 .points(donation.getPoint())
                 .message(donation.getMessage())
                 .createdAt(donation.getCreatedAt())
+                .profileImageUrl(donation.getUser().getProfileImageUrl())
                 .build());
     }
 }

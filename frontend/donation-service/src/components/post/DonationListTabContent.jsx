@@ -27,9 +27,9 @@ const NoDonationMessage = styled.p`
 `;
 
 const LoadMoreButton = styled.button`
-  width: 100%;
-  padding: 12px 0;
-  margin-top: 20px;
+  width: 18%;
+  padding: 8px 0;
+  margin-top: 10px;
   background-color: white;
   color: black;
   border: 1px solid #adaaaa;
@@ -79,7 +79,7 @@ function DonationListTabContent({ postId }) {
       } else { // '더보기'로 다음 페이지 로드
         setDonations((prevDonations) => [...prevDonations, ...fetchedDonations]);
       }
-
+      
       setCurrentPage(pagedDonationResponse.number + 1); // 백엔드 Page 객체의 'number'는 0부터 시작하는 현재 페이지
       setHasMore(!pagedDonationResponse.last); // 'last'가 true면 마지막 페이지
 
@@ -125,7 +125,7 @@ function DonationListTabContent({ postId }) {
       {/* '더보기' 버튼 */}
       {hasMore && ( // 더 불러올 기부 내역이 있을 때만 버튼 표시
         <LoadMoreButton onClick={handleLoadMore} disabled={loading}>
-          {loading ? '불러오는 중...' : '더보기  ⌄'}
+          {loading ? '불러오는 중...' : '더보기'}
         </LoadMoreButton>
       )}
 

@@ -79,6 +79,7 @@ public class UserServiceImpl implements UserService {
                     .accessToken(accessToken)
                     .nickName(customUserDetail.getNickName())
                     .userRole(customUserDetail.getUserRole())
+                    .profileImageUrl(customUserDetail.getProfileImageUrl())
                     .build();
 
         } catch (AuthenticationException e) {

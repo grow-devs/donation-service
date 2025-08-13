@@ -27,6 +27,7 @@ export default function LoginForm({ onSwitchMode, onClose }) {
   const login = useAuthStore((state) => state.login);
   const setNickName = useAuthStore((state) => state.setNickName);
   const setUserRole = useAuthStore((state) => state.setUserRole);
+  const setProfileImage = useAuthStore((state) => state.setProfileImage);
 
   const isEmailValid = emailRegex.test(email);
   const isPasswordValid = password.length >= 8; // 최소 8자
@@ -45,8 +46,10 @@ export default function LoginForm({ onSwitchMode, onClose }) {
       const accessToken = res.data.data.accessToken;
       localStorage.setItem("accessToken", accessToken);
       login();
+      console.log(res.data.data);
       setNickName(res.data.data.nickName);
       setUserRole(res.data.data.userRole);
+      setProfileImage(res.data.data.profileImageUrl)
       onClose?.();
     } catch (err) {
       setError(

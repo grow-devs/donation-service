@@ -106,29 +106,38 @@ export default function TodayStats() {
         {firstDonation ? (
           // 첫 기부자가 있을 때 보여주는 내용
           <>
-            <Typography
-              variant="body1"
-              sx={{ fontSize: "0.9rem", lineHeight: 1.5, color: "#555" }}
-            >
-              이 따뜻한 이야기는
-              <Box
-                component="span"
-                sx={{ color: "#FF6B6B", fontWeight: "bold" }}
+            <Box>
+              <Typography
+                variant="body1"
+                sx={{ fontSize: "0.9rem", lineHeight: 1.5, color: "#555" }}
               >
-                {" "}
-                {firstDonorTime}
-              </Box>
-              <br/>
-              
-              <Box
-                component="span"
-                sx={{ color: "#4A6094", fontWeight: "bold" }}
+                이 따뜻한 이야기는
+                <Box
+                  component="span"
+                  sx={{ color: "#FF6B6B", fontWeight: "bold" }}
+                >
+                  {" "}
+                  {firstDonorTime}
+                </Box>
+                에
+                <br />
+              </Typography>
+            </Box>
+            <Box sx={{textAlign:"left"}}>
+              <Typography
+                variant="body1"
+                sx={{ fontSize: "0.9rem", lineHeight: 1.5, color: "#555" }}
               >
-                {" "}
-                {firstDonorName}님의 첫 기부
-              </Box>
-              로 시작되었습니다.
-            </Typography>
+                <Box
+                  component="span"
+                  sx={{ color: "#4A6094", fontWeight: "bold" }}
+                >
+                  {" "}
+                  {firstDonorName} 님의 첫 기부
+                </Box>
+                로 시작되었습니다.
+              </Typography>
+            </Box>
             <br />
           </>
         ) : (
