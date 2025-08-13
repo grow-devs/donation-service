@@ -30,7 +30,7 @@ public class CommentLikeServiceImpl implements CommentLikeService {
 
         // 2. 댓글 엔티티 조회 (필수)
         // likesCount 업데이트를 위해 댓글 엔티티를 조회해야 함
-        Comment comment = commentRepository.findById(commentId)
+        Comment comment = commentRepository.findByIdWithLock(commentId)
                 .orElseThrow(() -> new RestApiException(CommonErrorCode.COMMENT_NOT_FOUND));
 
         // 3. 기존 좋아요 기록 확인 (존재할 수도 있고, 없을 수도 있어서 Optional 사용)

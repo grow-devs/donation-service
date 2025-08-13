@@ -29,6 +29,7 @@ public class CommentDto {
         private String message;
         private Long userId;
         private String nickname; // 댓글 작성자의 닉네임
+        private String profileImageUrl; // 댓글 작성자의 프로필 이미지 URL
         private LocalDateTime createdAt; // 댓글 작성 시간
         private Integer likesCount; // 댓글 좋아요 수
         private boolean isLikedByCurrentUser; // 현재 사용자가 좋아요를 눌렀는지 여부

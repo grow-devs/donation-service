@@ -70,17 +70,17 @@ function DonationStatusCard({ summary }) {
       <CardTitle>모금함 기부현황</CardTitle>
 
       <StatusItem>
-        <TotalItemLabel>총 기부 ({formatAmount(summary.totalDonors)}명)</TotalItemLabel>
+        <TotalItemLabel>총 기부 횟수({formatAmount(summary.totalDonors)}회)</TotalItemLabel>
         <TotalItemValue>{formatAmount(summary.totalAmount)}원</TotalItemValue>
       </StatusItem>
 
       <StatusItem>
-        <ItemLabel>직접기부 ({formatAmount(summary.directDonors)}명)</ItemLabel>
+        <ItemLabel>직접기부 횟수({formatAmount(summary.directDonors)}회)</ItemLabel>
         <ItemValue>{formatAmount(summary.directAmount)}원</ItemValue>
       </StatusItem>
 
       <StatusItem>
-        <ItemLabel>참여기부 ({formatAmount(summary.participatoryDonors)}명)</ItemLabel>
+        <ItemLabel>참여기부 횟수({formatAmount(summary.participatoryDonors)}회)</ItemLabel>
         <ItemValue>{formatAmount(summary.participatoryAmount)}원</ItemValue>
       </StatusItem>
     </CardContainer>

@@ -148,7 +148,7 @@ const CommentList = styled.div`
   /* 댓글 아이템들이 여기에 나열됩니다. */
 `;
 // comments
-function CommentSection({ postId }) {
+function CommentSection({ postId, onCommentCountUpdate }) {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   // const [sortOrder, setSortOrder] = useState('latest'); // 'latest' 또는 'cheer'
@@ -185,6 +185,11 @@ function CommentSection({ postId }) {
         setComments(fetchedComments); // 기존 댓글 초기화 후 새 댓글로 채움
       } else { // '더보기'로 다음 페이지 로드
         setComments((prevComments) => [...prevComments, ...fetchedComments]); // 기존 댓글에 새 댓글 추가
+      }
+
+      // ✨ 가장 중요한 부분: totalElements를 부모 컴포넌트로 전달 ✨
+      if (onCommentCountUpdate) {
+        onCommentCountUpdate(pagedCommentResponse.totalElements);
       }
 
       setCurrentPage(pagedCommentResponse.currentPage + 1); // 백엔드에서 받은 현재 페이지 번호 + 1 (다음 요청 시 사용)
@@ -230,6 +235,12 @@ function CommentSection({ postId }) {
           // teamId: 필요하다면 CommentDto.CreateCommentRequest에 맞춰 추가
         });
         setNewComment(''); // 입력창 비우기
+
+        // ✨ 댓글 등록 성공 시, 부모 컴포넌트의 카운트 즉시 업데이트
+        if (onCommentCountUpdate) {
+          onCommentCountUpdate(prevCount => prevCount + 1);
+        }
+
         alert('댓글이 성공적으로 등록되었습니다!');
         // ✨ 수정: 댓글 등록 후 첫 페이지부터 다시 로드하여 최신 댓글 포함
         fetchComments(0, currentSort); // 현재 정렬 기준으로 첫 페이지부터 다시 로드

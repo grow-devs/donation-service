@@ -72,8 +72,8 @@ public class CommentServiceImpl implements CommentService {
         // Map<userId, nickname> 형태로 사용자 닉네임을 미리 가져옴
         // 이렇게 한 번에 가져오는 것이 N+1 문제를 해결하는 핵심이다.
         // 만약 댓글이 100개인데 각각 getUser()를 통해 닉네임을 조회한다면 100번의 쿼리가 발생할 수 있지만, 이 방식은 쿼리 횟수를 1번으로 줄여줍니다. (fetch join 도 있음)
-        Map<Long, String> userNicknames = userRepository.findAllById(userIds).stream()
-                .collect(Collectors.toMap(User::getId, User::getNickName));
+        Map<Long, User> userMap = userRepository.findAllById(userIds).stream()
+                .collect(Collectors.toMap(User::getId, user -> user));
 
         // ✨ 좋아요 여부를 한 번에 조회하여 Map으로 만듦 (N+1 문제 방지)
 //        Set<Long> likedCommentIdsByUser = new java.util.HashSet<>();
@@ -95,16 +95,19 @@ public class CommentServiceImpl implements CommentService {
 
         // CommentResponse DTO로 변환 시 닉네임 맵과 좋아요 상태 맵 사용
         List<CommentDto.CommentResponse> commentResponses = commentPage.getContent().stream()
-                .map(comment -> CommentDto.CommentResponse.builder()
-                        .id(comment.getId())
-                        .message(comment.getMessage())
-                        .userId(comment.getUserId())
-                        .nickname(userNicknames.getOrDefault(comment.getUserId(), "알 수 없음"))
-                        .createdAt(comment.getCreatedAt())
-                        .likesCount(comment.getLikesCount() != null ? comment.getLikesCount() : 0)
-                        .isLikedByCurrentUser(likedCommentIdsByUser.contains(comment.getId()))
-                        .build()
-                )
+                .map(comment -> {
+                    User user = userMap.get(comment.getUserId());
+                    return CommentDto.CommentResponse.builder()
+                            .id(comment.getId())
+                            .message(comment.getMessage())
+                            .userId(comment.getUserId())
+                            .nickname(user != null ? user.getNickName() : "알 수 없음") // 사용자 정보가 없을 경우 기본값 설정
+                            .profileImageUrl(user != null ? user.getProfileImageUrl() : null) // 프로필 이미지 URL 추가
+                            .createdAt(comment.getCreatedAt())
+                            .likesCount(comment.getLikesCount() != null ? comment.getLikesCount() : 0)
+                            .isLikedByCurrentUser(likedCommentIdsByUser.contains(comment.getId()))
+                            .build();
+                })
                 .collect(Collectors.toList());
 
         return CommentDto.PagedCommentResponse.builder()
