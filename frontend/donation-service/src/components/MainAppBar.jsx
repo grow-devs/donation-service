@@ -15,7 +15,7 @@ import {
   ListItemText,
   Divider,
   Button,
-  CircularProgress,
+  CircularProgress,Avatar
 } from "@mui/material";
 import { formatNotificationTime } from "../utils/formatNotificationTime";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
@@ -48,6 +48,7 @@ export default function MainAppBar() {
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
   const userRole = useAuthStore((state) => state.userRole);
   const nickName = useAuthStore((state) => state.nickName);
+  const profileImage = useAuthStore((state) => state.profileImage);
 
   const [notifications, setNotifications] = React.useState([]);
   const [page, setPage] = React.useState(0);
@@ -357,7 +358,15 @@ export default function MainAppBar() {
                   }
                 }}
               >
-                <AccountCircleIcon fontSize="medium" color="primary" />
+                {isLoggedIn && profileImage ? (
+                  <Avatar
+                    src={profileImage}
+                    alt={nickName}
+                    sx={{ width: 32, height: 32 }}
+                  />
+                ) : (
+                  <AccountCircleIcon fontSize="medium" color="primary" />
+                )}
                 <Typography
                   variant="body2"
                   color="black"
