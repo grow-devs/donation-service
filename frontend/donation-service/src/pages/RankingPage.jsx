@@ -83,8 +83,6 @@ const getMonthlyDateRange = () => {
 };
 
 export default function RankingPage() {
-  const [tabLoading, setTabLoading] = useState({});
-
   const { isLoggedIn, nickName } = useAuthStore();
   const [tabIndex, setTabIndex] = useState(0);
   const [rankingData, setRankingData] = useState({}); // 객체로 변경
@@ -98,37 +96,27 @@ export default function RankingPage() {
   };
 
   // 더보기 버튼 클릭 시 호출
-  const handleLoadMore = async () => {
-    if (!rankingData[tabIndex]?.hasMore) return;
-    setLoadingMore(true);
-
-    const nextPage = (rankingData[tabIndex]?.page || 0) + 1;
-    try {
-      const { rankings, hasMore } = await fetchRankingData(tabIndex, nextPage);
-      setRankingData((prev) => ({
-        ...prev,
-        [tabIndex]: {
-          page: nextPage,
-          data: [...prev[tabIndex].data, ...rankings],
-          hasMore,
-        },
-      }));
-    } finally {
-      setLoadingMore(false);
-    }
+  const handleLoadMore = () => {
+    setRankingData((prev) => ({
+      ...prev,
+      [tabIndex]: {
+        ...prev[tabIndex],
+        page: prev[tabIndex].page + 1,
+      },
+    }));
   };
 
   // ✅ 랭킹 데이터 로딩
   useEffect(() => {
     const loadRankingData = async () => {
-      if (rankingData[tabIndex] && rankingData[tabIndex].data?.length > 0)
+      // 이미 데이터가 존재하면 API 호출을 건너뛰고 로딩 상태만 해제
+      if (rankingData[tabIndex] && rankingData[tabIndex].data.length > 0) {
+        setLoading(false);
         return;
+      }
 
+      setLoading(true);
       const currentPage = rankingData[tabIndex]?.page || 0;
-
-      // 탭별 로딩 시작
-      setTabLoading((prev) => ({ ...prev, [tabIndex]: true }));
-
       try {
         const { rankings, hasMore } = await fetchRankingData(
           tabIndex,
@@ -138,15 +126,17 @@ export default function RankingPage() {
           ...prev,
           [tabIndex]: {
             page: currentPage,
-            data: [...(prev[tabIndex]?.data || []), ...rankings],
+            data:
+              currentPage === 0
+                ? rankings
+                : [...(prev[tabIndex]?.data || []), ...rankings],
             hasMore,
           },
         }));
       } catch (error) {
         console.error("Error loading ranking data:", error);
       } finally {
-        // 탭별 로딩 종료
-        setTabLoading((prev) => ({ ...prev, [tabIndex]: false }));
+        setLoading(false);
       }
     };
     loadRankingData();
@@ -156,39 +146,33 @@ export default function RankingPage() {
   useEffect(() => {
     const loadMoreData = async () => {
       const currentTabState = rankingData[tabIndex];
+      // 첫 페이지가 아니고, hasMore가 true일 때만 추가 데이터 로드
       if (
-        !currentTabState ||
-        currentTabState.page === 0 ||
-        !currentTabState.hasMore
-      )
-        return;
-
-      const nextPage = currentTabState.page + 1;
-
-      // 탭별 로딩 시작
-      setTabLoading((prev) => ({ ...prev, [tabIndex]: true }));
-
-      try {
-        const { rankings, hasMore } = await fetchRankingData(
-          tabIndex,
-          nextPage
-        );
-        setRankingData((prev) => ({
-          ...prev,
-          [tabIndex]: {
-            page: nextPage,
-            data: [...prev[tabIndex].data, ...rankings],
-            hasMore,
-          },
-        }));
-      } catch (error) {
-        console.error("Error loading more ranking data:", error);
-      } finally {
-        // 탭별 로딩 종료
-        setTabLoading((prev) => ({ ...prev, [tabIndex]: false }));
+        currentTabState &&
+        currentTabState.page > 0 &&
+        currentTabState.hasMore
+      ) {
+        setLoading(true);
+        try {
+          const { rankings, hasMore } = await fetchRankingData(
+            tabIndex,
+            currentTabState.page
+          );
+          setRankingData((prev) => ({
+            ...prev,
+            [tabIndex]: {
+              ...prev[tabIndex],
+              data: [...prev[tabIndex].data, ...rankings],
+              hasMore,
+            },
+          }));
+        } catch (error) {
+          console.error("Error loading more ranking data:", error);
+        } finally {
+          setLoading(false);
+        }
       }
     };
-
     loadMoreData();
   }, [rankingData[tabIndex]?.page]);
 
@@ -227,6 +211,7 @@ export default function RankingPage() {
       return `${getMonthlyDateRange()} 동안 가장 따뜻한 마음을 나눠주신 분들 ❤️`;
     return "역대 기부 천사 분들✨";
   };
+  console.log(rankingData);
 
   // 현재 탭의 데이터 및 상태를 추출
   const currentRankings = rankingData[tabIndex]?.data || [];
@@ -269,21 +254,10 @@ export default function RankingPage() {
       {/* 📊 랭킹 카드 리스트 */}
       <Stack spacing={1.5} alignItems="center" mt={2} mb={8}>
         {/* ✅ 로딩 중일 때만 스켈레톤을 표시합니다. */}
-        {tabLoading[tabIndex] ? (
-          // 로딩 중일 때 스피너 표시
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: 200, // 가운데 정렬
-              width: "100%",
-            }}
-          >
-            <CircularProgress />
-          </Box>
-        ) : currentRankings.length > 0 ? (
-          // 데이터 있을 때 랭킹 리스트 표시
+        {loading ? (
+          <CircularProgress></CircularProgress>
+        ) : /* ✅ 로딩이 완료된 후에 데이터가 있는지 확인합니다. */
+        currentRankings && currentRankings.length > 0 ? (
           currentRankings.map((user) => (
             <Card
               key={user.userId}
@@ -345,7 +319,7 @@ export default function RankingPage() {
             </Card>
           ))
         ) : (
-          // 로딩 완료 후 데이터가 없을 때 메시지 표시
+          /* ✅ 로딩이 완료되었지만 데이터가 없을 때 메시지를 표시합니다. */
           <Paper
             elevation={0}
             sx={{
