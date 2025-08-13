@@ -62,7 +62,7 @@ export default function PostListPage() {
   const [lastEndDate, setLastEndDate] = useState(null); // 'deadline' 정렬용 (백엔드에 'deadline' 정렬 추가 가정)
   const [lastFundingAmount, setLastFundingAmount] = useState(null); // 'fundingAmountDesc' 정렬용 (백엔드에 추가 가정)
   const [lastParticipants, setLastParticipants] = useState(null); // 'participantsDesc' (추천순) 정렬용
-  // 새로운 상태 추가: 첫 페이지 로드인지 확인
+  // 첫 페이지 로드인지 확인
   const [initialLoad, setInitialLoad] = useState(true);
 
   const [hasMore, setHasMore] = useState(true);

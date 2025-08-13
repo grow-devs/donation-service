@@ -7,7 +7,9 @@ import DonationStatusCard from "./DonationStatusCard"; // DonationStatusCard 컴
 import DonationModal from '../../modal/DonationModal';
 import { FaHeart } from "react-icons/fa";
 import useAuthStore from "../../store/authStore";
+import LoginForm from "../../modal/LoginForm";
 import api from "../../apis/api";
+import { Modal, Box } from "@mui/material"; // ✨ Modal, Box 컴포넌트 임포트
 
 const SummaryContainer = styled.div`
   background-color: white;
@@ -129,7 +131,9 @@ const LikeButton = styled.button`
 
 
 function FundraisingSummary({ summary, post }) {
-    const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태 관리
+  const [isModalOpen, setIsModalOpen] = useState(false); // 기부 모달 상태 관리
+  // ✨ 로그인 모달 상태 관리
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false); 
   // const formatAmount = (amount) => {
   //   return new Intl.NumberFormat('ko-KR').format(amount);
   // };
@@ -139,7 +143,7 @@ function FundraisingSummary({ summary, post }) {
 
   // 컴포넌트 마운트 시 또는 post prop 변경 시 좋아요 상태를 확인
   useEffect(() => {
-    if (post && post.id & isLoggedIn) {
+    if (post && post.id && isLoggedIn) {
       setLikesCount(post.likesCount || 0); // 초기 좋아요 수는 post prop에서 가져옵니다.
 
       const checkUserLikeStatus = async () => {
@@ -181,7 +185,6 @@ function FundraisingSummary({ summary, post }) {
   // 진행률을 소수점 첫째 자리까지 표시
   const formattedProgress = progress.toFixed(1);
 
-  
   // 모달 열기 함수
   const handleDonateClick = () => {
     setIsModalOpen(true);
@@ -192,8 +195,20 @@ function FundraisingSummary({ summary, post }) {
     setIsModalOpen(false);
   };
 
+  // 로그인 모달 닫기 함수
+  const handleLoginModalClose = () => {
+    setIsLoginModalOpen(false);
+  };
+
   // 좋아요 버튼 클릭 핸들러
   const handleLikeClick = async () => {
+
+    // 로그인 상태 확인
+    if (!isLoggedIn) {
+      setIsLoginModalOpen(true); // 로그인 모달 열기
+      return; // 로그인하지 않았으면 여기서 함수 실행을 멈춤
+    }
+
     if (isLiked) {
       alert("이미 좋아요를 누르셨습니다.");
       return;
@@ -231,53 +246,78 @@ function FundraisingSummary({ summary, post }) {
     }
   };
 
-
-
   return (
     <>
-    <SummaryContainer>
-      <FundraisingTitle>{post.title}</FundraisingTitle>
+      <SummaryContainer>
+        <FundraisingTitle>{post.title}</FundraisingTitle>
 
-      <DetailRow>
-        <span>목표 모금액</span>
-        {/* <span>{formatAmount(post.goalAmount)}원</span> */}
-        <span>{formatAmount(targetAmount)}원</span>
-      </DetailRow>
-      <DetailRow>
-        <span>참여자</span>
-        <span>{formatAmount(post.participants)}명</span>
-      </DetailRow>
+        <DetailRow>
+          <span>목표 모금액</span>
+          {/* <span>{formatAmount(post.goalAmount)}원</span> */}
+          <span>{formatAmount(targetAmount)}원</span>
+        </DetailRow>
+        <DetailRow>
+          <span>참여자</span>
+          <span>{formatAmount(post.participants)}명</span>
+        </DetailRow>
 
-      {/* <CurrentAmount>{formatAmount(post.currentAmount)}원</CurrentAmount> */}
-      <CurrentAmount>{formatAmount(currentAmount)}원</CurrentAmount>
+        {/* <CurrentAmount>{formatAmount(post.currentAmount)}원</CurrentAmount> */}
+        <CurrentAmount>{formatAmount(currentAmount)}원</CurrentAmount>
 
-      <ProgressContainer>
-        <ProgressBar $progress={progress} />
-      </ProgressContainer>
-      <ProgressText>{formattedProgress}% 달성</ProgressText>
+        <ProgressContainer>
+          <ProgressBar $progress={progress} />
+        </ProgressContainer>
+        <ProgressText>{formattedProgress}% 달성</ProgressText>
 
-      <DonateButton onClick={handleDonateClick}>응원하고 기부하기</DonateButton>
+        <DonateButton onClick={handleDonateClick}>응원하고 기부하기</DonateButton>
 
-      {/* 좋아요 버튼 추가 */}
-      <LikeButton
-        onClick={handleLikeClick}
-        className={isLiked ? 'liked' : ''} // 좋아요 상태에 따라 클래스 적용
-        disabled={isLiked} // 이미 좋아요를 눌렀으면 버튼 비활성화
-      >
-        <FaHeart />
-        <span>{formatAmount(likesCount)} 좋아요</span>
-      </LikeButton>
+        {/* 좋아요 버튼 추가 */}
+        <LikeButton
+          onClick={handleLikeClick}
+          className={isLiked ? 'liked' : ''} // 좋아요 상태에 따라 클래스 적용
+          disabled={isLiked} // 이미 좋아요를 눌렀으면 버튼 비활성화
+        >
+          <FaHeart />
+          <span>{formatAmount(likesCount)} 좋아요</span>
+        </LikeButton>
 
-      {/* 모금함 기부현황 카드 */}
-      <DonationStatusCard summary={summary} />
-    </SummaryContainer>
+        {/* 모금함 기부현황 카드 */}
+        <DonationStatusCard summary={summary} />
+      </SummaryContainer>
 
-   {/* 기부 모달 */}
+      {/* 기부 모달 */}
       <DonationModal
         isOpen={isModalOpen}
         onClose={handleModalClose}
         post={post}
-      /></>
+      />
+      {/* ✨ 로그인 폼을 Modal 컴포넌트로 감쌌습니다. */}
+      <Modal
+        open={isLoginModalOpen} // isLoginModalOpen 상태에 따라 모달을 열고 닫음
+        onClose={handleLoginModalClose}
+        aria-labelledby="login-form-title"
+      >
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '90%',
+            maxWidth: 400,
+            bgcolor: 'background.paper',
+            borderRadius: '8px',
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
+          <LoginForm
+            onClose={handleLoginModalClose}
+            // LoginForm 컴포넌트가 필요로 하는 다른 prop들을 여기에 전달합니다.
+          />
+        </Box>
+      </Modal>
+    </>
   );
 }
 

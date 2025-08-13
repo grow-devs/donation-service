@@ -385,7 +385,6 @@ export default function MyPage() {
               onClick={() => {
                 logout();
                 navigate("/");
-                alert("로그아웃 했습니다.");
               }}
               sx={{ height: 25 }}
             >
