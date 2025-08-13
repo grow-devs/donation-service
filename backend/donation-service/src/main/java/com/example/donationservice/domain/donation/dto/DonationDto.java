@@ -31,5 +31,6 @@ public class DonationDto {
         private Long points; // 기부한 포인트 수
         private String message; // 기부 메시지
         private LocalDateTime createdAt; // 기부 생성 시간
+        private String profileImageUrl; // 유저 프로필 사진 url
     }
 }

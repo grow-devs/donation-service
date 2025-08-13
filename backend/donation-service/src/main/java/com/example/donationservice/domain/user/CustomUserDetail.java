@@ -16,15 +16,18 @@ public class CustomUserDetail implements UserDetails {
     private String password; // JWT 인증에서는 사용하지 않지만 UserDetails 인터페이스 때문에 필요
     private String nickName; // UserDto.loginResponse를 위해 추가
     private UserRole userRole; // UserRole enum 필드 추가
+    private String profileImageUrl; // UserRole enum 필드 추가
 
     // 생성자: 필요한 정보를 모두 받도록 합니다.
-    public CustomUserDetail(Long id, String email, String password, String nickName, UserRole userRole) {
+    public CustomUserDetail(Long id, String email, String password, String nickName, UserRole userRole,String profileImageUrl) {
         this.id = id;
         this.email = email;
         this.password = password;
         this.nickName = nickName;
         this.userRole = userRole;
+        this.profileImageUrl = profileImageUrl;
     }
+    public String getProfileImageUrl(){return profileImageUrl;}
 
     public Long getUserId() {
         return id;

@@ -88,7 +88,7 @@ public class RankingServiceImpl implements RankingService {
                                       Long amount, LocalDate date) {
         String key = getRankingKey(type, date);
         Boolean keyExists = redisTemplate.hasKey(key);
-        System.out.println("key"+key+" keyExistes " + keyExists);
+        System.out.println("key" + key + " keyExistes " + keyExists);
         // 새로운 기부 시에 "오늘 처음 기부한 기부자의 정보를 가져오기 위해 확인 후 저장
         // 하루마다 생성되는 TODAY 키가 없을 경우 처음 기부하는 기부자로 판단한다.
         if (type.equals(RankingType.TODAY) && Boolean.FALSE.equals(keyExists)) {
@@ -203,13 +203,19 @@ public class RankingServiceImpl implements RankingService {
                         .userId(userId)
                         .nickName(user.getNickName())
                         .totalAmount(currentScore)
-//                        .profileImageUrl(user.getProfileImageUrl())// todo 유저 이미지 프로필 이미지
+                        .profileImageUrl(user.getProfileImageUrl())// todo 유저 이미지 프로필 이미지
                         .build());
             }
             currentRank++;
             previousScore = currentScore;
         }
-        boolean hasNext = !redisTemplate.opsForZSet().reverseRange(key, end + 1, end + 1).isEmpty();
+        //todo NPE 방지 추가 ( NPE 방지가 중요하므로 todo에 넣어 확인하기 위함)
+        boolean hasNext = Optional.ofNullable(
+                        redisTemplate.opsForZSet().reverseRange(key, end + 1, end + 1)
+                )                               // null이면 Optional.empty()
+                .orElse(Collections.emptySet()) // null이면 빈 Set 반환
+                .isEmpty();                      // 비어있으면 true, 아니면 false
+
 
         return RankingDto.Response.builder()
                 .rankings(result)
@@ -236,6 +242,10 @@ public class RankingServiceImpl implements RankingService {
         LocalDate date = LocalDate.now();
         String key = getRankingKey(type, date);
 
+        //프로필 url을 위한 내 유저의 프로필url 조회 -> imgeUrl을 redis에 넣는 방안도 있다.
+        String profileImageUrl = userRepository.findProfileImageUrlById(userId)
+                .orElse("null");
+
         // Redis Zset에서 해당 사용자의 점수 조회
         Double myScore = redisTemplate.opsForZSet().score(key, userId.toString());
         if (myScore == null) {
@@ -244,6 +254,7 @@ public class RankingServiceImpl implements RankingService {
                     .rank(0L)
                     .percentile("0%")
                     .totalAmount(0L)
+                    .profileImageUrl("")
                     .build();
         }
 
@@ -268,24 +279,26 @@ public class RankingServiceImpl implements RankingService {
                 .rank(myRank)
                 .percentile(percentile)
                 .totalAmount(myScore.longValue())
+                .profileImageUrl(profileImageUrl)
                 .build();
     }
+
     // @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)를 통해
     // donationServiceImpl에서 기부를 save하고 난 시점이다.(기부데이터를 가져올 수 있다.
     // userId는 기부자의 id
-    private void updateFirstDonor(Long userId){
+    private void updateFirstDonor(Long userId) {
         //limit 1 을 위한 페이져블
         Pageable pageable = PageRequest.of(0, 1);
         // Pageable 객체로 첫 번째 결과를 요청
-        List<MetaDataDto.FirstDonationResponse> firstDonations = donationRepository.findFirstDonation(userId,pageable);
-        Optional<MetaDataDto.FirstDonationResponse>  firstDonation= firstDonations.stream().findFirst();
+        List<MetaDataDto.FirstDonationResponse> firstDonations = donationRepository.findFirstDonation(userId, pageable);
+        Optional<MetaDataDto.FirstDonationResponse> firstDonation = firstDonations.stream().findFirst();
 
-        if(firstDonation.isPresent()){
-            System.out.println("In updateFirstDonor 닉네임 : "+firstDonation.get().getNickName());
+        if (firstDonation.isPresent()) {
+            System.out.println("In updateFirstDonor 닉네임 : " + firstDonation.get().getNickName());
             String nickName = firstDonation.get().getNickName();
             LocalDateTime createdAt = firstDonation.get().getCreatedAt();
-            redisTemplate.opsForHash().put("first_donation:","nickName",nickName);
-            redisTemplate.opsForHash().put("first_donation:","createdAt",createdAt.toString());
+            redisTemplate.opsForHash().put("first_donation:", "nickName", nickName);
+            redisTemplate.opsForHash().put("first_donation:", "createdAt", createdAt.toString());
         }
     }
 

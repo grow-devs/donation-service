@@ -58,7 +58,7 @@ public class JwtFilter extends OncePerRequestFilter {
             userEmail = jwtService.getUserEmailFromJwtToken(jwt); // JWT에서 userEmail 추출
             userRole = jwtService.getRoleFromJwtToken(jwt); // 토큰에서 역할 추출
             //jwt에서 추출한 정보로 userDetail 객체 생성
-            userDetails = new CustomUserDetail(userId, userEmail, null, null, UserRole.valueOf(userRole));
+            userDetails = new CustomUserDetail(userId, userEmail, null, null, UserRole.valueOf(userRole),null);
             // 이미 인증된 요청에 대해 다시 인증 과정을 거치는 것을 막기
             // JWT 파싱 중 예외가 발생하지 않았지만 유효한 정보가 추출되지 않은 경우를 대비
             // 필터 체인 내의 역할 명확화
@@ -108,7 +108,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         System.out.println("refreshToken" + refreshToken);
 
-        CustomUserDetail userDetails = new CustomUserDetail(userId, email, null, null, UserRole.valueOf(role));
+        CustomUserDetail userDetails = new CustomUserDetail(userId, email, null, null, UserRole.valueOf(role),null);
 
         //등록된 refreshToken이 존재한다면 accesstoken을 재발급해야한다.
         if (refreshToken != null) {

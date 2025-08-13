@@ -31,7 +31,8 @@ public class CustomUserDetailService implements UserDetailsService {
                 userAccount.getEmail(),
                 userAccount.getPassword(), // 실제 패스워드는 해시된 값
                 userAccount.getNickName(), // ✅ User 엔티티에 닉네임 필드가 있다면 가져옴
-                userAccount.getUserRole() // ✅ User 엔티티에 UserRole enum 필드가 있다면 직접 가져옴
+                userAccount.getUserRole(), // ✅ User 엔티티에 UserRole enum 필드가 있다면 직접 가져옴
+                userAccount.getProfileImageUrl()
         );
     }
 }

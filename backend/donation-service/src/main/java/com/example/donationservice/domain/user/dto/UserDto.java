@@ -38,6 +38,7 @@ public class UserDto {
         private String accessToken;
         private UserRole userRole;
         private String nickName;
+        private String profileImageUrl; // 프로필 이미지 URL
     }
 
     @Getter
