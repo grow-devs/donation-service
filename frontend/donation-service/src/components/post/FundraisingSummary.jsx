@@ -9,7 +9,7 @@ import { FaHeart } from "react-icons/fa";
 import useAuthStore from "../../store/authStore";
 import LoginForm from "../../modal/LoginForm";
 import api from "../../apis/api";
-import { Modal, Box } from "@mui/material"; // ✨ Modal, Box 컴포넌트 임포트
+import FloatingAuthModal from "../../modal/FloatingAuthModal";
 
 const SummaryContainer = styled.div`
   background-color: white;
@@ -205,7 +205,7 @@ function FundraisingSummary({ summary, post }) {
 
     // 로그인 상태 확인
     if (!isLoggedIn) {
-      setIsLoginModalOpen(true); // 로그인 모달 열기
+      setIsLoginModalOpen(true); // FloatingAuthModal 모달 열기
       return; // 로그인하지 않았으면 여기서 함수 실행을 멈춤
     }
 
@@ -291,32 +291,11 @@ function FundraisingSummary({ summary, post }) {
         onClose={handleModalClose}
         post={post}
       />
-      {/* ✨ 로그인 폼을 Modal 컴포넌트로 감쌌습니다. */}
-      <Modal
-        open={isLoginModalOpen} // isLoginModalOpen 상태에 따라 모달을 열고 닫음
+      {/* FloatingAuthModal을 사용 */}
+      <FloatingAuthModal
+        open={isLoginModalOpen}
         onClose={handleLoginModalClose}
-        aria-labelledby="login-form-title"
-      >
-        <Box
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: '90%',
-            maxWidth: 400,
-            bgcolor: 'background.paper',
-            borderRadius: '8px',
-            boxShadow: 24,
-            p: 4,
-          }}
-        >
-          <LoginForm
-            onClose={handleLoginModalClose}
-            // LoginForm 컴포넌트가 필요로 하는 다른 prop들을 여기에 전달합니다.
-          />
-        </Box>
-      </Modal>
+      />
     </>
   );
 }

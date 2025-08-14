@@ -4,7 +4,7 @@ import { Typography, Box, Card, Modal, Backdrop, CircularProgress } from '@mui/m
 import api from '../apis/api';
 import useAuthStore from '../store/authStore';
 import TimeImpendingCampaignCard from './TimeImpendingCampaignCard';
-import LoginForm from '../modal/LoginForm';
+import FloatingAuthModal from '../modal/FloatingAuthModal';
 
 export default function TimeImpendingCampaign() {
   const [post, setPost] = useState(null);
@@ -152,29 +152,10 @@ export default function TimeImpendingCampaign() {
       </Card>
 
       {/* 로그인 모달 */}
-      <Modal 
-        open={isLoginModalOpen} 
-        onClose={handleCloseLoginModal} 
-        closeAfterTransition 
-        BackdropComponent={Backdrop} 
-        BackdropProps={{ 
-          timeout: 500, 
-        }} 
-      > 
-        <Box sx={{ 
-          position: 'absolute', 
-          top: '50%', 
-          left: '50%', 
-          transform: 'translate(-50%, -50%)', 
-          width: 400, 
-          bgcolor: 'background.paper', 
-          boxShadow: 24, 
-          p: 4, 
-          borderRadius: 2 
-        }}> 
-          <LoginForm onClose={handleCloseLoginModal} /> 
-        </Box> 
-      </Modal> 
+      <FloatingAuthModal
+        open={isLoginModalOpen}
+        onClose={handleCloseLoginModal}
+      />
     </>
   );
 }

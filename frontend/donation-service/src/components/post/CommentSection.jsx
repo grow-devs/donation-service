@@ -6,8 +6,7 @@ import styled from 'styled-components';
 import CommentItem from './CommentItem'; // CommentItem 컴포넌트 임포트
 import api from '../../apis/api';
 import useAuthStore from "../../store/authStore"; // 로그인 상태를 확인하기 위한 스토어
-import LoginForm from "../../modal/LoginForm"; // 로그인 모달 컴포넌트
-import { Modal, Box } from "@mui/material"; // 모달을 띄우기 위한 MUI 컴포넌트
+import FloatingAuthModal from '../../modal/FloatingAuthModal';
 
 const SectionContainer = styled.div`
   background-color: white;
@@ -191,13 +190,12 @@ function CommentSection({ postId, onCommentCountUpdate }) {
       console.log(response.data.data.comments);
       if (page === 0) { // 첫 페이지 로드 (초기 로드 또는 정렬 변경 시)
         setComments(fetchedComments); // 기존 댓글 초기화 후 새 댓글로 채움
+        // ✨ 가장 중요한 부분: totalElements를 부모 컴포넌트로 전달 ✨
+        if (onCommentCountUpdate) {
+          onCommentCountUpdate(pagedCommentResponse.totalElements);
+        }
       } else { // '더보기'로 다음 페이지 로드
         setComments((prevComments) => [...prevComments, ...fetchedComments]); // 기존 댓글에 새 댓글 추가
-      }
-
-      // ✨ 가장 중요한 부분: totalElements를 부모 컴포넌트로 전달 ✨
-      if (onCommentCountUpdate) {
-        onCommentCountUpdate(pagedCommentResponse.totalElements);
       }
 
       setCurrentPage(pagedCommentResponse.currentPage + 1); // 백엔드에서 받은 현재 페이지 번호 + 1 (다음 요청 시 사용)
@@ -338,6 +336,8 @@ function CommentSection({ postId, onCommentCountUpdate }) {
             <CommentItem 
               key={comment.id} comment={comment} 
               onLikeToggle={handleCommentItemLikeToggle} // 콜백 전달
+              isLoggedIn={isLoggedIn}
+              onOpenLoginModal={() => setIsLoginModalOpen(true)}
             />
           ))
         ) : (
@@ -361,31 +361,11 @@ function CommentSection({ postId, onCommentCountUpdate }) {
         <p style={{ textAlign: 'center', marginTop: '20px', color: 'var(--text-color)' }}>더 이상 댓글이 없습니다.</p>
       )}
 
-      {/* ✨ 추가: 로그인 폼을 Modal 컴포넌트로 감쌌습니다. */}
-      <Modal
+      {/* 로그인과 회원가입 모달 */}
+      <FloatingAuthModal
         open={isLoginModalOpen}
         onClose={handleLoginModalClose}
-      >
-        <Box
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: '90%',
-            maxWidth: 400,
-            bgcolor: 'background.paper',
-            borderRadius: '8px',
-            boxShadow: 24,
-            p: 4,
-          }}
-        >
-          <LoginForm
-            onClose={handleLoginModalClose}
-            // onSwitchMode 등의 prop이 필요하다면 추가할 수 있습니다.
-          />
-        </Box>
-      </Modal>
+      />
 
     </SectionContainer>
   );
