@@ -1,11 +1,11 @@
 // CampaignTop3.jsx
 import React, {useEffect, useState} from 'react';
-import { Typography, Box, Card, CardContent, Modal, Backdrop, CircularProgress} from '@mui/material';
+import { Typography, Box, Card, CardContent, CircularProgress} from '@mui/material';
 import { AnimatePresence, motion } from 'framer-motion';
 import api from '../apis/api';
 import CampaignTop3Card from './CampaignTop3Card';
-import LoginForm from '../modal/LoginForm';
 import useAuthStore from '../store/authStore';
+import FloatingAuthModal from '../modal/FloatingAuthModal';
 
 export default function CampaignTop3() {
   const [topPosts, setTopPosts] = useState([]);
@@ -169,30 +169,11 @@ export default function CampaignTop3() {
         {renderContent()}
       </Card>
       
-      {/* 로그인 모달 */}
-      <Modal
+      {/* FloatingAuthModal 모달 */}
+      <FloatingAuthModal
         open={isLoginModalOpen}
         onClose={handleCloseLoginModal}
-        closeAfterTransition
-        BackdropComponent={Backdrop}
-        BackdropProps={{
-          timeout: 500,
-        }}
-      >
-        <Box sx={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: 400,
-          bgcolor: 'background.paper',
-          boxShadow: 24,
-          p: 4,
-          borderRadius: 2
-        }}>
-          <LoginForm onClose={handleCloseLoginModal} />
-        </Box>
-      </Modal>
+      />
     </>
   );
 
