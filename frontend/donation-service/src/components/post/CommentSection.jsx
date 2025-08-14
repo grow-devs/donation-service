@@ -190,13 +190,12 @@ function CommentSection({ postId, onCommentCountUpdate }) {
       console.log(response.data.data.comments);
       if (page === 0) { // 첫 페이지 로드 (초기 로드 또는 정렬 변경 시)
         setComments(fetchedComments); // 기존 댓글 초기화 후 새 댓글로 채움
+        // ✨ 가장 중요한 부분: totalElements를 부모 컴포넌트로 전달 ✨
+        if (onCommentCountUpdate) {
+          onCommentCountUpdate(pagedCommentResponse.totalElements);
+        }
       } else { // '더보기'로 다음 페이지 로드
         setComments((prevComments) => [...prevComments, ...fetchedComments]); // 기존 댓글에 새 댓글 추가
-      }
-
-      // ✨ 가장 중요한 부분: totalElements를 부모 컴포넌트로 전달 ✨
-      if (onCommentCountUpdate) {
-        onCommentCountUpdate(pagedCommentResponse.totalElements);
       }
 
       setCurrentPage(pagedCommentResponse.currentPage + 1); // 백엔드에서 받은 현재 페이지 번호 + 1 (다음 요청 시 사용)
