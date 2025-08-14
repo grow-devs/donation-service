@@ -338,6 +338,8 @@ function CommentSection({ postId, onCommentCountUpdate }) {
             <CommentItem 
               key={comment.id} comment={comment} 
               onLikeToggle={handleCommentItemLikeToggle} // 콜백 전달
+              isLoggedIn={isLoggedIn}
+              onOpenLoginModal={() => setIsLoginModalOpen(true)}
             />
           ))
         ) : (

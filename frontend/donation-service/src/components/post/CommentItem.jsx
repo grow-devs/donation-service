@@ -130,7 +130,7 @@ const formatTimeAgo = (dateString) => {
 };
 
 // --- CommentItem 컴포넌트 ---
-function CommentItem({ comment, onLikeToggle }) {
+function CommentItem({ comment, onLikeToggle, isLoggedIn, onOpenLoginModal }) {
   const { id, nickname, message, createdAt, likesCount, likedByCurrentUser, profileImageUrl } = comment;
   // ✨ isCurrentlyLiked 하나만 사용하도록 통일
   const [currentLikesCount, setCurrentLikesCount] = React.useState(likesCount);
@@ -144,6 +144,11 @@ function CommentItem({ comment, onLikeToggle }) {
   const displayContent = message;
 
   const handleLikeClick = async () => {
+    if (!isLoggedIn) {
+      onOpenLoginModal();
+      return;
+    }
+
     try {
       const response = await api.post(`/comment-like/${id}`);
 
