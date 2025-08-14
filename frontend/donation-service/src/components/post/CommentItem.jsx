@@ -144,6 +144,7 @@ function CommentItem({ comment, onLikeToggle, isLoggedIn, onOpenLoginModal }) {
   const displayContent = message;
 
   const handleLikeClick = async () => {
+    // 로그인을 안했다면 로그인 모달창을 띄움
     if (!isLoggedIn) {
       onOpenLoginModal();
       return;

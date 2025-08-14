@@ -6,8 +6,7 @@ import styled from 'styled-components';
 import CommentItem from './CommentItem'; // CommentItem 컴포넌트 임포트
 import api from '../../apis/api';
 import useAuthStore from "../../store/authStore"; // 로그인 상태를 확인하기 위한 스토어
-import LoginForm from "../../modal/LoginForm"; // 로그인 모달 컴포넌트
-import { Modal, Box } from "@mui/material"; // 모달을 띄우기 위한 MUI 컴포넌트
+import FloatingAuthModal from '../../modal/FloatingAuthModal';
 
 const SectionContainer = styled.div`
   background-color: white;
@@ -363,31 +362,11 @@ function CommentSection({ postId, onCommentCountUpdate }) {
         <p style={{ textAlign: 'center', marginTop: '20px', color: 'var(--text-color)' }}>더 이상 댓글이 없습니다.</p>
       )}
 
-      {/* ✨ 추가: 로그인 폼을 Modal 컴포넌트로 감쌌습니다. */}
-      <Modal
+      {/* 로그인과 회원가입 모달 */}
+      <FloatingAuthModal
         open={isLoginModalOpen}
         onClose={handleLoginModalClose}
-      >
-        <Box
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: '90%',
-            maxWidth: 400,
-            bgcolor: 'background.paper',
-            borderRadius: '8px',
-            boxShadow: 24,
-            p: 4,
-          }}
-        >
-          <LoginForm
-            onClose={handleLoginModalClose}
-            // onSwitchMode 등의 prop이 필요하다면 추가할 수 있습니다.
-          />
-        </Box>
-      </Modal>
+      />
 
     </SectionContainer>
   );
