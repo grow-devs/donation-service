@@ -8,8 +8,10 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -32,25 +34,29 @@ public class MailServiceImpl implements MailService {
     }
 
     @Override
-    public void sendDonationGoalReachedMail(String toEmail, String postTitle, Long currentAmount) {
-        try {
-            MimeMessage message = javaMailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+    @Async("mailTaskExecutor")
+    public void sendDonationGoalReachedMail(List<String> toEmails, String postTitle, Long currentAmount) {
+        for (String toEmail : toEmails) {
+            try {
+                MimeMessage message = javaMailSender.createMimeMessage();
+                MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-            String subject = "[기부 알림] 게시물의 목표 금액이 달성되었습니다!";
-            String htmlContent = buildHtmlContent(postTitle, currentAmount);
+                String subject = "[기부 알림] 게시물의 목표 금액이 달성되었습니다!";
+                String htmlContent = buildHtmlContent(postTitle, currentAmount);
 
-            helper.setTo(toEmail);
-            helper.setSubject(subject);
-            helper.setText(htmlContent, true); // true = HTML
+                helper.setTo(toEmail);
+                helper.setSubject(subject);
+                helper.setText(htmlContent, true); // true = HTML
 
-            javaMailSender.send(message);
-            log.info("✅ 목표 도달 HTML 메일 전송 완료: {}", toEmail);
+                javaMailSender.send(message);
+                log.info("✅ 목표 도달 HTML 메일 전송 완료: {}", toEmail);
 
-        } catch (MessagingException e) {
-            log.error("❌ 메일 전송 실패 (to: {})", toEmail, e);
+            } catch (MessagingException e) {
+                log.error("❌ 메일 전송 실패 (to: {})", toEmail, e);
+            }
         }
     }
+
     // 로그인 이메일 인증 코드 발송 메서드
     public void sendVerificationEmail(String to) {
         try {
@@ -66,7 +72,7 @@ public class MailServiceImpl implements MailService {
             helper.setSubject("이메일 인증");
 
             // HTML 이메일 본문
-            String htmlContent = getVerificationEmailHtml(verificationCode,to);
+            String htmlContent = getVerificationEmailHtml(verificationCode, to);
 
             helper.setText(htmlContent, true); // 두 번째 인자를 true로 설정하여 HTML 형식임을 알림
 
@@ -76,11 +82,12 @@ public class MailServiceImpl implements MailService {
             log.error("❌ 메일 전송 실패 (to: {})", to, e);
         }
     }
+
     //이메일 인증 코드 확인 메서드
     public boolean verifyCode(String email, String code) {
         String key = "emailVerify:" + email;
         String storedCode = redisTemplate.opsForValue().get(key);
-        System.out.println("실제 코드 storedCode"+ storedCode + " "+ "입력한 code : "+ code);
+        System.out.println("실제 코드 storedCode" + storedCode + " " + "입력한 code : " + code);
         // 인증번호가 일치하면 true 반환 후, 인증번호 삭제
         if (storedCode != null && storedCode.equals(code)) {
             redisTemplate.delete(key);
@@ -103,6 +110,7 @@ public class MailServiceImpl implements MailService {
                 </html>
                 """.formatted(postTitle, currentAmount);
     }
+
     //이메일 인증 발송 컨텐츠 html
     private String getVerificationEmailHtml(String verificationCode, String email) {
         return "<div style='font-family: Arial, sans-serif; border-collapse: collapse; width: 100%;'>"
@@ -115,5 +123,21 @@ public class MailServiceImpl implements MailService {
                 + "<p style='color: #999999; font-size: 12px;'>본 메일은 발신 전용입니다. 문의사항은 고객센터를 이용해 주시기 바랍니다.</p>"
                 + "</div>";
     }
+
+    //test용 메서드
+    //test 통과✔️
+//    @Async("mailTaskExecutor")
+//    @Override
+//    public void sendMail(List<String>emails) {
+//
+//        for (String email : emails) {
+//            try {
+//                Thread.sleep(3000);
+//                log.info(email + "님에게 메일 전송 성공");
+//            } catch (Exception e) {
+//                log.error("메일 전송 실패 - postId: {}, email: {}, error: {}");
+//            }
+//        }
+//    }
 
 }
