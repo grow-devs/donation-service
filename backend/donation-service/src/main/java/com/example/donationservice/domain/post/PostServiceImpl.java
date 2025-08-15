@@ -229,6 +229,9 @@ public class PostServiceImpl implements PostService {
         List<Post> expiredPosts = postRepository.findExpiredPostsDeadlinePassed(LocalDateTime.now());
 
         for(Post post : expiredPosts){
+            // post의 deadlinePassed 필드를 true로 업데이트
+            post.updateDeadlinePassed();
+
             List<User> donorUsers = donationRepository.findDistinctUsersByPost(post);
 //            List<String> donorEmails = donationRepository.findDistinctUserEmailsByPostId(post.getId());
 

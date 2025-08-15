@@ -82,4 +82,9 @@ public class Post extends BaseTimeEntity {
         }
         this.likesCount++;
     }
+
+    // post의 deadlinePassed 필드를 true로 업데이트
+    public void updateDeadlinePassed() {
+        this.deadlinePassed = true;
+    }
 }

@@ -24,6 +24,19 @@ public class AsyncConfig {
         return executor;
     }
 
+    @Bean(name = "deadlineExpiredMailTaskExecutor")
+    public Executor deadlineExpiredMailTaskExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        // 데드라인 만료 메일 전송은 일반적인 메일 전송과 유사하게 처리
+        // MaxPoolSize, QueueCapacity는  크게 잡아놔도 스레드가 차지하지 않으므로 CPU/메모리에 큰 부담 없음
+        executor.setCorePoolSize(5); // 기본 스레드 수
+        executor.setMaxPoolSize(50); // 최대 스레드 수
+        executor.setQueueCapacity(50); // 큐 용량
+        executor.setThreadNamePrefix("DeadlineExpiredMail-Async-"); // 스레드 이름 접두사
+        executor.initialize();
+        return executor;
+    }
+
     // 스프링 기본 Async용 Executor
     @Bean(name = "taskExecutor")
     public ThreadPoolTaskExecutor defaultTaskExecutor() {

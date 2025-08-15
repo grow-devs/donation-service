@@ -41,7 +41,7 @@ public class MailServiceImpl implements MailService {
                 MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
                 String subject = "[기부 알림] 게시물의 목표 금액이 달성되었습니다!";
-                String htmlContent = buildHtmlContent(postTitle, currentAmount);
+                String htmlContent = buildHtmlContentByGoalReached(postTitle, currentAmount);
 
                 helper.setTo(toEmail);
                 helper.setSubject(subject);
@@ -56,6 +56,29 @@ public class MailServiceImpl implements MailService {
         }
     }
 
+    @Override
+    @Async("deadlineExpiredMailTaskExecutor")
+    public void sendDeadlinePassedMail(List<String> toEmails,  String postTitle, Long currentAmount) {
+        for(String toEmail : toEmails) {
+            try {
+                MimeMessage message = javaMailSender.createMimeMessage();
+                MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+                String subject = "[기부 알림] 게시물의 기부 마감일이 지났습니다!";
+                String htmlContent = buildHtmlContentByDeadlinePassed(postTitle, currentAmount);
+
+                helper.setTo(toEmail);
+                helper.setSubject(subject);
+                helper.setText(htmlContent, true); // true = HTML
+
+                javaMailSender.send(message);
+                log.info("✅ 기부 마감일 알림 메일 전송 완료: {}", toEmail);
+
+            } catch (MessagingException e) {
+                log.error("❌ 메일 전송 실패 (to: {})", toEmail, e);
+            }
+        }
+    }
 
     public void sendDonationGoalReachedMail(String toEmail, String postTitle, Long currentAmount) {
         try {
@@ -71,27 +94,6 @@ public class MailServiceImpl implements MailService {
 
             javaMailSender.send(message);
             log.info("✅ 목표 도달 HTML 메일 전송 완료: {}", toEmail);
-
-        } catch (MessagingException e) {
-            log.error("❌ 메일 전송 실패 (to: {})", toEmail, e);
-        }
-    }
-
-    @Override
-    public void sendDeadlinePassedMail(String toEmail, String postTitle, Long currentAmount) {
-        try {
-            MimeMessage message = javaMailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
-            String subject = "[기부 알림] 게시물의 기부 마감일이 지났습니다!";
-            String htmlContent = buildHtmlContentByDeadlinePassed(postTitle, currentAmount);
-
-            helper.setTo(toEmail);
-            helper.setSubject(subject);
-            helper.setText(htmlContent, true); // true = HTML
-
-            javaMailSender.send(message);
-            log.info("✅ 기부 마감일 알림 메일 전송 완료: {}", toEmail);
 
         } catch (MessagingException e) {
             log.error("❌ 메일 전송 실패 (to: {})", toEmail, e);
