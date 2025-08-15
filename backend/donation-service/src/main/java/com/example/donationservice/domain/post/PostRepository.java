@@ -66,4 +66,8 @@ public interface PostRepository extends JpaRepository<Post,Long>,PostRepositoryC
     @Query("select sum(p.currentAmount) from Post p")
     Long sumAllDonationAmounts();
 
+    // 데드라인이 지났는지 여부를 판단하기 위한 쿼리
+    @Query("SELECT p FROM Post p WHERE p.deadline < :now AND p.deadlinePassed = false")
+    List<Post> findExpiredPostsDeadlinePassed(@Param("now") LocalDateTime now);
+
 }

@@ -43,6 +43,28 @@ public class AlarmServiceImpl implements AlarmService {
 
     @Override
     @Transactional
+    public void saveDeadlinePassedAlarms(Long postId, String postTitle, List<User> donorUsers) {
+        try {
+            List<Alarm> alarmList = donorUsers.stream()
+                    .map(user -> Alarm.builder()
+                            .type(AlarmType.DEADLINE_REACHED)
+                            .message("게시물 [" + postTitle + "]의 기부 마감일이 지났습니다.")
+                            .postId(postId)
+                            .isRead(false)
+                            .user(user)
+                            .build())
+                    .toList();
+
+            alarmRepository.saveAll(alarmList);
+
+            log.info("✅ 기부 마감일 경과 알람 저장 완료: postId={}, donorCount={}", postId, donorUsers.size());
+        } catch (Exception e) {
+            log.error("❌ 기부 마감일 경과 알람 저장 실패: postId={}, error={}", postId, e.getMessage(), e);
+        }
+    }
+
+    @Override
+    @Transactional
     public void saveApprovalStatusChangedAlarm(ApprovalStatus approvalStatus, String message, String teamName, User user) {
         try {
             Alarm alarm = Alarm.builder()
