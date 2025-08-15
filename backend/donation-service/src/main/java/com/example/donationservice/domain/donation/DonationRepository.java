@@ -1,6 +1,7 @@
 package com.example.donationservice.domain.donation;
 
 import com.example.donationservice.domain.metadata.dto.MetaDataDto;
+import com.example.donationservice.domain.post.Post;
 import com.example.donationservice.domain.user.User;
 import com.example.donationservice.domain.user.dto.UserDonationInfoProjection;
 import org.springframework.data.domain.Page;
@@ -60,4 +61,8 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
                 "where d.user.id = :userId " +
                 "ORDER BY createdAt DESC")
     List<MetaDataDto.FirstDonationResponse> findFirstDonation(Long userId,Pageable pageable);
+
+    // 기부 참여자 조회
+    @Query("SELECT DISTINCT d.user FROM Donation d WHERE d.post = :post")
+    List<User> findDistinctUsersByPost(@Param("post") Post post);
 }
