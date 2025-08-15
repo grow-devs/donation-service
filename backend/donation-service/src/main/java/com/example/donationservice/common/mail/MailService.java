@@ -5,7 +5,7 @@ import java.util.List;
 public interface MailService {
     void sendDonationGoalReachedMail(List<String> toEmail, String postTitle, Long currentAmount);
 
-    void sendDeadlinePassedMail(String toEmail, String postTitle, Long currentAmount);
+    void sendDeadlinePassedMail(List<String> toEmails, String postTitle, Long currentAmount);
 
     void sendVerificationEmail(String email);
 

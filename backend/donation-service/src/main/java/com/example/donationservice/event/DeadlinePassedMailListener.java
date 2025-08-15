@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -15,16 +17,23 @@ public class DeadlinePassedMailListener {
 
     private final MailService mailService;
 
-    @Async
+    private final int CORE_POOL_SIZE = 5;
+
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handle(DeadlinePassedMailEvent event) {
-        for(String email : event.getDonorUserEmails()) {
-            try {
-                mailService.sendDeadlinePassedMail(email, event.getPostTitle(), event.getCurrentAmount());
-            } catch (Exception e){
-                log.error("메일 전송 실패 - postId: {}, email: {}, error: {}",
-                        event.getPostId(), email, e.getMessage(), e);
-            }
+        List<String> donorUserEmails = event.getDonorUserEmails();
+        int size = donorUserEmails.size();
+
+        int batchSize = (int) Math.ceil((double) size / 5); // 5개의 쓰레드로 나누기
+
+        for(int i = 0; i < CORE_POOL_SIZE; i++) {
+            int fromIndex = i * batchSize;
+            int toIndex = Math.min(fromIndex + batchSize, size); // 마지막 배치는 size를 넘지 않도록
+
+            List<String> subEvent = donorUserEmails.subList(fromIndex, toIndex);
+
+            mailService.sendDeadlinePassedMail(subEvent, event.getPostTitle(), event.getCurrentAmount());
         }
+
     }
 }
