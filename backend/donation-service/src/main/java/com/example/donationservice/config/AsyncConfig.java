@@ -23,4 +23,16 @@ public class AsyncConfig {
         executor.initialize();
         return executor;
     }
+
+    // 스프링 기본 Async용 Executor
+    @Bean(name = "taskExecutor")
+    public ThreadPoolTaskExecutor defaultTaskExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(5);
+        executor.setMaxPoolSize(10);
+        executor.setQueueCapacity(50);
+        executor.setThreadNamePrefix("default-");
+        executor.initialize();
+        return executor;
+    }
 }
