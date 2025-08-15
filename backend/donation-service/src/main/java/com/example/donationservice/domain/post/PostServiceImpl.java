@@ -5,10 +5,13 @@ import com.example.donationservice.common.exception.CommonErrorCode;
 import com.example.donationservice.common.exception.RestApiException;
 import com.example.donationservice.domain.category.Category;
 import com.example.donationservice.domain.category.CategoryRepository;
+import com.example.donationservice.domain.donation.DonationRepository;
 import com.example.donationservice.domain.post.dto.PostDto;
 import com.example.donationservice.domain.sponsor.Team;
 import com.example.donationservice.domain.sponsor.TeamRepository;
 import com.example.donationservice.domain.user.ApprovalStatus;
+import com.example.donationservice.domain.user.User;
+import com.example.donationservice.event.DeadlinePassedEventPublisher;
 import lombok.RequiredArgsConstructor;
 import org.owasp.html.HtmlPolicyBuilder;
 import org.owasp.html.PolicyFactory;
@@ -27,6 +30,8 @@ public class PostServiceImpl implements PostService {
     private final TeamRepository teamRepository;
     private final CategoryRepository categoryRepository;
     private final S3UploadService s3UploadService;
+    private final DonationRepository donationRepository;
+    private final DeadlinePassedEventPublisher deadlinePassedEventPublisher;
 
     @Override
     @Transactional
@@ -56,6 +61,7 @@ public class PostServiceImpl implements PostService {
                     .team(team)
                     .category(category)
                     .goalReached(false)
+                    .deadlinePassed(false)
                     .build();
 
             postRepository.save(post);
@@ -215,6 +221,26 @@ public class PostServiceImpl implements PostService {
                 .participants(topPost.getParticipants())
                 .likesCount(topPost.getLikesCount() != null ? topPost.getLikesCount() : 0)
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public void sendDeadlinePassedNotifications() {
+        List<Post> expiredPosts = postRepository.findExpiredPostsDeadlinePassed(LocalDateTime.now());
+
+        for(Post post : expiredPosts){
+            List<User> donorUsers = donationRepository.findDistinctUsersByPost(post);
+//            List<String> donorEmails = donationRepository.findDistinctUserEmailsByPostId(post.getId());
+
+            List<String> donorEmails = donorUsers.stream()
+                    .map(User::getEmail)
+                    .toList();
+
+            // 이메일 전송
+            deadlinePassedEventPublisher.publishMailEvent(post, donorEmails);
+            // 알람 저장
+            deadlinePassedEventPublisher.publishAlarmEvent(post, donorUsers);
+        }
     }
 
     /**

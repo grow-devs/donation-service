@@ -29,4 +29,7 @@ public interface PostService {
     PostDto.PostMainResponse getPostWithEarliestEndDate();
 
     PostDto.PostMainResponse getTopDonationRatePost();
+
+    void sendDeadlinePassedNotifications();
+
 }

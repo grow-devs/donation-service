@@ -5,12 +5,10 @@ import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -38,7 +36,7 @@ public class MailServiceImpl implements MailService {
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
             String subject = "[기부 알림] 게시물의 목표 금액이 달성되었습니다!";
-            String htmlContent = buildHtmlContent(postTitle, currentAmount);
+            String htmlContent = buildHtmlContentByGoalReached(postTitle, currentAmount);
 
             helper.setTo(toEmail);
             helper.setSubject(subject);
@@ -51,6 +49,28 @@ public class MailServiceImpl implements MailService {
             log.error("❌ 메일 전송 실패 (to: {})", toEmail, e);
         }
     }
+
+    @Override
+    public void sendDeadlinePassedMail(String toEmail, String postTitle, Long currentAmount) {
+        try {
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            String subject = "[기부 알림] 게시물의 기부 마감일이 지났습니다!";
+            String htmlContent = buildHtmlContentByDeadlinePassed(postTitle, currentAmount);
+
+            helper.setTo(toEmail);
+            helper.setSubject(subject);
+            helper.setText(htmlContent, true); // true = HTML
+
+            javaMailSender.send(message);
+            log.info("✅ 기부 마감일 알림 메일 전송 완료: {}", toEmail);
+
+        } catch (MessagingException e) {
+            log.error("❌ 메일 전송 실패 (to: {})", toEmail, e);
+        }
+    }
+
     // 로그인 이메일 인증 코드 발송 메서드
     public void sendVerificationEmail(String to) {
         try {
@@ -89,7 +109,7 @@ public class MailServiceImpl implements MailService {
         return false;
     }
 
-    private String buildHtmlContent(String postTitle, Long currentAmount) {
+    private String buildHtmlContentByGoalReached(String postTitle, Long currentAmount) {
         return """
                 <html>
                     <body>
@@ -103,6 +123,22 @@ public class MailServiceImpl implements MailService {
                 </html>
                 """.formatted(postTitle, currentAmount);
     }
+
+    private String buildHtmlContentByDeadlinePassed(String postTitle, Long currentAmount) {
+        return """
+                <html>
+                    <body>
+                        <h2>⏰ 기부 마감일 알림 ⏰</h2>
+                        <p><strong>게시물 제목:</strong> %s</p>
+                        <p><strong>최종 기부 금액:</strong> %d 포인트</p>
+                        <p>회원님이 참여하신 게시물의 기부 마감일이 지났습니다. 참여해주셔서 감사합니다!</p>
+                        <p>소중한 기부에 감사드립니다! 🙏</p>
+                        <hr />
+                    </body>
+                </html>
+                """.formatted(postTitle, currentAmount);
+    }
+
     //이메일 인증 발송 컨텐츠 html
     private String getVerificationEmailHtml(String verificationCode, String email) {
         return "<div style='font-family: Arial, sans-serif; border-collapse: collapse; width: 100%;'>"
