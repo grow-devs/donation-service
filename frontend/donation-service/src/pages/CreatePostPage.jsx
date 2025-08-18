@@ -250,7 +250,6 @@ export default function CreatePostPage() {
       const res = await postapi.post(
         "/post",
         formData
-        // postData 대신 formData 사용
         // headers: {
         //   "Content-Type": "multipart/form-data", // 필수
         // },
