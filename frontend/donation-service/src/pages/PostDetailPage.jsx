@@ -1,9 +1,9 @@
 // PostDetailPage.jsx
 import React, {useState, useEffect} from 'react';
 import styled from 'styled-components';
-import PostContentSection from '../components/post/main-area/PostContentSection';
-import FundraisingSummary from '../components/post/donation-status/FundraisingSummary';
-import CommentSection from '../components/post/comment/CommentSection';
+import PostContentSection from '../components/post-detail/main-area/PostContentSection';
+import FundraisingSummary from '../components/post-detail/donation-status/FundraisingSummary';
+import CommentSection from '../components/post-detail/comment/CommentSection';
 import api from '../apis/api';
 import { useParams } from 'react-router-dom';
 
