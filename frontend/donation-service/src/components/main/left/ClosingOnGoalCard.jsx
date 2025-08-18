@@ -13,8 +13,8 @@ import {
 } from '@mui/material';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { useNavigate } from 'react-router-dom';
-import useAuthStore from '../store/authStore';
-import api from '../apis/api';
+import useAuthStore from '../../../store/authStore';
+import api from '../../../apis/api';
 import FavoriteIcon from '@mui/icons-material/Favorite'; // 채워진 하트 아이콘 추가
 
 export default function ClosingOnGoalCard({

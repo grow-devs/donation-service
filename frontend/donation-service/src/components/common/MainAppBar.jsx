@@ -17,15 +17,15 @@ import {
   Button,
   CircularProgress,Avatar
 } from "@mui/material";
-import { formatNotificationTime } from "../utils/formatNotificationTime";
+import { formatNotificationTime } from "../../utils/formatNotificationTime";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 
-import FloatingAuthModal from "../modal/FloatingAuthModal";
-import useAuthStore from "../store/authStore";
-import AutoChangingText from "../motion/AutoChangingText";
-import api from "../apis/api"; // ✅ axios 인스턴스 경로에 맞게 수정
+import FloatingAuthModal from "../../modal/FloatingAuthModal";
+import useAuthStore from "../../store/authStore";
+import AutoChangingText from "../../motion/AutoChangingText";
+import api from "../../apis/api"; // ✅ axios 인스턴스 경로에 맞게 수정
 
 // 오늘 날짜를 가져오는 헬퍼 함수
 const getTodayDateString = () => {

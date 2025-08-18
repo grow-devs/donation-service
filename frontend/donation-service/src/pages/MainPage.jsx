@@ -3,12 +3,12 @@ import React from "react";
 import { Container, Grid } from "@mui/material";
 // ↓ 아래 import들은 기존 App.jsx의 내용과 동일
 import MainCategory from '../components/MainCategory';
-import TotalAmount from '../components/TotalAmount';
-import TimeImpendingCampaign from '../components/TimeImpendingCampaign';
-import CampaignTop3 from '../components/CampaignTop3';
-import ClosingOnGoal from '../components/ClosingOnGoal';
-import TodayStats from '../components/TodayStats';
-import RankingCard from '../components/RankingCard';
+import TotalAmount from '../components/main/right/TotalAmount';
+import TimeImpendingCampaign from '../components/main/left/TimeImpendingCampaign';
+import CampaignTop3 from '../components/main/left/CampaignTop3';
+import ClosingOnGoal from '../components/main/left/ClosingOnGoal';
+import TodayStats from '../components/main/right/TodayStats';
+import RankingCard from '../components/main/right/RankingCard';
 
 export default function MainPage() {
   const sampleEnd = new Date();

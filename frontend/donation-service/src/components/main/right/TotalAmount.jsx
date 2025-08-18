@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card, Box, Typography, Skeleton } from "@mui/material"; // Skeleton 컴포넌트 추가
-import api from "../apis/api";
+import api from "../../../apis/api";
 import dayjs from 'dayjs';
 
 export default function TotalAmount() {

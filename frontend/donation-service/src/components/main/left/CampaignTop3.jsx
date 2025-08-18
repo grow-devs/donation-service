@@ -2,10 +2,10 @@
 import React, {useEffect, useState} from 'react';
 import { Typography, Box, Card, CardContent, CircularProgress} from '@mui/material';
 import { AnimatePresence, motion } from 'framer-motion';
-import api from '../apis/api';
+import api from '../../../apis/api';
 import CampaignTop3Card from './CampaignTop3Card';
-import useAuthStore from '../store/authStore';
-import FloatingAuthModal from '../modal/FloatingAuthModal';
+import useAuthStore from '../../../store/authStore';
+import FloatingAuthModal from '../../../modal/FloatingAuthModal';
 
 export default function CampaignTop3() {
   const [topPosts, setTopPosts] = useState([]);
