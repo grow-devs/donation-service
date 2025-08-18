@@ -13,9 +13,9 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
-import CategoryTabs from "../components/CategoryTabs";
-import PostCard from "../components/PostCard";
-import PostCardSkeleton from "../components/PostCardSkeleton";
+import CategoryTabs from "../components/postlist/CategoryTabs";
+import PostCard from "../components/postlist/PostCard";
+import PostCardSkeleton from "../components/postlist/PostCardSkeleton";
 import postapi from "../apis/postapi";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import api from "../apis/api";

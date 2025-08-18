@@ -11,8 +11,8 @@ import {
 } from '@mui/material';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite'; // 채워진 하트 아이콘 추가
-import api from '../apis/api';
-import useAuthStore from '../store/authStore';
+import api from '../../../apis/api';
+import useAuthStore from '../../../store/authStore';
 import { useNavigate } from 'react-router-dom';
 
 export default function CampaignTop3Card({

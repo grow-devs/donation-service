@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Card, Box, Typography, CardContent } from "@mui/material";
 import VolunteerActivismSharpIcon from "@mui/icons-material/VolunteerActivismSharp";
 import dayjs from "dayjs";
-import api from "../apis/api";
+import api from "../../../apis/api";
 
 /**
  * stats: [{ id, label, value }, …]

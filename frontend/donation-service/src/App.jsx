@@ -6,7 +6,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import MainPage from './pages/MainPage';
 import RankingPage from './pages/RankingPage'
 import PostListPage from './pages/PostListPage';
-import MainAppBar from './components/MainAppBar';
+import MainAppBar from './components/common/MainAppBar';
 import ScrollToTop from './ScrollToTop';
 import MyPage from './pages/MyPage';
 import ApplyAgencyPage from './pages/ApplyAgencyPage';

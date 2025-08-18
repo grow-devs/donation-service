@@ -11,7 +11,7 @@ import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ProfileInRankingCard from "./ProfileInRankingCard";
 import { useNavigate } from "react-router-dom";
-import api from "../apis/api";
+import api from "../../../apis/api";
 
 export default function RankingCard() {
   const [ranks, setRanks] = useState([]);

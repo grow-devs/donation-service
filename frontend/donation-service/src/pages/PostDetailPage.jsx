@@ -1,12 +1,11 @@
 // PostDetailPage.jsx
 import React, {useState, useEffect} from 'react';
 import styled from 'styled-components';
-import PostContentSection from '../components/post/PostContentSection';
-import FundraisingSummary from '../components/post/FundraisingSummary';
-import CommentSection from '../components/post/CommentSection';
+import PostContentSection from '../components/post/main-area/PostContentSection';
+import FundraisingSummary from '../components/post/donation-status/FundraisingSummary';
+import CommentSection from '../components/post/comment/CommentSection';
 import api from '../apis/api';
 import { useParams } from 'react-router-dom';
-import { donationSummaryData } from '../components/post/dummyData';
 
 const PageContainer = styled.div`
   display: flex;
