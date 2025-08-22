@@ -1,0 +1,50 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://database-1.c5swacuye84a.ap-northeast-2.rds.amazonaws.com:5432/postgres
+    username: postgres
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false       # 콘솔에 SQL 출력
+    properties:
+      hibernate:
+        format_sql: true  # SQL 예쁘게 출력
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  data:
+    redis:
+      host: donation-service-redis-wz83b0.serverless.apn2.cache.amazonaws.com
+      port: 6379
+#      password: redis_password  # Redis 비밀번호 설정 (필요 시)
+
+  mail:
+    host: smtp.gmail.com  # SMTP 서버 주소
+    port: 587              # SMTP 서버 포트
+    username: ${SPRING_MAIL_USERNAME}  # SMTP 서버 사용자 이름
+    password: ${SPRING_MAIL_PASSWORD}  # SMTP 서버 비밀번호
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+#        smtp:
+#          ssl:
+#            enable: false  # SSL 사용 여부
+
+  # 필요 시 timezone 설정
+  jackson:
+    time-zone: Asia/Seoul
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type.descriptor.sql.BasicBinder: trace  # 바인딩 파라미터 출력
+ # aws s3 설정
+aws:
+  s3:
+    bucket: donation-service #  S3 버킷 이름
+    region: ap-northeast-2     #  S3 버킷 리전
