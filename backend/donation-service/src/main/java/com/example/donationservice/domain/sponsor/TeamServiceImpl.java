@@ -9,6 +9,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 import static com.example.donationservice.common.exception.CommonErrorCode.TEAM_ALREADY_EXISTS;
 import static com.example.donationservice.common.exception.CommonErrorCode.USER_NOT_FOUND;
 
@@ -57,5 +59,28 @@ public class TeamServiceImpl implements TeamService{
     public boolean isTeamNameAvailable(String teamName) {
         // 팀 이름이 이미 존재하는지 확인
         return !teamRepository.existsByName(teamName);
+    }
+
+    @Override
+    public TeamDto.ApprovalStatusResponse getApprovalStatus(Long userId) {
+        Optional<ApprovalStatus> optionalStatus = teamRepository.findApprovalStatusByUserId(userId);
+
+        if (optionalStatus.isEmpty()) {
+            return TeamDto.ApprovalStatusResponse.builder()
+                    .approvalStatus(null)
+                    .build();
+        }
+
+        ApprovalStatus status = optionalStatus.get();
+
+        return TeamDto.ApprovalStatusResponse.builder()
+                .approvalStatus(status.name())
+                .build();
+    }
+
+    // 팀이 존재하는지 체크
+    @Override
+    public boolean isExistTeam(Long userId) {
+        return teamRepository.existsByUserId(userId);
     }
 }

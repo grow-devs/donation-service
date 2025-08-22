@@ -25,6 +25,14 @@ public class CustomUserDetailService implements UserDetailsService {
                         //나중에 exception 추가하기
                         ()->new RestApiException(CommonErrorCode.USER_NOT_FOUND)
                 );
-        return new CustomUserDetail(userAccount);
+        // 조회된 User 엔티티 정보를 바탕으로 CustomUserDetail 객체 생성
+        return new CustomUserDetail(
+                userAccount.getId(),
+                userAccount.getEmail(),
+                userAccount.getPassword(), // 실제 패스워드는 해시된 값
+                userAccount.getNickName(), // ✅ User 엔티티에 닉네임 필드가 있다면 가져옴
+                userAccount.getUserRole(), // ✅ User 엔티티에 UserRole enum 필드가 있다면 직접 가져옴
+                userAccount.getProfileImageUrl()
+        );
     }
 }

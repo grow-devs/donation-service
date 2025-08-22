@@ -39,7 +39,13 @@ public class Post extends BaseTimeEntity {
 
     private ApprovalStatus approvalStatus;
 
-    private Long participants;//Donation 발생 시 트랜잭션 내에서 이 필드를 업데이트하는 카운터 캐싱을 한다.
+    private Integer likesCount; // 게시물 좋아요 수
+
+    private Long participants; //Donation 발생 시 트랜잭션 내에서 이 필드를 업데이트하는 카운터 캐싱을 한다.
+
+    private Boolean goalReached; // 목표 금액 도달 여부
+
+    private Boolean deadlinePassed; // 데드라인이 지났는지 여부를 판단
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_id")
@@ -54,4 +60,31 @@ public class Post extends BaseTimeEntity {
         this.approvalStatus = approvalStatus;
     }
 
+    // 현재 기부 금액 업데이트
+    public void addCurrentAmount(Long amount) {
+        this.currentAmount += amount;
+    }
+
+    // 목표 금액 도달 여부 업데이트
+    public void updateGoalReached() {
+        this.goalReached = true;
+    }
+
+    // 게시물의 참여자 수 증가
+    public void incrementParticipants() {
+        this.participants++;
+    }
+
+    // likesCount 증가
+    public void incrementLikesCount() {
+        if (this.likesCount == null) {
+            this.likesCount = 0;
+        }
+        this.likesCount++;
+    }
+
+    // post의 deadlinePassed 필드를 true로 업데이트
+    public void updateDeadlinePassed() {
+        this.deadlinePassed = true;
+    }
 }

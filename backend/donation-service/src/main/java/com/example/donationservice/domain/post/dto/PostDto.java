@@ -62,6 +62,31 @@ public class PostDto {
         private List<PostResponse> resultList;
         private long totalCount;
     }
+
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class PostDetailResponse { // admin 요청하 게시물 목록조회 + 게시물 목록조회
+        private Long id;
+        private String title;
+        private String content; // html
+        private LocalDateTime createdAt; // 최신순 정렬을 위한 만들어진 시간 응답
+        private LocalDateTime updatedAt;
+        private Long currentAmount;
+        private Long targetAmount;
+        private LocalDateTime deadline;
+        private String displayImageUrl; // 대표 이미지 // todo : 이름 맞는지 확인
+        private ApprovalStatus approvalStatus;
+        private Long teamId;
+        private String teamName;
+        private Long categoryId;
+        private String categoryName;
+        private Integer likesCount; // 게시물 좋아요 수
+        private Long participants;
+    }
+
     // todo 게시물 상세 조회와 게시물 목록 조회에서 보이는 데이터가 다름에 따라 dto가 상세조회용과 목록조회용으로 다를 필요성
     public static PostResponse from(Post post) {
         return PostResponse.builder()
@@ -85,22 +110,22 @@ public class PostDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class PostDetailResponse { // admin 요청하 게시물 목록조회 + 게시물 목록조회
+    public static class PostMainResponse {
         private Long id;
         private String title;
-        private String content; // html
-        private LocalDateTime createdAt; // 최신순 정렬을 위한 만들어진 시간 응답
-        private LocalDateTime updatedAt;
         private Long currentAmount;
         private Long targetAmount;
         private LocalDateTime deadline;
-        private String displayImageUrl; // 대표 이미지
+        private String imageUrl; // 썸네일 용 imageurl
         private ApprovalStatus approvalStatus;
         private Long teamId;
         private String teamName;
         private Long categoryId;
         private String categoryName;
-        private Long participants;
+        private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
+        private Long participants; // 참여자 수
+        private Integer likesCount; // 게시물 좋아요 수
     }
 
 }

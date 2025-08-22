@@ -33,6 +33,10 @@ public class RedisConfig {
         redisTemplate.setConnectionFactory(redisConnectionFactory());
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setValueSerializer(new StringRedisSerializer());
+        // Hash Key 직렬화 설정
+        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+        // Hash Value 직렬화 설정
+        redisTemplate.setHashValueSerializer(new StringRedisSerializer());
         return redisTemplate;
     }
 }

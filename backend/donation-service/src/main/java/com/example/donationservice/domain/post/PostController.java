@@ -7,12 +7,8 @@ import com.example.donationservice.common.exception.RestApiException;
 import com.example.donationservice.domain.post.dto.PostDto;
 import com.example.donationservice.domain.user.CustomUserDetail;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -111,6 +107,36 @@ public class PostController {
         return ResponseEntity.ok().body(Result.builder()
                 .message("게시글 조회 성공")
                 .data(postDetailResponse)
+                .build());
+    }
+
+    // 현재 기부금이 가장 높은 게시물 3개 조회
+    @GetMapping("/top3-current-amount")
+    public ResponseEntity<Result> getTop3CurrentAmountPosts() {
+        List<PostDto.PostMainResponse> topPosts = postService.getTop3CurrentAmountPosts();
+        return ResponseEntity.ok().body(Result.builder()
+                .message("현재 기부금이 가장 높은 게시물 3개 조회 성공")
+                .data(topPosts)
+                .build());
+    }
+
+    // 데드라인이 가장 남지 않은 게시물 조회
+    @GetMapping("/earliest-end-date")
+    public ResponseEntity<Result> getPostWithEarliestEndDate() {
+        PostDto.PostMainResponse earliestPost = postService.getPostWithEarliestEndDate();
+        return ResponseEntity.ok().body(Result.builder()
+                .message("데드라인이 가장 남지 않은 게시물 조회 성공")
+                .data(earliestPost)
+                .build());
+    }
+
+    // 기부율이 가장 높은 게시물 조회
+    @GetMapping("/top-donation-rate")
+    public ResponseEntity<Result> getTopDonationRatePost() {
+        PostDto.PostMainResponse topPost = postService.getTopDonationRatePost();
+        return ResponseEntity.ok().body(Result.builder()
+                .message("기부율이 가장 높은 게시물 조회 성공")
+                .data(topPost)
                 .build());
     }
 }

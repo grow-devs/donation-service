@@ -36,7 +36,9 @@ public class CommentController {
             @PathVariable Long postId,
             @PageableDefault(size = 10, sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        CommentDto.PagedCommentResponse response = commentService.getCommentsByPostId(userDetails.getUserId(), postId, pageable);
+        Long userId = (userDetails != null) ? userDetails.getUserId() : null;
+
+        CommentDto.PagedCommentResponse response = commentService.getCommentsByPostId(userId, postId, pageable);
         return ResponseEntity.ok(
                 Result.builder()
                         .message("댓글 조회 성공")

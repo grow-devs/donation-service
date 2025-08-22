@@ -27,7 +27,6 @@ public class CategoryController {
      */
     @PostMapping("")
     public ResponseEntity<Result> create(
-            @AuthenticationPrincipal CustomUserDetail userDetails,
             @RequestBody String name){
 
         categoryService.create(name);

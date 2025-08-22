@@ -19,6 +19,8 @@ import {
   MenuItem,
   Snackbar,
   Alert,
+  Backdrop,
+  CircularProgress,
 } from "@mui/material";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -48,6 +50,7 @@ export default function CreatePostPage() {
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState("");
   const [teamId, setTeamId] = useState("");
+  const [backdropOpen, setBackdropOpen] = useState(false);
 
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -121,10 +124,11 @@ export default function CreatePostPage() {
       console.log(file);
       if (file) {
         try {
+          setBackdropOpen(true);
           // 실제 이미지 업로드 API 호출 로직
           const formData = new FormData();
-          formData.append('image', file);
-           
+          formData.append("image", file);
+
           const res = await postapi.post("/post/upload", formData);
           const imageUrlToInsert = res.data.data;
           console.log(imageUrlToInsert);
@@ -140,6 +144,8 @@ export default function CreatePostPage() {
         } catch (error) {
           console.error("이미지 업로드 실패:", error);
           showSnackbar("이미지 업로드에 실패했습니다.", "error");
+        } finally {
+          setBackdropOpen(false);
         }
       } else {
         showSnackbar("이미지 선택이 취소되었습니다.", "info");
@@ -190,8 +196,9 @@ export default function CreatePostPage() {
   );
 
   // handleSubmit 함수를 async로 변경
-  const handleSubmit = async (event) => { // <-- 여기에 async 키워드를 추가했습니다.
-    
+  const handleSubmit = async (event) => {
+    // <-- 여기에 async 키워드를 추가했습니다.
+
     event.preventDefault();
 
     if (
@@ -238,9 +245,11 @@ export default function CreatePostPage() {
     console.log("선택된 이미지 파일:", imageFile);
 
     try {
+      setBackdropOpen(true);
       console.log("API 호출 시도 중...");
-      const res = await postapi.post("/post", formData, 
-        // postData 대신 formData 사용
+      const res = await postapi.post(
+        "/post",
+        formData
         // headers: {
         //   "Content-Type": "multipart/form-data", // 필수
         // },
@@ -259,7 +268,10 @@ export default function CreatePostPage() {
         setCategoryId("");
         setImageFile(null);
         setImagePreview("");
+        setBackdropOpen(true);
       } else {
+        setBackdropOpen(false);
+
         // 서버에서 200/201이 아닌 다른 성공 코드를 보낼 경우 대비
         showSnackbar(
           "게시물 등록에 실패했습니다: " +
@@ -274,6 +286,8 @@ export default function CreatePostPage() {
           (err.response?.data?.message || err.message),
         "error"
       );
+    } finally {
+      setBackdropOpen(false);
     }
   };
   // 디버깅용: content 상태 변화를 감시
@@ -292,21 +306,39 @@ export default function CreatePostPage() {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
-        <Paper elevation={3} sx={{ p: 4 }}>
+        <Paper
+          borderRadius={10}
+          elevation={3}
+          sx={{
+            border: "1px solid #cececeff", // 2px 두께의 연한 회색 테두리
+            borderRadius: "12px", // 모서리를 둥글게 (선택 사항)
+            backgroundColor: "#ffffff", // 배경색 (선택 사항)
+            padding: "24px", // 내부여백
+            p: 4,
+            mt: 10,
+          }}
+        >
           <Typography
-            variant="h4"
+            variant="h6" // h4에서 다시 h5로 변경하거나, 더 작게 h6도 고려
             component="h1"
             gutterBottom
             align="center"
-            sx={{ mb: 4, fontWeight: "bold" }}
+            sx={{
+              mb: 4, // 아래쪽 마진을 살짝 줄이거나 유지
+              fontWeight: "fontWeightSemiBold", // "bold"보다 약간 덜 굵은 'semi-bold' (MUI 기본 폰트에 따라 적용될 수도 있고 안 될 수도 있음)
+              // 혹은 '600' 같은 숫자 값으로 직접 지정
+              color: "text.primary", // 기본 텍스트 색상 사용
+              // letterSpacing: '0.02em', // 글자 간격도 살짝 줄여서 과하지 않게
+            }}
           >
-            새 게시물 등록
+            따뜻한 변화를 위한 첫걸음, <br />
+            새로운 모금함을 제안해주세요!
           </Typography>
           <form onSubmit={handleSubmit}>
             <Stack spacing={3}>
               {/* 제목 입력 */}
               <TextField
-                label="게시물 제목"
+                label="모금함 제목"
                 variant="outlined"
                 fullWidth
                 value={title}
@@ -315,7 +347,12 @@ export default function CreatePostPage() {
               />
 
               {/* 내용 입력 (Quill 에디터) */}
-              <Box sx={{ minHeight: 300, "& .ql-editor": { minHeight: 250 } }}>
+              <Box
+                sx={{
+                  minHeight: 300,
+                  "& .ql-editor": { minHeight: 280, fontSize: "0.8rem" },
+                }}
+              >
                 <ReactQuill
                   ref={quillRef}
                   theme="snow"
@@ -461,7 +498,16 @@ export default function CreatePostPage() {
           </form>
         </Paper>
       </Container>
-
+      <Backdrop
+        sx={{
+          backgroundColor: "rgba(0, 0, 0, 0)", // 배경을 완전 투명하게 설정
+          color: (theme) => theme.palette.primary.main, // 스피너 색상 설정 (예: 테마의 기본 색상)
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+        }}
+        open={backdropOpen}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
       {/* Snackbar 컴포넌트 */}
       <Snackbar
         open={snackbar.open}

@@ -1,12 +1,11 @@
 // PostDetailPage.jsx
 import React, {useState, useEffect} from 'react';
 import styled from 'styled-components';
-import PostContentSection from '../components/post/PostContentSection';
-import FundraisingSummary from '../components/post/FundraisingSummary';
-import CommentSection from '../components/post/CommentSection';
+import PostContentSection from '../components/post-detail/main-area/PostContentSection';
+import FundraisingSummary from '../components/post-detail/donation-status/FundraisingSummary';
+import CommentSection from '../components/post-detail/comment/CommentSection';
 import api from '../apis/api';
-
-import { postData, donationSummaryData, donationListData, commentsData } from '../components/post/dummyData';
+import { useParams } from 'react-router-dom';
 
 const PageContainer = styled.div`
   display: flex;
@@ -59,23 +58,45 @@ const SidebarArea = styled.div`
 function PostDetailPage() {
   // '모금소개'와 '기부현황' 탭 상태 관리
   // PostContentSection과 TabMenu가 이 상태를 공유합니다.
-  const [activeTab, setActiveTab] = useState('story'); 
-  const testPostId = 4; // todo : 동적으로 바꿔야함
+  const [activeTab, setActiveTab] = useState('story');
+  const { postId } = useParams(); 
 
   const [post, setPost] = useState(null); // ✨ 게시물 데이터를 저장할 state
+  const [totalCommentCount, setTotalCommentCount] = useState(0); // ✨ 댓글 총 개수 상태 추가
+  // const [donations, setDonations] = useState([]); // ✨ 기부 목록 데이터를 저장할 state
   const [loading, setLoading] = useState(true); // ✨ 로딩 상태 관리
   const [error, setError] = useState(null); // ✨ 에러 상태 관리
 
   useEffect(() => {
-    const fetchPostDetail = async () => {
+    const fetchPostDetailAndCommentList = async () => {
+      // ✨✨✨ postId가 유효한 숫자인지 확인합니다. ✨✨✨
+      // URL 파라미터는 문자열이므로 Number()로 변환해야 한다 - 근데 필수는 아니고 그냥 postId를 api 요청해도 된다.
+      const postIdToFetch = Number(postId);
+      if (isNaN(postIdToFetch) || postIdToFetch <= 0) {
+        setError("유효하지 않은 게시물 ID입니다.");
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true); // 데이터 가져오기 시작 시 로딩 true
         setError(null); // 에러 초기화
 
         // ✨ 백엔드 API 호출
-        const response = await api.get(`/post/${testPostId}`);
-        console.log('~~~~ : ', response.data.data);
-        setPost(response.data.data); // ✨ 가져온 데이터를 post state에 저장
+        // 1. 게시물 상세 정보 가져오기
+        const postResponse = await api.get(`/post/${postIdToFetch}`);
+        setPost(postResponse.data.data); // ✨ 가져온 데이터를 post state에 저장
+
+        // // 2. 해당 게시물의 기부 목록 가져오기 (페이지네이션 기본값 적용)
+        // // 백엔드 DonationController의 @GetMapping("/{postId}")에 맞춰 호출
+        // const donationResponse = await api.get(`/donation/${postIdToFetch}`);
+        // // axios 응답 구조: response.data.data.content 에 실제 기부 목록 배열이 있음 (Page 객체)
+        // setDonations(donationResponse.data.data.content); // ✨ 기부 목록 데이터 설정
+
+        // 댓글 총 개수만 가져오는 API 호출
+        // const commentCountResponse = await api.get(`/comment/count/${postIdToFetch}`);
+        // setTotalCommentCount(commentCountResponse.data.data); // ✨ 댓글 총 개수 업데이트
+
       } catch (err) {
         console.error("게시물 상세 정보 불러오기 실패:", err);
         setError("게시물 정보를 불러오는 데 실패했습니다."); // ✨ 에러 메시지 설정
@@ -85,8 +106,8 @@ function PostDetailPage() {
       }
     };
 
-    fetchPostDetail(); // 컴포넌트 마운트 시 데이터 가져오기 함수 호출
-  }, [testPostId]); // testPostId가 변경될 때마다 재실행 (현재는 고정값)
+    fetchPostDetailAndCommentList(); // 컴포넌트 마운트 시 데이터 가져오기 함수 호출
+  }, [postId]); // testPostId가 변경될 때마다 재실행 (현재는 고정값)
 
   // ✨ 로딩 중일 때 표시할 내용
   if (loading) {
@@ -121,6 +142,28 @@ function PostDetailPage() {
     );
   }
 
+  // ✨ 기부 현황 계산 로직
+  const likesCount = post?.likesCount || 0; // Post 엔터티에서 가져온 좋아요 수
+  const commentCount = totalCommentCount; // 위에서 가져온 전체 댓글 수
+
+  const participatoryDonors = commentCount + likesCount;
+  const participatoryAmount = participatoryDonors * 100;
+
+  const totalAmount = post?.currentAmount || 0;
+  const directDonationCount = post?.participants || 0; // Post 엔터티에서 가져온 참여자 수로 가정
+  const directDonationAmount = totalAmount - participatoryAmount; // Post 엔터티에서 가져온 현재 기부 금액
+  const totalDonors = participatoryDonors + directDonationCount;
+
+  // ✨ DonationStatusCard에 전달할 summary 객체 생성
+  const donationSummary = {
+    totalDonors: totalDonors,
+    totalAmount: totalAmount,
+    directDonors: directDonationCount,
+    directAmount: directDonationAmount,
+    participatoryDonors: participatoryDonors,
+    participatoryAmount: participatoryAmount
+  };
+
   return (
     <PageContainer>
       <ContentWrapper>
@@ -131,16 +174,20 @@ function PostDetailPage() {
             // post={post} 
             activeTab={activeTab} 
             setActiveTab={setActiveTab} 
-            donations={donationListData} /* 더미 데이터 */
+            // donations={donations}
+            postId={Number(postId)} // ✨ PostId를 전달합니다.
           />
           {/* 댓글 섹션은 탭과 관계없이 항상 아래에 표시됨 */}
-          <CommentSection postId={testPostId} />
+          <CommentSection
+            postId={Number(postId)} 
+            onCommentCountUpdate={setTotalCommentCount} // 콜백 함수 전달
+          /> 
         </MainContentArea>
 
         {/* 우측 1/3 사이드바 영역 */}
         <SidebarArea>
           <FundraisingSummary 
-            summary={donationSummaryData} 
+            summary={donationSummary} 
             post={post} 
           />
         </SidebarArea>

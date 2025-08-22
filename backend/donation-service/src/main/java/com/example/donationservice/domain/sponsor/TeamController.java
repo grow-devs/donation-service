@@ -39,4 +39,29 @@ public class TeamController {
                         .build()
         );
     }
+
+    @GetMapping("/approval-status")
+    public ResponseEntity<Result> getApprovalStatus(@AuthenticationPrincipal CustomUserDetail customUserDetail) {
+        TeamDto.ApprovalStatusResponse approvalStatusResponse = teamService.getApprovalStatus(customUserDetail.getUserId());
+        return ResponseEntity.ok(
+                Result.builder()
+                        .message("팀 승인 상태 조회 성공")
+                        .data(approvalStatusResponse)
+                        .build()
+        );
+    }
+
+    // 유저에 팀이 있는지 체크
+    @GetMapping("/check-team")
+    public ResponseEntity<Result> existTeamCheck(
+            @AuthenticationPrincipal CustomUserDetail customUserDetail
+    ) {
+        boolean isExistTeam = teamService.isExistTeam(customUserDetail.getUserId());
+        return ResponseEntity.ok(
+                Result.builder()
+                        .message("유저에 팀이 있는지 확인")
+                        .data(isExistTeam)
+                        .build()
+        );
+    }
 }

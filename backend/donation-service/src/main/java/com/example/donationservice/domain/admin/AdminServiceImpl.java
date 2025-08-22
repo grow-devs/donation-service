@@ -1,5 +1,6 @@
 package com.example.donationservice.domain.admin;
 
+import com.example.donationservice.domain.admin.dto.AdminDto;
 import com.example.donationservice.domain.post.Post;
 import com.example.donationservice.domain.post.PostRepository;
 import com.example.donationservice.domain.post.dto.PostDto;
@@ -7,13 +8,12 @@ import com.example.donationservice.domain.sponsor.Team;
 import com.example.donationservice.domain.sponsor.TeamRepository;
 import com.example.donationservice.domain.sponsor.dto.TeamDto;
 import com.example.donationservice.domain.user.ApprovalStatus;
+import com.example.donationservice.event.ApprovalStatusEventPublisher;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +21,8 @@ public class AdminServiceImpl implements AdminService{
 
     private final TeamRepository teamRepository;
     private final PostRepository postRepository;
+
+    private final ApprovalStatusEventPublisher approvalStatusEventPublisher;
 
     @Override
     @Transactional
@@ -45,24 +47,46 @@ public class AdminServiceImpl implements AdminService{
 
     @Override
     @Transactional
-    public void updateTeamApprovalStatus(Long teamId, ApprovalStatus approvalStatus) {
+    public void updateTeamApprovalStatus(Long teamId, AdminDto.ApprovalStatusReq teamStatusReq) {
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new IllegalArgumentException("팀을 찾을 수 없습니다."));
 
         // 요청한 팀 상태를 수락 및 반려
-        team.updateTeamApprovalStatus(approvalStatus);
+        team.updateTeamApprovalStatus(teamStatusReq.getApprovalStatus());
         teamRepository.save(team);
+
+        // 팀 승인 상태 변경 시 알람
+        approvalStatusEventPublisher.publishTeamStatusAlarmEvent(
+                teamStatusReq.getApprovalStatus(),
+                teamStatusReq.getMessage(),
+                team.getName(),
+                team.getUser()
+        );
+
+        // 만약 approvalStatus 가 REJECTED 이면 team을 삭제한다.
+        if (teamStatusReq.getApprovalStatus() == ApprovalStatus.REJECTED) {
+            teamRepository.delete(team); // 트랜잭션 완료시점에 db에 반영
+        }
     }
 
     @Override
     @Transactional
-    public void updatePostApprovalStatus(Long postId, ApprovalStatus approvalStatus) {
+    public void updatePostApprovalStatus(Long postId, AdminDto.ApprovalStatusReq postStatusReq) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
 
         // 요청한 게시글 상태를 수락 및 반려
-        post.updateApprovalStatus(approvalStatus);
+        post.updateApprovalStatus(postStatusReq.getApprovalStatus());
         postRepository.save(post);
+
+        // 게시글 승인 상태 변경 시 알람
+        approvalStatusEventPublisher.publishPostStatusAlarmEvent(
+                postStatusReq.getApprovalStatus(),
+                postStatusReq.getMessage(),
+                post.getId(),
+                post.getTitle(),
+                post.getTeam().getUser() // TODO : n+1 확인
+        );
     }
 
     @Override

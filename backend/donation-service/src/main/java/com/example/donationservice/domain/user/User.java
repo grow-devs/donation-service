@@ -1,6 +1,8 @@
 package com.example.donationservice.domain.user;
 
 import com.example.donationservice.common.entity.BaseTimeEntity;
+import com.example.donationservice.common.exception.CommonErrorCode;
+import com.example.donationservice.common.exception.RestApiException;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,8 +26,30 @@ public class User extends BaseTimeEntity {
 
     private String nickName;
 
+    private String profileImageUrl; // 프로필 이미지 URL
+
     private UserRole userRole;
 
+    private Long points; // 사용자의 현재 포인트 잔액
+
+    // 사용자 points를 감소
+    public void decreasePoints(Long amount) {
+        if (amount < 0) {
+            throw new RestApiException(CommonErrorCode.ZERO_POINTS);
+        }
+        if (this.points < amount) {
+            throw new RestApiException(CommonErrorCode.INSUFFICIENT_POINTS);
+        }
+        this.points -= amount;
+    }
+
+    // 사용자 포인트 추가
+    public void addPoints(Long amount) {
+        this.points += amount;
+    }
+
+    // 사용자 프로필 이미지 업데이트
+    public void updateProfileImage(String imageUrl) {
+        this.profileImageUrl = imageUrl;
+    }
 }
-
-
