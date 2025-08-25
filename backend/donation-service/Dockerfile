@@ -17,7 +17,8 @@ RUN gradle bootJar -x test
 #스테이지 2: 실행 환경 설정 (Java 17 JRE만 포함)
 #이 스테이지는 빌드된 JAR 파일을 실행하는 데 필요한 최소한의 환경만 포함합니다.
 #빌드 도구(Gradle)는 포함되지 않아 최종 이미지 크기가 작아집니다.
-FROM openjdk:17-jre-slim-buster
+FROM openjdk:17-jre-slim
+
 
 #컨테이너 내 작업 디렉토리를 /opt/springboot으로 설정합니다.
 WORKDIR /opt/springboot
