@@ -28,7 +28,8 @@ WORKDIR /opt/springboot
 #일반적으로 build/libs/your-project-name-version.jar 형태입니다.
 #여기서는 donation-service-1.0.jar를 예시로 사용했습니다.
 #버전(예: 1.0)은 실제 빌드 결과물에 따라 수정해야 할 수 있습니다.
-COPY --from=builder /app/build/libs/donation-service-1.0.jar /opt/springboot/app.jar
+COPY --from=builder /app/build/libs/donation-service-0.0.1-SNAPSHOT.jar /opt/springboot/app.jar
+#COPY --from=builder /app/build/libs/*.jar /opt/springboot/app.jar
 
 #컨테이너가 시작될 때 Spring Boot 애플리케이션을 실행하는 명령어를 정의합니다.
 ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=${SPRING_PROFILES_ACTIVE}", "app.jar"]
