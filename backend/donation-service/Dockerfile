@@ -17,7 +17,8 @@ RUN gradle bootJar -x test
 #스테이지 2: 실행 환경 설정 (Java 17 JRE만 포함)
 #이 스테이지는 빌드된 JAR 파일을 실행하는 데 필요한 최소한의 환경만 포함합니다.
 #빌드 도구(Gradle)는 포함되지 않아 최종 이미지 크기가 작아집니다.
-FROM openjdk:17-jre-slim-buster
+FROM openjdk:17
+
 
 #컨테이너 내 작업 디렉토리를 /opt/springboot으로 설정합니다.
 WORKDIR /opt/springboot
@@ -27,7 +28,8 @@ WORKDIR /opt/springboot
 #일반적으로 build/libs/your-project-name-version.jar 형태입니다.
 #여기서는 donation-service-1.0.jar를 예시로 사용했습니다.
 #버전(예: 1.0)은 실제 빌드 결과물에 따라 수정해야 할 수 있습니다.
-COPY --from=builder /app/build/libs/donation-service-1.0.jar /opt/springboot/app.jar
+COPY --from=builder /app/build/libs/donation-service-0.0.1-SNAPSHOT.jar /opt/springboot/app.jar
+#COPY --from=builder /app/build/libs/*.jar /opt/springboot/app.jar
 
 #컨테이너가 시작될 때 Spring Boot 애플리케이션을 실행하는 명령어를 정의합니다.
 ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=${SPRING_PROFILES_ACTIVE}", "app.jar"]
