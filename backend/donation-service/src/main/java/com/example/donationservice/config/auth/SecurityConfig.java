@@ -90,7 +90,7 @@ public class SecurityConfig {
                         .requestMatchers( "/api/alarm/**").authenticated() //todo "/**"를 붙임으로써 alarm관련 모든 요청을 user만 할 수 있게 한다.
                         .requestMatchers(HttpMethod.GET, "/api/ranking/**").permitAll() //todo "/**"를 붙임으로써 ranking관련 get 요청을 허용한다.
                         .requestMatchers(HttpMethod.GET, "/api/meta/**").permitAll() //todo "/**"를 붙임으로써 meta관련 get요청을 허용한다.
-
+                        .requestMatchers(HttpMethod.GET, "/api/health-check").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
 //                        .requestMatchers("/api/admin/**").hasRole("ADMIN_ROLE")  // ADMIN 만접근!
