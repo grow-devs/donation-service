@@ -36,6 +36,11 @@ spring:
 #          ssl:
 #            enable: false  # SSL 사용 여부
 
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
   # 필요 시 timezone 설정
   jackson:
     time-zone: Asia/Seoul
@@ -49,6 +54,3 @@ aws:
   s3:
     bucket: donation-service #  S3 버킷 이름
     region: ap-northeast-2     #  S3 버킷 리전
-    http-client:
-      connection-timeout: 15s # 연결을 시도하는 최대 시간
-      socket-timeout: 15s # 데이터 전송(읽기/쓰기)을 기다리는 최대 시간
