@@ -49,3 +49,6 @@ aws:
   s3:
     bucket: donation-service #  S3 버킷 이름
     region: ap-northeast-2     #  S3 버킷 리전
+    http-client:
+      connection-timeout: 15s # 연결을 시도하는 최대 시간
+      socket-timeout: 15s # 데이터 전송(읽기/쓰기)을 기다리는 최대 시간
