@@ -19,7 +19,6 @@ RUN gradle bootJar -x test
 #빌드 도구(Gradle)는 포함되지 않아 최종 이미지 크기가 작아집니다.
 FROM openjdk:17
 
-
 #컨테이너 내 작업 디렉토리를 /opt/springboot으로 설정합니다.
 WORKDIR /opt/springboot
 
@@ -32,4 +31,5 @@ COPY --from=builder /app/build/libs/donation-service-0.0.1-SNAPSHOT.jar /opt/spr
 #COPY --from=builder /app/build/libs/*.jar /opt/springboot/app.jar
 
 #컨테이너가 시작될 때 Spring Boot 애플리케이션을 실행하는 명령어를 정의합니다.
-ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=${SPRING_PROFILES_ACTIVE}", "app.jar"]
+#ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=${SPRING_PROFILES_ACTIVE}", "app.jar"]
+ENTRYPOINT ["java", "-Duser.timezone=Asia/Seoul", "-jar", "-Dspring.profiles.active=${SPRING_PROFILES_ACTIVE}", "app.jar"]
