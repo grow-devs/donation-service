@@ -43,7 +43,7 @@ export default function TodayStats() {
   const firstDonorName = firstDonation?.nickName ?? "첫 번째 시작";
   const firstDonorTime = firstDonation?.createdAt
     ? (() => {
-        const date = dayjs(firstDonation.createdAt);
+        const date = dayjs(firstDonation.createdAt).tz('Asia/Seoul');
         const hour = date.hour();
         const period = hour < 12 ? "오전" : "오후";
         const h = hour % 12 === 0 ? 12 : hour % 12; // 12시간제
