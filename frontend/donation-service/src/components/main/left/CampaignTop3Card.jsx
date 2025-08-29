@@ -184,7 +184,7 @@ export default function CampaignTop3Card({
               <LinearProgress
                 variant="determinate"
                 value={percent}
-                sx={{ height: 8, borderRadius: 3, backgroundColor: '#e0e0e0', '& .MuiLinearProgress-bar': { backgroundColor: 'primary.main' } }}
+                sx={{ height: 8, borderRadius: 3, backgroundColor: '#e0e0e0', '& .MuiLinearProgress-bar': { backgroundColor: '#fc7979' } }}
               />
             </Box>
 
@@ -224,7 +224,17 @@ export default function CampaignTop3Card({
               )}
               <Typography variant="body2">하트응원</Typography>
             </Button>
-            <Button variant="contained" fullWidth>
+            <Button variant="outlined" fullWidth
+              sx={{
+                backgroundColor: '#ffffff', // 버튼 배경 흰색
+                color: '#000000',           // 글자 검은색
+                borderColor: '#595959',     // 테두리 검정
+                '&:hover': {
+                  backgroundColor: '#f0f0f0', // 호버 시 연한 회색 배경
+                  borderColor: '#595959',      // 호버 시 테두리 검정 유지
+                },
+                boxShadow: 'none',           // 입체감 제거
+              }}>
               기부하기
             </Button>
           </Box>

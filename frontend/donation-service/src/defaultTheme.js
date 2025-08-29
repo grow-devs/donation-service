@@ -50,8 +50,10 @@ import { createTheme } from '@mui/material/styles';
 export let theme = createTheme({
     palette: {
         primary: {
-            main:"#ffc14d",
-            light:"#ffb64d",
+            // main:"#ffc14d",
+            main: "#595959",
+            // main: "#B6CBBD",
+            light:"#273F4F",
             dark:"#b37f36",
             contarstText: "#ffc14d",
         },
