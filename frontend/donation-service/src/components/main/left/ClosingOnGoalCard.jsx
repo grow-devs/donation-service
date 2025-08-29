@@ -173,7 +173,7 @@ export default function ClosingOnGoalCard({
             {/* 게시물 제목 */}
             <Typography
               variant="h6"
-              fontWeight={400}
+              fontWeight={600}
               noWrap
               sx={{ mb: 1 }}
             >
