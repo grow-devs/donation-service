@@ -46,7 +46,7 @@ const DetailRow = styled.div`
 `;
 
 const CurrentAmount = styled.div`
-  font-size: 2em;
+  font-size: 1.6em;
   font-weight: bold;
   color: var(--primary-color);
   margin-bottom: 10px;
@@ -81,16 +81,18 @@ const ProgressText = styled.div`
 `;
 
 const DonateButton = styled.button`
-  width: 100%;
+  width: 90%;
   padding: 15px 20px;
   background-color: var; /* 카카오톡 노란색 */
   color: #3c1e1e; /* 카카오톡 버튼 텍스트 색상 */
   border: none;
   border-radius: 10px;
-  font-size: 1.2em;
+  font-size: 1.1em;
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  display: block;       /* block 요소로 */
+  margin: 0 auto;       /* 좌우 auto → 가운데 정렬 */
 
   &:hover {
     background-color: #f7dd00; /* 호버 시 약간 어둡게 */
@@ -98,17 +100,18 @@ const DonateButton = styled.button`
 `;
 
 const LikeButton = styled.button`
-  width: 100%;
+  width: 90%;
   padding: 15px 20px;
+  display: flex;       /* block 요소로 */
+  margin: 0 auto;       /* 좌우 auto → 가운데 정렬 */
   margin-top: 15px; /* '응원하고 기부하기' 버튼과의 간격 */
   background-color: #e0e0e0; /* 기본 회색 배경 */
   color: #555; /* 기본 텍스트 색상 */
   border: none;
   border-radius: 10px;
-  font-size: 1.2em;
+  font-size: 1.1em;
   font-weight: bold;
   cursor: pointer;
-  display: flex;
   justify-content: center;
   align-items: center;
   gap: 10px; /* 아이콘과 텍스트 사이 간격 */
@@ -254,15 +257,15 @@ function FundraisingSummary({ summary, post }) {
         <DetailRow>
           <span>목표 모금액</span>
           {/* <span>{formatAmount(post.goalAmount)}원</span> */}
-          <span>{formatAmount(targetAmount)}원</span>
+          <span>{formatAmount(targetAmount)} 원</span>
         </DetailRow>
         <DetailRow>
           <span>참여자</span>
-          <span>{formatAmount(post.participants)}명</span>
+          <span>{formatAmount(post.participants)} 명</span>
         </DetailRow>
 
         {/* <CurrentAmount>{formatAmount(post.currentAmount)}원</CurrentAmount> */}
-        <CurrentAmount>{formatAmount(currentAmount)}원</CurrentAmount>
+        <CurrentAmount>{formatAmount(currentAmount)} 원</CurrentAmount>
 
         <ProgressContainer>
           <ProgressBar $progress={progress} />

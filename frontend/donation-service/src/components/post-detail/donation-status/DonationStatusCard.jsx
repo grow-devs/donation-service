@@ -7,6 +7,7 @@ import styled from 'styled-components';
 const CardContainer = styled.div`
   background-color: white;
   border-radius: 10px;
+  border: 1px solid #e0e0e0; /* 연한 회색 테두리 추가 */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   padding: 25px;
   margin-top: 30px; /* 상단 요약 정보와의 간격 */
