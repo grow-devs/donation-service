@@ -12,7 +12,7 @@ public class PostScheduler {
     private final PostService postService;
 
     // 데드라인이 지난 게시물에게 알림을 보내는 스케줄러
-    @Scheduled(cron = "0 13 16 * * *") //
+    @Scheduled(cron = "0 47 17 * * *") //
     public void sendDeadlinePassedNotifications() {
         postService.sendDeadlinePassedNotifications();
     }
