@@ -42,8 +42,8 @@ public class RankingScheduler {
      * <p>
      * 매일 새벽 1시에 스케줄링
      */
-    @Scheduled(cron = "0 13 16 * * ?")  // 매일 1AM
-//    @Scheduled(fixedRate =5000 )  // 스캐줄링 테스트를 위한 5초 간격 스케줄링
+//    @Scheduled(cron = "0 47 17 * * ?")  // 매일 1AM
+    @Scheduled(fixedRate = 600000 )  // 스캐줄링 테스트를 위한 5초 간격 스케줄링
     public void recalculateLast30DaysRanking() {
         LocalDate today = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
@@ -68,8 +68,8 @@ public class RankingScheduler {
     /**
      * 전체 기부 랭킹(명에의 전당) 데이터 싱크(정합성 체크)
      */
-    @Scheduled(cron = "0 13 16 * * ?")  // 매일 1AM
-//    @Scheduled(fixedRate = 600000)  // 스캐줄링 테스트를 위한 5초 간격 스케줄링
+//    @Scheduled(cron = "0 47 17 * * ?")  // 매일 1AM
+    @Scheduled(fixedRate = 600000)  // 스캐줄링 테스트를 위한 5초 간격 스케줄링
     public void syncHallOfFameRanking() {
         try {
             //명예의 전당 key

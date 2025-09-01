@@ -56,7 +56,7 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
     //오늘 처음 기부한 기부자의 정보
     //해당 user의 기부가 가장 처음으로 기부되었기에 이 유저의 도네이션에서 가장 최근 도네이션을 찾는다.
         @Query(value = "SELECT " +
-                " new com.example.donationservice.domain.metadata.dto.MetaDataDto$FirstDonationResponse(d.user.nickName,d.user.createdAt) " +
+                " new com.example.donationservice.domain.metadata.dto.MetaDataDto$FirstDonationResponse(d.user.nickName,d.createdAt) " +
                 "FROM Donation d " +
                 "where d.user.id = :userId " +
                 "ORDER BY createdAt DESC")
