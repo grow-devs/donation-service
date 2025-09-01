@@ -27,6 +27,8 @@ import useAuthStore from "../../store/authStore";
 import AutoChangingText from "../../motion/AutoChangingText";
 import api from "../../apis/api"; // ✅ axios 인스턴스 경로에 맞게 수정
 
+
+
 // 오늘 날짜를 가져오는 헬퍼 함수
 const getTodayDateString = () => {
   const today = new Date();
@@ -278,15 +280,20 @@ export default function MainAppBar() {
             <Box sx={{ flexShrink: 0 }}>
               <Typography
                 variant="h5"
-                fontWeight="bold"
-                color="primary"
+                fontWeight=""
+                color="#fc7979"
+                fontFamily={"Juache"}
                 onClick={() => navigate("/")}
                 sx={{
                   cursor: "pointer",
                   "&:hover": { opacity: 0.8 },
                 }}
+                
               >
-                마음이음
+                마
+                <Box component="span" sx={{ color: "#fc7979" }}>음</Box >
+                <Box component="span"sx={{ color: "#181717d8" }}>이</Box>
+                <Box component="span" sx={{ color: "#181717d8" }}>음</Box>
               </Typography>
             </Box>
 

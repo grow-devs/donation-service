@@ -68,7 +68,7 @@ const ProgressBar = styled.div`
       100,
       props.$progress
     )}%`}; /* 달성률에 따라 너비 조절, 100% 초과 방지 */
-  background-color: #ff69b4; /* 바의 진행 색상 */
+  background-color: #fc7979; /* 바의 진행 색상 */
   border-radius: 10px; /* 둥근 모서리 */
   transition: width 0.5s ease-in-out; /* 너비 변화 애니메이션 */
 `;
@@ -95,7 +95,7 @@ const DonateButton = styled.button`
   margin: 0 auto;       /* 좌우 auto → 가운데 정렬 */
 
   &:hover {
-    background-color: #f7dd00; /* 호버 시 약간 어둡게 */
+    background-color: #5c595935; /* 호버 시 약간 어둡게 */
   }
 `;
 
@@ -190,6 +190,11 @@ function FundraisingSummary({ summary, post }) {
 
   // 모달 열기 함수
   const handleDonateClick = () => {
+        // 로그인 상태 확인
+    if (!isLoggedIn) {
+      setIsLoginModalOpen(true); // FloatingAuthModal 모달 열기
+      return; // 로그인하지 않았으면 여기서 함수 실행을 멈춤
+    }
     setIsModalOpen(true);
   };
 
@@ -272,7 +277,10 @@ function FundraisingSummary({ summary, post }) {
         </ProgressContainer>
         <ProgressText>{formattedProgress}% 달성</ProgressText>
 
-        <DonateButton onClick={handleDonateClick}>응원하고 기부하기</DonateButton>
+        <DonateButton
+          onClick={handleDonateClick}
+        >
+          응원하고 기부하기</DonateButton>
 
         {/* 좋아요 버튼 추가 */}
         <LikeButton
