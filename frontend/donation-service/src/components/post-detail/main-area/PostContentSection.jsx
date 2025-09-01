@@ -27,6 +27,14 @@ const PostImage = styled.img`
   margin-bottom: 20px;
 `;
 
+// 전체 폭 연한 밑줄 컴포넌트
+const FullWidthUnderline = styled.div`
+  width: 100%;
+  height: 1px;            /* 선 두께 */
+  background-color: #e0e0e0; /* 연한 회색 */
+  margin: 5px 0 20px;     /* 탭과 콘텐츠 사이 간격 */
+`;
+
 function PostContentSection({ post, activeTab, setActiveTab, postId }) {
   const handleTabChange = (tabName) => {
     setActiveTab(tabName);
@@ -37,6 +45,9 @@ function PostContentSection({ post, activeTab, setActiveTab, postId }) {
       <PostImage src={post.displayImageUrl} alt={post.title} />
 
       <TabMenu activeTab={activeTab} onTabChange={handleTabChange} />
+
+      {/* 전체 폭 연한 밑줄 */}
+      <FullWidthUnderline />
 
       {activeTab === 'story' ? (
         <StoryTabContent post={post} />

@@ -9,6 +9,7 @@ const TabContainer = styled.div`
   width: fit-content;
   /* border-bottom: 1px solid var(--border-color); <- 이 선은 가상 요소로 대체하거나 제거할 수 있습니다. */
   margin-top: 15px;
+  margin-bottom : 15px;
   justify-content: flex-start;
 `;
 

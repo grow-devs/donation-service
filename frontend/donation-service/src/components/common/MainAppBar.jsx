@@ -286,7 +286,7 @@ export default function MainAppBar() {
                   "&:hover": { opacity: 0.8 },
                 }}
               >
-                같이가치
+                마음이음
               </Typography>
             </Box>
 
