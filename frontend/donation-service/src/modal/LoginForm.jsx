@@ -124,10 +124,11 @@ export default function LoginForm({ onSwitchMode, onClose }) {
       <Button
         fullWidth
         variant="contained"
-        sx={{ mt: 2 }}
+        sx={{ mt: 2, "&:hover": { backgroundColor:"#fc7979" },}}
         onClick={handleLogin}
         // disabled={!canSubmit}
         startIcon={loading ? <CircularProgress size={18} /> : null}
+        
       >
         로그인
       </Button>

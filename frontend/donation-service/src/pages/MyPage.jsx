@@ -372,6 +372,8 @@ export default function MyPage() {
                     px: 1,
                     fontSize: '0.8rem',
                     minWidth: 'auto',
+                    backgroundColor: "#fc79799d",
+                    color:"#ffffffdf"
                   }}
                 >
                   포인트 충전
