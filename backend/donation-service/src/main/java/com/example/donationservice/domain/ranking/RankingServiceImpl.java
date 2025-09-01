@@ -296,7 +296,9 @@ public class RankingServiceImpl implements RankingService {
         Optional<MetaDataDto.FirstDonationResponse> firstDonation = firstDonations.stream().findFirst();
 
         if (firstDonation.isPresent()) {
-            System.out.println("In updateFirstDonor 닉네임 : " + firstDonation.get().getNickName());
+//            System.out.println("In updateFirstDonor 닉네임 : " + firstDonation.get().getNickName());
+//            System.out.println("~~~ In updateFirstDonor createdAt : " + firstDonation.get().getCreatedAt());
+//            System.out.println("~~~22 LocalDateTime.now() : " + LocalDateTime.now());
             String nickName = firstDonation.get().getNickName();
             LocalDateTime createdAt = firstDonation.get().getCreatedAt();
             redisTemplate.opsForHash().put("first_donation:", "nickName", nickName);
