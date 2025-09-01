@@ -53,7 +53,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
 
         return queryFactory
                 .selectFrom(post)
-                .where(cursorCondition, categoryCondition) // 조건들을 쉼표로 나열하면 AND로 연결됨
+                .where(cursorCondition, categoryCondition,approvalCondition) // 조건들을 쉼표로 나열하면 AND로 연결됨
                 .orderBy(orderSpecifiers)
                 .limit(size)
                 .fetch()
