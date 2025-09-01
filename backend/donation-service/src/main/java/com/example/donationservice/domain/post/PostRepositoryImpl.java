@@ -45,7 +45,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
         BooleanExpression categoryCondition = (categoryId != null && categoryId != 0) ? post.category.id.eq(categoryId) : null;
 
         // 3. 수락한 게시물 필터링 조건
-//        BooleanExpression approvalCondition = post.approvalStatus.eq(ACCEPTED); // todo 시나리오 테스트를 할 시에는 "PENDING"상태여도 조회할 수 있게 주석 -> 해당 조건이 있어야 인덱스를 탈 것이다.
+        BooleanExpression approvalCondition = post.approvalStatus.eq(ACCEPTED); // todo 시나리오 테스트를 할 시에는 "PENDING"상태여도 조회할 수 있게 주석 -> 해당 조건이 있어야 인덱스를 탈 것이다.
 
         // 4. 정렬 조건 (OrderSpecifier) 구성
         // 정렬 순서에 따라 동적으로 OrderSpecifier를 생성합니다.
