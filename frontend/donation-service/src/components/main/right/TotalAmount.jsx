@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Card, Box, Typography, Skeleton } from "@mui/material"; // Skeleton 컴포넌트 추가
 import api from "../../../apis/api";
 import dayjs from 'dayjs';
-
+import iconHeartEarth from '../../../assets/iconHeartEarth.png'
 export default function TotalAmount() {
   const [metaData, setMetaData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -105,7 +105,7 @@ export default function TotalAmount() {
         </Box>
         <Box
           component="img"
-          src="src\assets\iconHeartEarth.png"
+          src={iconHeartEarth}
           alt="Donation"
           sx={{
             width: 80,
