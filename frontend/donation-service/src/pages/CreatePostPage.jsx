@@ -59,6 +59,31 @@ export default function CreatePostPage() {
   });
 
   const quillRef = useRef(null);
+  const inputRef = useRef(null);
+
+  const formatWithComma = (value) => {
+    if (!value) return "";
+    return value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+
+  const handleTargetInputChange = (e) => {
+    const input = e.target.value;
+
+    // 숫자만 추출
+    const numericValue = input.replace(/[^0-9]/g, "");
+    setTargetAmount(numericValue);
+
+    // 커서 위치 유지
+    const inputEl = inputRef.current;
+    if (inputEl) {
+      const prevLength = inputEl.value.length;
+      setTimeout(() => {
+        const newLength = formatWithComma(numericValue).length;
+        const cursorPos = inputEl.selectionStart + (newLength - prevLength);
+        inputEl.setSelectionRange(cursorPos, cursorPos);
+      }, 0);
+    }
+  };
 
   // Snackbar 열기 함수
   const showSnackbar = (message, severity) => {
@@ -366,14 +391,15 @@ export default function CreatePostPage() {
 
               {/* 목표 모금 금액 */}
               <TextField
-                label="목표 모금 금액"
+                label="목표 모금 금액(원)"
                 variant="outlined"
                 fullWidth
-                type="number"
-                value={targetAmount}
-                onChange={(e) => setTargetAmount(e.target.value)}
+                type="text"
+                value={formatWithComma(targetAmount)}
+                onChange={handleTargetInputChange}
                 required
-                inputProps={{ min: 1000 }}
+                inputRef={inputRef}
+                inputProps={{ inputMode: "numeric", min: 1000 }}
               />
 
               {/* 마감 기한 (DatePicker) */}
