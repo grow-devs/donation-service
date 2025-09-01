@@ -58,6 +58,9 @@ public class MetaDataScheduler {
         String key = "first_donation:";
         redisTemplate.opsForHash().delete(key,"nickName");
         redisTemplate.opsForHash().delete(key,"createdAt");
+
+        redisTemplate.delete("ranking:daily:20250901");
+
         System.out.println("redis의 오늘의 첫 기부데이터 key = first_donation: 삭제를 완료했습니다.");
     }
 
