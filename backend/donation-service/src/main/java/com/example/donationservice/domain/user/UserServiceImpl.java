@@ -12,6 +12,7 @@ import com.example.donationservice.domain.user.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -72,21 +73,23 @@ public class UserServiceImpl implements UserService {
             // [5] 랜덤 UUID로 Refresh Token 생성
             // -> Refresh Token 자체에는 사용자 정보 같은 payload를 담지 않음 (추적 불가한 순수 식별용)
             String refreshToken = UUID.randomUUID().toString();
-            // [6] Refresh Token을 Redis에 저장 (key: email, value: refreshToken)
-            redisTokenService.saveRefreshToken(customUserDetail.getUsername(), refreshToken, 1000L * 60 * 60 * 24 * 10);
+
+            // [6] Refresh Token을 Redis에 저장 (key: refreshToken, value: email )
+            redisTokenService.saveRefreshToken(refreshToken, customUserDetail.getUsername(), 1000L * 60 * 60 * 24 * 10);
 
             return UserDto.loginResponse.builder()
                     .accessToken(accessToken)
                     .nickName(customUserDetail.getNickName())
                     .userRole(customUserDetail.getUserRole())
                     .profileImageUrl(customUserDetail.getProfileImageUrl())
+                    .refreshToken(refreshToken)
                     .build();
 
         } catch (AuthenticationException e) {
             System.out.println("인증실패");
             // [2] 인증 실패 시 예외를 잡아 처리
             throw new RestApiException(LOGIN_FAILED);
-        }catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             // UserRole.valueOf(roleName)에서 발생할 수 있는 예외 (토큰에 유효하지 않은 역할이 있을 경우)
             System.out.println("유효하지 않은 역할 정보: " + e.getMessage());
             throw new RestApiException(LOGIN_FAILED);
@@ -170,7 +173,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void uploadProfileImage(Long userId, MultipartFile imageFile) throws IOException {
-        if(imageFile == null || imageFile.isEmpty()) {
+        if (imageFile == null || imageFile.isEmpty()) {
             throw new RestApiException(CommonErrorCode.IMAGE_NOT_FOUND);
         }
         String userProfileImageUrl = s3UploadService.uploadProfileImage(imageFile);

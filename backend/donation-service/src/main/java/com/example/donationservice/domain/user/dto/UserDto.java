@@ -39,6 +39,7 @@ public class UserDto {
         private UserRole userRole;
         private String nickName;
         private String profileImageUrl; // 프로필 이미지 URL
+        private String refreshToken; // UUID
     }
 
     @Getter

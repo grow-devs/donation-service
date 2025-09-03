@@ -43,7 +43,8 @@ public class JwtService {
 
         // 만료 시간을 상수로 정의하여 관리하는 것이 좋습니다. (예: application.properties)
         // 여기서는 예시를 위해 직접 계산합니다.
-        long expirationMillis = System.currentTimeMillis() + 1000 * 60 * 60 * 2; // 2시간
+//        long expirationMillis = System.currentTimeMillis() + 1000 * 60 * 60 * 2; // 2시간
+        long expirationMillis = System.currentTimeMillis() + 1000 * 60 * 60; // 1 시간
 
         return Jwts.builder()
                 .setClaims(claims)           // 클레임 설정 (userEmail,role)

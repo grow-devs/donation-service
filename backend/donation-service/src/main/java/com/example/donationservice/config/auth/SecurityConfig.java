@@ -75,6 +75,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/user/send-code").permitAll()
                         .requestMatchers("/api/user/verify-code").permitAll()
                         .requestMatchers("/api/user/check-nickname").permitAll()
+                        .requestMatchers("/api/refresh").permitAll()
                         .requestMatchers("/api/team/check-name").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/donation/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/team").permitAll()
