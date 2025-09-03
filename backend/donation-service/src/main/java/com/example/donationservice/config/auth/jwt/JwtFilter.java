@@ -5,6 +5,7 @@ import com.example.donationservice.common.exception.RestApiException;
 import com.example.donationservice.domain.user.CustomUserDetail;
 import com.example.donationservice.domain.user.CustomUserDetailService;
 import com.example.donationservice.domain.user.UserRole;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -25,6 +26,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -69,8 +71,12 @@ public class JwtFilter extends OncePerRequestFilter {
                 }
             }
         } catch (ExpiredJwtException e) {
-            // Access Token이 만료된 경우 → Refresh Token 검증 로직 실행
-            handleExpiredAccessToken(request, response,e.getClaims()); // ✅ handleExpiredAccessToken에서 userDetails 제거
+//            // Access Token이 만료된 경우 → Refresh Token 검증 로직 실행
+//            handleExpiredAccessToken(request, response,e.getClaims()); // ✅ handleExpiredAccessToken에서 userDetails 제거
+
+            //만료된 경우 401에러 전송
+            sendErrorResponse(response,"Access Token이 만료되었습니다.");
+
         } catch (JwtException e) {
             // 위조된 토큰 또는 다른 JWT 관련 에러
             System.err.println("JWT Exception: " + e.getMessage());
@@ -92,36 +98,54 @@ public class JwtFilter extends OncePerRequestFilter {
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
+
+    // 401 에러 응답을 보내는 메소드
+    private void sendErrorResponse(HttpServletResponse response, String message) throws IOException {
+        // HTTP 상태 코드를 401(Unauthorized)로 설정
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
+        // 응답 콘텐츠 타입을 JSON으로 설정
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        // 응답 바디에 JSON 에러 메시지를 작성
+        String jsonResponse = new ObjectMapper().writeValueAsString(
+                Map.of("error", message, "status", HttpServletResponse.SC_UNAUTHORIZED)
+        );
+
+        response.getWriter().write(jsonResponse);
+    }
+
     // ExpiredJwtException 에서 받아온 e.getClaims()를 파라미터로 받아서
     // 만료된 토큰에서 사용자의 정보를 가져올 수 있게 한다.
     private void handleExpiredAccessToken(HttpServletRequest request, HttpServletResponse response, Claims claims) {
-        // 1. 만료된 Access Token 문자열 가져오기
-        String expiredAccessToken = request.getHeader("Authorization").substring(7);
-        // 2. 만료된 토큰에서 userId, userEmail, UserRole 등 필요한 정보를 '다시' 추출
-        // JwtService의 getUserXFromJwtToken 메서드들은 ExpiredJwtException이 발생하더라도
-        // 클레임 정보 자체는 파싱하여 반환할 수 있도록 설계
-        Long userId = Long.valueOf(claims.getSubject());
-        String email = claims.get("email").toString();
-        String role = claims.get("role").toString();
-
-        String refreshToken = (String) redisTemplate.opsForValue().get(email); // Redis에서 Refresh Token 가져오기
-
-        System.out.println("refreshToken" + refreshToken);
-
-        CustomUserDetail userDetails = new CustomUserDetail(userId, email, null, null, UserRole.valueOf(role),null);
-
-        //등록된 refreshToken이 존재한다면 accesstoken을 재발급해야한다.
-        if (refreshToken != null) {
-            String newAccessToken = jwtService.generateToken(userDetails);
-            setAuthentication(userDetails);
-            response.setHeader("Authorization", "Bearer " + newAccessToken);
-        }
-        //등록된 refreshToken이 없다면
-        else {
-            System.out.println("there is no refresh token");
-
-            //TODO globalException 필요
-            throw new RuntimeException();
-        }
+//        // 1. 만료된 Access Token 문자열 가져오기
+//        String expiredAccessToken = request.getHeader("Authorization").substring(7);
+//        // 2. 만료된 토큰에서 userId, userEmail, UserRole 등 필요한 정보를 '다시' 추출
+//        // JwtService의 getUserXFromJwtToken 메서드들은 ExpiredJwtException이 발생하더라도
+//        // 클레임 정보 자체는 파싱하여 반환할 수 있도록 설계
+//        Long userId = Long.valueOf(claims.getSubject());
+//        String email = claims.get("email").toString();
+//        String role = claims.get("role").toString();
+//
+//        String refreshToken = (String) redisTemplate.opsForValue().get(email); // Redis에서 Refresh Token 가져오기
+//
+//        System.out.println("refreshToken" + refreshToken);
+//        CustomUserDetail userDetails = new CustomUserDetail(userId, email, null, null, UserRole.valueOf(role),null);
+//
+//        //등록된 refreshToken이 존재한다면 accesstoken을 재발급해야한다.
+//        if (refreshToken != null) {
+//            String newAccessToken = jwtService.generateToken(userDetails);
+//            setAuthentication(userDetails);
+//            response.setHeader("Authorization", "Bearer " + newAccessToken);
+//        }
+//        //등록된 refreshToken이 없다면
+//        else {
+//            System.out.println("there is no refresh token");
+//
+//            //TODO globalException 필요
+//            throw new RuntimeException();
+//        }
     }
+
 }

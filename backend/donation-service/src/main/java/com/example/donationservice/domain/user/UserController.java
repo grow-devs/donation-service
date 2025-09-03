@@ -11,6 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -27,20 +29,32 @@ public class UserController {
     private final MailService mailService;
 
     @PostMapping("/login")
-    public ResponseEntity<Result> login(@RequestBody UserDto.loginRequest loginRequest){
+    public ResponseEntity<Result> login(@RequestBody UserDto.loginRequest loginRequest) {
+        UserDto.loginResponse loginResponse = userService.login(loginRequest);
 
-        return ResponseEntity.status(200).body(
-                Result.builder()
-                        .message("로그인 성공")
-                        .data(userService.login(loginRequest))
-                        .build()
-        );
+        // refreshToken 생성
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", loginResponse.getRefreshToken())
+                .httpOnly(true)
+                .secure(false) // HTTPS가 아닌 HTTP에서도 쿠키 전송 허용 (cloudfront -> alb 로 넘어갈때 https에서 http로 변경됨에 따라)
+                .sameSite("Strict") // csrf 방지
+                .maxAge(7 * 24 * 60 * 60) // 7일
+                .path("/")
+                .build();
+
+        return ResponseEntity.status(200).header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(
+                        Result.builder()
+                                .message("로그인 성공")
+                                .data(loginResponse)
+                                .build()
+                );
     }
+
     /*
         TODO. data안에 회피성 null이 있다. refactoring 필요.
      */
     @PostMapping("/signup")
-    public ResponseEntity<Result> signup(@RequestBody UserDto.signupRequest signupRequest){
+    public ResponseEntity<Result> signup(@RequestBody UserDto.signupRequest signupRequest) {
         userService.signup(signupRequest);
         return ResponseEntity.status(200).body(
                 Result.builder()
@@ -65,7 +79,7 @@ public class UserController {
     @GetMapping("/donation-list")
     public ResponseEntity<Result> getUserDonationInfo(
             @AuthenticationPrincipal CustomUserDetail userDetails,
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)Pageable pageable) {
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         Page<UserDonationInfoProjection> userDonationInfo = userService.getUserDonationInfo(userDetails.getUserId(), pageable);
         return ResponseEntity.ok(
                 Result.builder()
@@ -139,17 +153,17 @@ public class UserController {
             return "이메일 발송 실패: " + e.getMessage();
         }
     }
-  
+
     //이메일 인증 코드 확인 api
     @PostMapping("/verify-code")
     public boolean verifyCode(@RequestBody UserDto.verifyCodeRequest request) {
         return mailService.verifyCode(request.getEmail(), request.getCode());
     }
-  
+
     //닉네임 중복 체크 api
     @GetMapping("/check-nickname")
     public boolean checkNickName(@RequestParam String nickName) {
-        System.out.println("nickName : "+nickName);
+        System.out.println("nickName : " + nickName);
         return userService.checkNickName(nickName);
     }
 
