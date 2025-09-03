@@ -75,7 +75,7 @@ public class UserServiceImpl implements UserService {
             String refreshToken = UUID.randomUUID().toString();
 
             // [6] Refresh Token을 Redis에 저장 (key: refreshToken, value: email )
-            redisTokenService.saveRefreshToken(refreshToken, customUserDetail.getUsername(), 1000L * 60 * 60 * 24 * 10);
+            redisTokenService.saveRefreshToken(refreshToken, customUserDetail.getUsername(), 1000L * 60 * 60 * 24 * 7); // 7일
 
             return UserDto.loginResponse.builder()
                     .accessToken(accessToken)

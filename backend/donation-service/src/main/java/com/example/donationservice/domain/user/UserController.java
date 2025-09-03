@@ -36,7 +36,7 @@ public class UserController {
         ResponseCookie cookie = ResponseCookie.from("refreshToken", loginResponse.getRefreshToken())
                 .httpOnly(true)
                 .secure(false) // HTTPS가 아닌 HTTP에서도 쿠키 전송 허용 (cloudfront -> alb 로 넘어갈때 https에서 http로 변경됨에 따라)
-                .sameSite("Strict") // csrf 방지
+                .sameSite("Lax") // csrf 방지
                 .maxAge(7 * 24 * 60 * 60) // 7일
                 .path("/")
                 .build();
