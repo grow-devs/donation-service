@@ -6,9 +6,16 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials: true,
 });
 
-
+const refreshApi = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+  withCredentials: true,
+});
 
 // 응답 인터셉터: 토큰 갱신 로직 (핵심)
 api.interceptors.response.use(
@@ -25,7 +32,7 @@ api.interceptors.response.use(
 
       try {
         // 1. 재발급 엔드포인트에 요청 (HttpOnly 쿠키 자동 전송)
-        const response = await axios.get("/api/refresh");
+        const response = await refreshApi.get("/refresh");
 
         // 2. 응답 헤더에서 새 AccessToken 추출 및 저장
         const newAccessToken = response.headers.authorization.split(" ")[1];
