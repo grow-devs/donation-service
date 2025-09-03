@@ -76,7 +76,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
             //만료된 경우 401에러 전송
             sendErrorResponse(response,"Access Token이 만료되었습니다.");
-
+            return; // 에러 응답 후 필터 체인 중단
         } catch (JwtException e) {
             // 위조된 토큰 또는 다른 JWT 관련 에러
             System.err.println("JWT Exception: " + e.getMessage());
