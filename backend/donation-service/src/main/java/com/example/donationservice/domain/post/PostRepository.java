@@ -70,4 +70,7 @@ public interface PostRepository extends JpaRepository<Post,Long>,PostRepositoryC
     @Query("SELECT p FROM Post p WHERE p.deadline < :now AND p.deadlinePassed = false")
     List<Post> findExpiredPostsDeadlinePassed(@Param("now") LocalDateTime now);
 
+    Long countByApprovalStatus(ApprovalStatus approvalStatus);
+
+    Long countByCategoryIdAndApprovalStatus(Long categoryId, ApprovalStatus approvalStatus);
 }

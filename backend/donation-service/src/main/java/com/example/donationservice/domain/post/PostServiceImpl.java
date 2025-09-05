@@ -99,8 +99,8 @@ public class PostServiceImpl implements PostService {
         // "전체" 카테고리(null)라면 post의 전체갯수를, 아니면 카테고리면 count해서 dto에 포함시킨다.
         if (initialLoad)
             totalCount = categoryId == null
-                    ? postRepository.count()
-                    : postRepository.countByCategoryId(categoryId);
+                    ? postRepository.countByApprovalStatus(ApprovalStatus.ACCEPTED)
+                    : postRepository.countByCategoryIdAndApprovalStatus(categoryId, ApprovalStatus.ACCEPTED);
 
         return PostDto.PostResponseWithTotalCount.builder()
                 .totalCount(totalCount)
