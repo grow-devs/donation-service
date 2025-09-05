@@ -6,7 +6,7 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-  withCredentials: true,
+  withCredentials: true, // 쿠키 허용
 });
 
 const refreshApi = axios.create({
@@ -14,7 +14,7 @@ const refreshApi = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-  withCredentials: true,
+  withCredentials: true, // 쿠키 허용
 });
 
 // 응답 인터셉터: 토큰 갱신 로직 (핵심)
