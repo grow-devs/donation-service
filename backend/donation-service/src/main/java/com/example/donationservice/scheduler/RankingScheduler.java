@@ -3,6 +3,7 @@ package com.example.donationservice.scheduler;
 import com.example.donationservice.domain.donation.DonationRepository;
 import com.example.donationservice.domain.ranking.RankingService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class RankingScheduler {
 
     private final RankingService rankingService;
@@ -43,9 +45,9 @@ public class RankingScheduler {
      * <p>
      * 매일 새벽 1시에 스케줄링
      */
-//    @Scheduled(cron = "0 0 0 * * ?")  // 매일 1AM
+    @Scheduled(cron = "0 15 23 * * ?")  // 매일 1AM
     @SchedulerLock(name = "recalculateLast30DaysRankingLock",lockAtMostFor = "10m",lockAtLeastFor = "5m")
-    @Scheduled(fixedRate = 600000 )  // 스캐줄링 테스트를 위한 5초 간격 스케줄링
+//    @Scheduled(fixedRate = 600000 )  // 스캐줄링 테스트를 위한 5초 간격 스케줄링
     public void recalculateLast30DaysRanking() {
         LocalDate today = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
@@ -65,14 +67,16 @@ public class RankingScheduler {
         // 캐시만료 2일
         // 하루에 한번씩 30일치의 랭킹이 새로 생긴다.
         redisTemplate.expire(curKey, Duration.ofDays(2));
+
+        log.info("~~~~ recalculateLast30DaysRanking 스케줄러 ~~~~");
     }
 
     /**
      * 전체 기부 랭킹(명에의 전당) 데이터 싱크(정합성 체크)
      */
-//    @Scheduled(cron = "0 0 0 * * ?")  // 매일 1AM
+    @Scheduled(cron = "0 15 23 * * ?")  // 매일 1AM
     @SchedulerLock(name = "syncHallOfFameRankingLock",lockAtMostFor = "10m",lockAtLeastFor = "5m")
-    @Scheduled(fixedRate = 600000)  // 스캐줄링 테스트를 위한 5초 간격 스케줄링
+//    @Scheduled(fixedRate = 600000)  // 스캐줄링 테스트를 위한 5초 간격 스케줄링
     public void syncHallOfFameRanking() {
         try {
             //명예의 전당 key
@@ -136,5 +140,6 @@ public class RankingScheduler {
             System.err.println("전체 기부 랭킹 데이터 싱크 실패: " + e.getMessage());
             e.printStackTrace();
         }
+        log.info("~~~~ syncHallOfFameRanking 스케줄러 ~~~~");
     }
 }
