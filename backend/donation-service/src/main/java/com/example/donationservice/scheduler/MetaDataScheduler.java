@@ -5,6 +5,7 @@ import com.example.donationservice.domain.metadata.MetaData;
 import com.example.donationservice.domain.metadata.MetaDataRepository;
 import com.example.donationservice.domain.post.PostRepository;
 import lombok.RequiredArgsConstructor;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -21,8 +22,9 @@ public class MetaDataScheduler {
     private final RedisTemplate<String,String> redisTemplate;
 
     // 총 모금액 계산 스케줄러
-    @Scheduled(cron = "0 0 0 * * ?")  // 매일 2AM
-//    @Scheduled(fixedRate = 600000)  // 테스트를 위한 5초 스케줄
+//    @Scheduled(cron = "0 0 0 * * ?")  // 매일 2AM
+    @SchedulerLock(name = "updateTotalDonationAmountLock", lockAtMostFor = "10m", lockAtLeastFor = "3m")
+    @Scheduled(fixedRate = 600000)  // 테스트를 위한 5초 스케줄
     @Transactional
     public void updateTotalDonationAmount(){
         Long totalAmount = postRepository.sumAllDonationAmounts();//post에서 sum함으로써 계산량을 줄인다.
@@ -40,8 +42,9 @@ public class MetaDataScheduler {
 //    ########## 총 후원자수 저장 스캐줄러 ########
 //    일일 통계처럼 매일 갱신되는 데이터의 경우,
 //    Redis에 이미 저장된 키에 새로운 값으로 덮어쓰는 것이 가장 효율적인 방법
-    @Scheduled(cron = "0 0 0 * * ?")  // 매일 00시 //todo 오늘에 관한 정보이다보니 언제 스케줄링을 돌릴지도 생각해야함
-//    @Scheduled(fixedRate = 600000)  // 테스트를 위한 5초 스케줄
+//    @Scheduled(cron = "0 0 0 * * ?")  // 매일 00시 //todo 오늘에 관한 정보이다보니 언제 스케줄링을 돌릴지도 생각해야함
+    @SchedulerLock(name = "updateTotalDonorsLock", lockAtMostFor = "10m", lockAtLeastFor = "3m")
+    @Scheduled(fixedRate = 600000)  // 테스트를 위한 5초 스케줄
     @Transactional
     public void updateTotalDonors(){
         Long totalDonors = donationRepository.CountDistinctDonors();
@@ -51,13 +54,11 @@ public class MetaDataScheduler {
 
 //    ########## 오늘의 첫 기부 데이터 key 삭제 스케줄러 ########
     // 키를 삭제하지 않으면 어제 혹은 그 이전에 기부했던 정보가 그대로 있게된다.
-    @Scheduled(cron = "0 0 0 * * ?")  // 매일 23시 59분 //todo 오늘에 관한 정보이다보니 언제 스케줄링을 돌릴지도 생각해야함
-//    @Scheduled(fixedRate = 600000)  // 테스트를 위한 5초 스케줄
-    @Transactional
+//    @Scheduled(cron = "0 0 0 * * ?")  // 매일 23시 59분 //todo 오늘에 관한 정보이다보니 언제 스케줄링을 돌릴지도 생각해야함
+    @SchedulerLock(name = "DeleteFirstDonationKeyLock", lockAtMostFor = "10m", lockAtLeastFor = "3m")
+    @Scheduled(fixedRate = 600000)  // 테스트를 위한 5초 스케줄
     public void DeleteFirstDonationKey(){
         String key = "first_donation:";
-//        redisTemplate.opsForHash().delete(key,"nickName");
-//        redisTemplate.opsForHash().delete(key,"createdAt");
 
         redisTemplate.delete(key);
         redisTemplate.delete("ranking:daily:20250901");
