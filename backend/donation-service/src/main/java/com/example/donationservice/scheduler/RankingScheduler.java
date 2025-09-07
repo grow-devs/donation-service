@@ -45,7 +45,7 @@ public class RankingScheduler {
      * <p>
      * 매일 새벽 1시에 스케줄링
      */
-    @Scheduled(cron = "0 15 23 * * ?")  // 매일 1AM
+    @Scheduled(cron = "0 0 0 * * ?")  // 매일 1AM
     @SchedulerLock(name = "recalculateLast30DaysRankingLock",lockAtMostFor = "10m",lockAtLeastFor = "5m")
 //    @Scheduled(fixedRate = 600000 )  // 스캐줄링 테스트를 위한 5초 간격 스케줄링
     public void recalculateLast30DaysRanking() {
@@ -74,7 +74,7 @@ public class RankingScheduler {
     /**
      * 전체 기부 랭킹(명에의 전당) 데이터 싱크(정합성 체크)
      */
-    @Scheduled(cron = "0 15 23 * * ?")  // 매일 1AM
+    @Scheduled(cron = "0 0 0 * * ?")  // 매일 1AM
     @SchedulerLock(name = "syncHallOfFameRankingLock",lockAtMostFor = "10m",lockAtLeastFor = "5m")
 //    @Scheduled(fixedRate = 600000)  // 스캐줄링 테스트를 위한 5초 간격 스케줄링
     public void syncHallOfFameRanking() {
