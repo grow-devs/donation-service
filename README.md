@@ -1,7 +1,7 @@
 # 기부플랫폼 서비스 :마음이음
-
-<img width="313" height="114" alt="Image" src="https://github.com/user-attachments/assets/3e9f2c52-42f6-4046-8444-d09ac12a2595" />
-
+<div align="center">
+<img width="350" height="200" alt="Image" src="https://github.com/user-attachments/assets/3e9f2c52-42f6-4046-8444-d09ac12a2595" />
+</div>
 &nbsp;
 
 ## **개요**😀
@@ -70,13 +70,14 @@ Spring Boot와 React 기반으로 개발되었으며 AWS 인프라 (EC2, S3, Clo
 
 ## **시스템 아키텍처**⚙️
 
+<div align="center">
 
-<img width="785" height="656" alt="Image" src="https://github.com/user-attachments/assets/a21c9b39-e0dd-4ec8-95dc-cd94c0cc02a5" /> 
-
+<img width="550" height="550" alt="Image" src="https://github.com/user-attachments/assets/a21c9b39-e0dd-4ec8-95dc-cd94c0cc02a5" /> 
+</div>
 
 &nbsp;
 
-**요청 흐름 🔄**
+### **요청 흐름 🔄**
 
 사용자의 요청이 시스템에서 어떻게 처리되는지 그 과정을 단계별로 설명합니다.
 
@@ -92,7 +93,7 @@ Spring Boot와 React 기반으로 개발되었으며 AWS 인프라 (EC2, S3, Clo
 &nbsp;
 
 
-**배포 프로세스(CI/CD)💡**
+### **배포 프로세스(CI/CD)💡**
 
 **CI/CD**
 
@@ -159,9 +160,9 @@ Spring Boot와 React 기반으로 개발되었으며 AWS 인프라 (EC2, S3, Clo
 
 <details>
 <summary>AWS 배포 대시보드 보기 🖥️</summary>
-    <h5>
+    <h3>
         오토 스케일링 그룹 
-    </h5>
+    </h3>
 <p>
 <img width="556" height="175" alt="Image" src="https://github.com/user-attachments/assets/a41683e2-6514-44b9-bd63-4f0f3e227e58" />
 </p>
@@ -169,27 +170,27 @@ Spring Boot와 React 기반으로 개발되었으며 AWS 인프라 (EC2, S3, Clo
 <img width="1174" height="524" alt="Image" src="https://github.com/user-attachments/assets/a45a2e5d-c28a-4b5d-9422-de47dfb905dc" />
 </p>
     <br/>
-     <h5>
+     <h3>
         RDS
-    </h5>
+    </h3>
 <p>
 <img width="1105" height="715" alt="Image" src="https://github.com/user-attachments/assets/9643420e-f7f1-4c84-a341-ca7e945edf0e" />
 </p><br/>
-    <h5>
+    <h3>
         Elasticache
-    </h5>
+    </h3>
 <p>
 <img width="1464" height="608" alt="Image" src="https://github.com/user-attachments/assets/0c1cce59-62cc-4b02-a34c-a9da0687c5b1" />
 </p><br/>
-    <h5>
+    <h3>
         CloudFront
-    </h5>
+    </h3>
 <p>
 <img width="1600" height="690" alt="Image" src="https://github.com/user-attachments/assets/7097e67e-1a49-4ece-b3fd-d665c04cb45d" />
 </p><br/>
-    <h5>
+    <h3>
         S3
-    </h5>
+    </h3>
 <p>
 <img width="985" height="211" alt="Image" src="https://github.com/user-attachments/assets/710942ce-9aaf-4c95-831b-337d551e71e8" />
 </p>
