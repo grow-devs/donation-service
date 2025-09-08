@@ -11,7 +11,10 @@ Spring Boot와 React 기반으로 개발되었으며 AWS 인프라 (EC2, S3, Clo
 
 &nbsp;
 
+## **시연 영상** 🖥️
+[![Video Thumbnail](https://img.youtube.com/vi/1GLJzIBFZ2Q/0.jpg)](https://www.youtube.com/watch?v=1GLJzIBFZ2Q)
 
+&nbsp;
 
 ## **개발 기간 및 인원📅**
 
