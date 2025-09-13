@@ -78,7 +78,7 @@ Spring Boot와 React 기반으로 개발되었으며 AWS 인프라 (EC2, S3, Clo
 
 <div align="center">
 
-<img width="550" height="550" alt="Image" src="https://github.com/user-attachments/assets/f047c829-1a88-4ecb-8ba5-5445e9490f10" />
+<img width="555" height="555" alt="Image" src="https://github.com/user-attachments/assets/d54c77ae-60c4-451b-874c-6d6a5b66d53f" />
 </div>
 
 &nbsp;
