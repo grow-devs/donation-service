@@ -16,7 +16,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     Page<Comment> findByPostIdOrderByUpdatedAtDesc(Long postId, Pageable pageable);
     Page<Comment> findByPostId(Long postId, Pageable pageable);
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Lock(LockModeType.PESSIMISTIC_READ)
     @Query("SELECT c FROM Comment c WHERE c.id = :commentId")
     Optional<Comment> findByIdWithLock(@Param("commentId") Long commentId);
 }
