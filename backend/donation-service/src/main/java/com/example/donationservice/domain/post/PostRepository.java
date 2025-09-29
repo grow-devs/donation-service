@@ -29,7 +29,7 @@ public interface PostRepository extends JpaRepository<Post,Long>,PostRepositoryC
     @Query("UPDATE Post p SET p.currentAmount = p.currentAmount + :cureentAmount WHERE p.id = :postId")
     void addDonationAmount(@Param("postId") Long postId, @Param("cureentAmount") Long cureentAmount);
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Lock(LockModeType.PESSIMISTIC_READ)
     @Query("SELECT p FROM Post p WHERE p.id = :postId")
     Optional<Post> findByIdWithLock(@Param("postId") Long postId);
 
