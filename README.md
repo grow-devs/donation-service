@@ -35,7 +35,7 @@ Spring Boot와 React 기반으로 개발되었으며 AWS 인프라 (EC2, S3, Clo
 
 **Back-end**
 
-- Java (17), SpringBoot (3.3.13), Gradle (8.14.2), QueryDSL (5.0.0), spring data jpa, springSecurity, postgres, redis
+- Java (17), SpringBoot (3.3.13), Gradle (8.14.2), QueryDSL (5.0.0), spring data jpa, springSecurity, postgres (17), redis(7)
 
 **Front-end**
 
